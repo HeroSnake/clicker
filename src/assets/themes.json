@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "name": "Banana",
+        "img": "banana.png"
+    },
+    {
+        "id": 2,
+        "name": "Gland",
+        "img": "acorn.png"
+    }
+]
