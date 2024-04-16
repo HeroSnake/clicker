@@ -88,7 +88,7 @@
             src="src/img/{theme.img}"
             alt="{theme.name}"
             class="item"
-            style="left: {item.x}px; top: {item.y}px;"
+            style="left: {item.x}px; top: {item.y}px; transform: rotate({Math.random() * 360}deg);"
         />
     {/each}
 </div>
@@ -104,5 +104,6 @@
         width: 50px;
         height: auto;
         pointer-events: none;
+        animation: rotation 5s linear infinite;
     }
 </style>

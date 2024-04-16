@@ -1,68 +1,62 @@
 <script>
-    import { onMount } from "svelte";
+    export let theme, upgrades
 
-    onMount(() => {
-        const canvas = document.getElementById('waterCanvas');
-const ctx = canvas.getContext('2d');
+    const BASE_HEIGHT = 502
 
-// Set canvas size
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    $: height = Math.min(300, - 0 + upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0))
 
-// Create SVG string for the wave
-const svgString = `
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-    <path d="M0,50 Q25,30 50,50 T100,50" fill="rgba(30, 144, 255, 0.5)"></path>
-    <path d="M0,50 Q25,70 50,50 T100,50" fill="rgba(30, 144, 255, 0.5)"></path>
-  </svg>
-`;
-
-// Convert SVG string to Blob
-const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-const url = URL.createObjectURL(blob);
-
-// Create image object from SVG
-const image = new Image();
-image.src = url;
-
-// Initial position
-let x = 0;
-
-// Animation loop
-function animate() {
-  requestAnimationFrame(animate);
-
-  // Clear canvas
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Draw image
-  ctx.drawImage(image, x, 0, canvas.width, canvas.height);
-  if (x < 0) {
-    ctx.drawImage(image, x + canvas.width, 0, canvas.width, canvas.height);
-  }
-
-  // Update position
-  x -= 1; // Adjust speed of horizontal movement
-  if (x <= -canvas.width) {
-    x = 0;
-  }
-}
-
-// Start animation
-animate();
-
-    });
-
+    $: style = `background: linear-gradient(to top, white, rgba(255, 255, 255, 0.05) 50%, transparent 65%, transparent 100%);`
 </script>
 
-<canvas id="waterCanvas"></canvas>
+<div class="container" style="bottom: {height}px; {style}">
+    <div class="fluid-1 fluid-mask {theme.name}" style="bottom: 0px"></div>
+    <div class="fluid-2 fluid-mask {theme.name}" style="bottom: 0px"></div>
+</div>
 
 <style>
-    #waterCanvas {
-        position: absolute;
-        top: 0;
-        left: 0;
+    .container {
+        overflow: hidden;
+        position: fixed;
         width: 100%;
         height: 100%;
+        left: 0;
+    }
+
+    .fluid-1, .fluid-2 {
+        height: 560px;
+        width: 5076px;
+        position: absolute;
+        left: 0;
+        opacity: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* Set opacity gradient from transparent to opaque */
+    }
+    .fluid-mask {
+        opacity: 0.5;
+        mix-blend-mode: multiply;
+    }
+
+    .fluid-1 {
+        background: url("src/img/fluid-1.png") repeat-x;
+        animation: slide 45s linear infinite;
+    }
+
+    .fluid-2 {
+        background: url("src/img/fluid-2.png") repeat-x;
+        animation: slide 60s linear infinite;
+    }
+
+    @keyframes slide {
+        0% {
+            transform: translate3d(0, 0, 0);
+        }
+        100% {
+            transform: translate3d(-1692px, 0, 0);
+        }
+    }
+
+    .Banana {
+        filter: saturate(0%) sepia(100%) hue-rotate(300deg) brightness(100%) contrast(100%);
+    }
+    .Gland {
+        filter: brightness(100%) saturate(0%) invert(100%) sepia(0%) hue-rotate(0deg);
     }
 </style>

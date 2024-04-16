@@ -115,7 +115,7 @@
 
 <Inventory bind:itemCount bind:upgrades bind:itemsPerClick />
 <Items bind:itemsPerSecond {theme}/>
-<Fluid />
+<Fluid {theme} {upgrades}/>
 <style>
     #plate {
         width: fit-content;
@@ -140,6 +140,7 @@
         margin-bottom: 50px;
         width: fit-content;
         height: fit-content;
+        touch-action: none;
     }
 
     .cookie-count {
