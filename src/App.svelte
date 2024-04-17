@@ -13,7 +13,7 @@
     let totalItemsCollected = +localStorage.getItem("totalItemsCollected") || 0;
     let itemsPerClick = +localStorage.getItem("itemsPerClick") || 1;
     let theme = themes.find(t => t.id == +localStorage.getItem("theme")) || themes[0];
-    let clickedCookie = false;
+    let clickedItem = false;
     let cursors = [];
 
     let upgrades = JSON.parse(localStorage.getItem("upgrades")) ?? [...gameData]
@@ -51,9 +51,9 @@
             setTimeout(() => {
                 clickText.remove();
             }, 500);
-            clickedCookie = true;
+            clickedItem = true;
             setTimeout(() => {
-                clickedCookie = false;
+                clickedItem = false;
             }, 500);
     }
 
@@ -93,11 +93,11 @@
 <div id="plate">
     <h1>{theme.name} Clicker</h1>
 
-    <div id="cookie-container" class:wiggle={clickedCookie} on:click={clickItem}>
-        <img src="src/img/{theme.img}" alt="Cookie" height="200" />
-    </div>
+    <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
+        <img src="/src/img/{theme.img}" alt="Cookie" id="item-img" height="200" />
+        <Cursors bind:cursors bind:upgrades />
+    </button>
 
-    <Cursors bind:cursors bind:upgrades />
     <hr>
     <div>
         <span class="cookie-count">
@@ -122,7 +122,6 @@
         text-align: center;
         position: relative;
         z-index: 1;
-        margin: auto;
         height: 100%;
         display: flex;
         flex-direction: column;
@@ -130,7 +129,7 @@
         align-items: center;
     }
 
-    #cookie-container {
+    #item-container {
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
@@ -141,6 +140,7 @@
         width: fit-content;
         height: fit-content;
         touch-action: none;
+        position: relative;
     }
 
     .cookie-count {
@@ -162,4 +162,14 @@
             transform: scale(1);
         }
     }
+
+    #item-container {
+        background: none;
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+    }
+
 </style>

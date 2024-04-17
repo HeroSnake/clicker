@@ -9,7 +9,7 @@ function createGame() {
     let totalItemsCollected = +localStorage.getItem("totalItemsCollected") || 0;
     let itemsPerClick = +localStorage.getItem("itemsPerClick") || 1;
     let theme = themes.find(t => t.id == +localStorage.getItem("theme")) || themes[0];
-    let clickedCookie = false;
+    let clickedItem = false;
     let cursors = [];
 
 

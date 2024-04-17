@@ -3,11 +3,11 @@
 
     function generateCursors(count) {
         let data = []
-        if(!document.getElementById("cookie-container")) {
+        if(!document.getElementById("item-container")) {
             return data
         }
-        const centerX = document.getElementById("cookie-container").offsetLeft + document.getElementById("cookie-container").offsetWidth / 2 - 10;
-        const centerY = document.getElementById("cookie-container").offsetHeight + 120;
+        const centerX = document.getElementById("item-container").offsetLeft + document.getElementById("item-container").offsetWidth / 2 - 10;
+        const centerY = document.getElementById("item-container").offsetHeight + 120;
 
         let cursorRadius = 150;
         let angle = -Math.PI / 2; // Start at 12 o'clock position
@@ -32,22 +32,22 @@
     window.addEventListener('resize', () => cursors = generateCursors(upgrades.find(u => u.id == 0).stock))
 </script>
 
-{#each cursors as cursor}
+<!-- {#each cursors as cursor} -->
 <img
-    src="src/img/cursor.png"
+    src="src/img/cursor-v2.png"
     alt="Cursor"
     class="cursor"
-    style="left: {cursor.x}px; top: {cursor.y}px; transform: rotate({cursor.rotation}deg);"
 />
-{/each}
+<!-- {/each} -->
 
 
 <style>
     .cursor {
         position: absolute;
-        width: 20px;
-        height: auto;
+        left: 0;
+        bottom: 0;
+        height: 100%;
+        width: auto;
         pointer-events: none;
-        z-index: 1;
     }
 </style>
