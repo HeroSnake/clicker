@@ -94,7 +94,7 @@
     <h1>{theme.name} Clicker</h1>
 
     <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
-        <img src="/src/img/{theme.img}" alt="Cookie" id="item-img" height="200" />
+        <img src="./img/{theme.img}" alt="Cookie" id="item-img" height="200" />
         <Cursors bind:cursors bind:upgrades />
     </button>
 

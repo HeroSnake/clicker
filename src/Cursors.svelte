@@ -34,7 +34,7 @@
 
 <!-- {#each cursors as cursor} -->
 <img
-    src="src/img/cursor-v2.png"
+    src="./img/cursor-v2.png"
     alt="Cursor"
     class="cursor"
 />

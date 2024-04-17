@@ -35,12 +35,12 @@
     }
 
     .fluid-1 {
-        background: url("/src/img/fluid-1.png") repeat-x;
+        background: url("./img/fluid-1.png") repeat-x;
         animation: slide 45s linear infinite;
     }
 
     .fluid-2 {
-        background: url("/src/img/fluid-2.png") repeat-x;
+        background: url("./img/fluid-2.png") repeat-x;
         animation: slide 60s linear infinite;
     }
 
