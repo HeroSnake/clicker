@@ -1,6 +1,6 @@
 <script>
     import Items from "./Items.svelte";
-    import Inventory from "./Inventory.svelte";
+    import Shop from "./Shop.svelte";
     import Cursors from "./Cursors.svelte";
     import Fluid from "./Fluid.svelte";
     import { onMount } from "svelte";
@@ -48,13 +48,9 @@
             clickText.style.left = event.clientX + 'px';
             clickText.style.top = event.clientY + 'px';
             document.body.appendChild(clickText);
-            setTimeout(() => {
-                clickText.remove();
-            }, 500);
+            setTimeout(() => clickText.remove(), 500);
             clickedItem = true;
-            setTimeout(() => {
-                clickedItem = false;
-            }, 500);
+            setTimeout(() => clickedItem = false, 250);
     }
 
     function saveData() {
@@ -94,7 +90,7 @@
     <h1>{theme.name} Clicker</h1>
 
     <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
-        <img src="./img/{theme.img}" alt="Cookie" id="item-img" height="200" />
+        <img src="./img/items/{theme.img}" alt="Cookie" id="item-img" />
         <Cursors bind:cursors bind:upgrades />
     </button>
 
@@ -113,7 +109,7 @@
     <button on:click={() => chooseTheme(2)}>Gland</button>
 </div>
 
-<Inventory bind:itemCount bind:upgrades bind:itemsPerClick />
+<Shop bind:itemCount bind:upgrades bind:itemsPerClick />
 <Items bind:itemsPerSecond {theme}/>
 <Fluid {theme} {upgrades}/>
 <style>
@@ -127,6 +123,7 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
+        width: 50%;
     }
 
     #item-container {
@@ -156,7 +153,7 @@
             transform: scale(1);
         }
         50% {
-            transform: scale(1.2);
+            transform: scale(1.05);
         }
         100% {
             transform: scale(1);
@@ -170,6 +167,10 @@
         font: inherit;
         cursor: pointer;
         outline: inherit;
+    }
+
+    #item-img {
+        width: 500px;
     }
 
 </style>

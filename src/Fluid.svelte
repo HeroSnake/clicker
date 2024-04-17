@@ -30,19 +30,18 @@
         opacity: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* Set opacity gradient from transparent to opaque */
     }
     .fluid-mask {
-        opacity: 0.5;
-        mix-blend-mode: multiply;
+        opacity: 0.7;
     }
 
     .fluid-1 {
-        background: url("/img/fluid-1.png") repeat-x;
-        animation: slide 45s linear infinite;
+        background: url("/img/fluids/fluid-1.png") repeat-x;
+        animation: slide 65s linear infinite;
     }
 
-    .fluid-2 {
-        background: url("/img/fluid-2.png") repeat-x;
-        animation: slide 60s linear infinite;
-    }
+    /* .fluid-2 {
+        background: url("/img/fluids/fluid-2.png") repeat-x;
+        animation: slide 45s linear infinite;
+    } */
 
     @keyframes slide {
         0% {

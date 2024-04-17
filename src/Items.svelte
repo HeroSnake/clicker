@@ -85,7 +85,7 @@
 <div class="itemCount">
     {#each itemCount as item}
         <img
-            src="./img/{theme.img}"
+            src="./img/items/{theme.img}"
             alt="{theme.name}"
             class="item"
             style="left: {item.x}px; top: {item.y}px; transform: rotate({Math.random() * 360}deg);"

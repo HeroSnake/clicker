@@ -1,5 +1,5 @@
 <script>
-    import { displayNumber } from "../src/utils"
+    import { displayNumber } from "./utils"
     export let itemCount, upgrades, itemsPerClick
 
     const MAX_LEVELS = 30
@@ -55,7 +55,7 @@
                 <div class="upgradeInfo {upgrade.stock == 0 ? 'locked' : ''}">
                     <div class="flex">
                         <div class="upgradeImg">
-                            <img src="./img/{upgrade.image}.png" alt="img">
+                            <img src="./img/upgrades/{upgrade.image}.png" alt="img">
                             <span class="upgradeStock">x{upgrade.stock}</span>
                         </div>
                         <div>
@@ -75,12 +75,12 @@
                 <div class="flex-c upgradeButtons">
                     <button class="shop-btn" on:click={() => buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor(itemCount)}">
                         <span>Buy</span><br>
-                        <small>{displayNumber(upgrade.cost)}<img src="./img/banana.png" alt="banana"></small>
+                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/banana.png" alt="banana"></small>
                     </button>
                     {#if upgrade.level < MAX_LEVELS}
                         <button class="shop-btn" on:click={() => enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor(itemCount)}">
                             <span>Up</span><br>
-                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/banana.png" alt="banana"></small>
+                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/banana.png" alt="banana"></small>
                         </button>
                     {/if}
                 </div>
@@ -93,7 +93,7 @@
     .shop {
         border-left: 2px solid #333;
         background-color: #242424;
-        width: 450px;
+        width: 40%;
         height: 100vh;
         overflow-y: scroll;
         z-index: 1;
