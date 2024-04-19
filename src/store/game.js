@@ -1,6 +1,8 @@
 import { writable } from 'svelte/store'
 import gameData from "../assets/gameData.json";
-import config from "../config.json";
+
+const MAX_UPGRADES = 30;
+const GOD_MODE = !!+import.meta.env.VITE_GOD_MODE
 
 function createGame() {
     const { subscribe, update, set } = writable({
@@ -37,7 +39,7 @@ function createGame() {
 
     const enhanceUpgrade = id => update(game => {
         let upgrade = game.upgrades.find(u => u.id == id)
-        if (upgrade.level < config.maxUpgrades && game.itemCount >= (upgrade.baseCost * Math.exp(upgrade.level))) {
+        if (upgrade.level < MAX_UPGRADES && game.itemCount >= (upgrade.baseCost * Math.exp(upgrade.level))) {
             game.itemCount -= upgrade.baseCost * Math.exp(upgrade.level)
             upgrade.level++
             switch (upgrade.type) {
@@ -105,7 +107,7 @@ function createGame() {
         return game
     })
 
-    return { subscribe , resetGame, enhanceUpgrade, buyUpgrade, clickItem }
+    return { subscribe , resetGame, enhanceUpgrade, buyUpgrade, clickItem, MAX_UPGRADES, GOD_MODE }
 }
 
 export const game = createGame()

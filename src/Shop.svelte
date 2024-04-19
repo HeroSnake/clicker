@@ -2,8 +2,6 @@
     import { displayNumber } from "./utils"
     import { game } from "./store/game";
     import { theme } from "./store/theme";
-    import config from "./config.json"
-
 
     function upgradeInfo(type) {
         switch (type) {
@@ -36,7 +34,7 @@
                     {#if upgrade.stock > 0}
                         <div class="upgradeLevel">
                             <div class="xp-bar">
-                                <div class="fill" style="width: {upgrade.stock == 0 ? 0 : upgrade.level / config.maxUpgrades * 100}%"></div>
+                                <div class="fill" style="width: {upgrade.stock == 0 ? 0 : upgrade.level / game.MAX_UPGRADES * 100}%"></div>
                             </div>
                             <span>{upgrade.level}</span>
                         </div>
@@ -47,7 +45,7 @@
                         <span>Buy</span><br>
                         <small>{displayNumber(upgrade.cost)}<img src="./img/items/{$theme.img}" alt="currency"></small>
                     </button>
-                    {#if upgrade.level < config.maxUpgrades}
+                    {#if upgrade.level < game.MAX_UPGRADES}
                         <button class="shop-btn" on:click={() => game.enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor($game.itemCount)}">
                             <span>Up</span><br>
                             <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{$theme.img}" alt="currency"></small>

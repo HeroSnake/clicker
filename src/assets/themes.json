@@ -1,11 +1,13 @@
 [
     {
         "id": 1,
+        "code": "banana",
         "name": "Banana",
         "img": "banana.png"
     },
     {
         "id": 2,
+        "code": "acorn",
         "name": "Gland",
         "img": "acorn.png"
     }

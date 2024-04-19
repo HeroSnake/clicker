@@ -43,9 +43,13 @@
             {displayNumber($game.itemsPerSecond)} <strong>Bps</strong>
         </small>
         <br>
-        <button on:click={game.resetGame}>Reset Game</button>
-        <button on:click={() => theme.chooseTheme(1)}>Banane</button>
-        <button on:click={() => theme.chooseTheme(2)}>Gland</button>
+        {#if game.GOD_MODE}
+            <button on:click={game.resetGame}>Reset Game</button>
+        {/if}
+        {#if theme.CHOOSABLE_THEME}
+            <button on:click={() => theme.chooseTheme(1)}>Banane</button>
+            <button on:click={() => theme.chooseTheme(2)}>Gland</button>
+        {/if}
     </div>
 </div>
 <Shop/>
