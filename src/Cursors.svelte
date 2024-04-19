@@ -1,5 +1,5 @@
 <script>
-    export let cursors, upgrades;
+    export let cursors;
 
     function rotation(count) {
 

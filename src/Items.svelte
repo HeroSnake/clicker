@@ -1,7 +1,8 @@
 <script>
-    export let itemsPerSecond, theme;
+    export let theme;
+    import { game } from "./store/game";
 
-    $: numItems = Math.min(30, Math.floor(10 + (itemsPerSecond / 100)))
+    $: numItems = Math.min(30, Math.floor(10 + ($game.itemsPerSecond / 100)))
     let itemCount = [];
 
     function createFloatingImage() {

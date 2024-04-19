@@ -1,39 +1,9 @@
 <script>
     import { displayNumber } from "./utils"
-    export let itemCount, upgrades, itemsPerClick, theme
+    import { game } from "./store/game";
+    import config from "./config.json"
 
-    const MAX_LEVELS = 30
-
-    function buyUpgrade(id) {
-        let upgrade = upgrades.find(u => u.id == id)
-        if (itemCount >= upgrade.cost) {
-            if(upgrade.type == 'cursor') {
-                itemsPerClick += upgrade.increase
-                localStorage.setItem('itemsPerClick', itemsPerClick)
-            }
-            upgrade.stock++
-            itemCount -= Math.floor(upgrade.cost)
-            upgrade.cost *= 3
-            upgrades = upgrades
-            localStorage.setItem('upgrades', JSON.stringify(upgrades))
-        }
-    }
-
-    function enhanceUpgrade(id) {
-        let upgrade = upgrades.find(u => u.id == id)
-        if (upgrade.level < MAX_LEVELS && itemCount >= (upgrade.baseCost * Math.exp(upgrade.level))) {
-            itemCount -= upgrade.baseCost * Math.exp(upgrade.level)
-            upgrade.level++
-            switch (upgrade.type) {
-                default:
-                    upgrade.increase *= 2
-                    break;
-            }
-            console.log(upgrade)
-            upgrades = upgrades
-            localStorage.setItem('upgrades', JSON.stringify(upgrades))
-        }
-    }
+    export let theme
 
     function upgradeInfo(type) {
         switch (type) {
@@ -42,7 +12,7 @@
             case 'amount':
                 return ' Bps'
             case 'cursor':
-                return ` Bps <strong>(${displayNumber(itemsPerClick)} Bpc)</strong>`
+                return ` Bps <strong>(${displayNumber($game.itemsPerClick)} Bpc)</strong>`
         }
     }
 </script>
@@ -50,7 +20,7 @@
 <div class="shop">
     <h2>Shop</h2>
     <div class="upgrades">
-        {#each upgrades as upgrade}
+        {#each $game.upgrades as upgrade}
             <div class="upgrade">
                 <div class="upgradeInfo {upgrade.stock == 0 ? 'locked' : ''}">
                     <div class="flex">
@@ -66,19 +36,19 @@
                     {#if upgrade.stock > 0}
                         <div class="upgradeLevel">
                             <div class="xp-bar">
-                                <div class="fill" style="width: {upgrade.stock == 0 ? 0 : upgrade.level / MAX_LEVELS * 100}%"></div>
+                                <div class="fill" style="width: {upgrade.stock == 0 ? 0 : upgrade.level / config.maxUpgrades * 100}%"></div>
                             </div>
                             <span>{upgrade.level}</span>
                         </div>
                     {/if}
                 </div>
                 <div class="flex-c upgradeButtons">
-                    <button class="shop-btn" on:click={() => buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor(itemCount)}">
+                    <button class="shop-btn" on:click={() => game.buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor($game.itemCount)}">
                         <span>Buy</span><br>
                         <small>{displayNumber(upgrade.cost)}<img src="./img/items/{theme.img}" alt="currency"></small>
                     </button>
-                    {#if upgrade.level < MAX_LEVELS}
-                        <button class="shop-btn" on:click={() => enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor(itemCount)}">
+                    {#if upgrade.level < config.maxUpgrades}
+                        <button class="shop-btn" on:click={() => game.enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor($game.itemCount)}">
                             <span>Up</span><br>
                             <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{theme.img}" alt="currency"></small>
                         </button>

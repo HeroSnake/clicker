@@ -1,9 +1,11 @@
 <script>
-    export let theme, upgrades
+    import { game } from "./store/game";
+
+    export let theme
 
     const BASE_HEIGHT = 502
 
-    $: height = Math.min(300, - BASE_HEIGHT + upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0))
+    $: height = Math.min(300, - BASE_HEIGHT + $game.upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0))
 
     $: style = `background: linear-gradient(to top, white, rgba(255, 255, 255, 0.05) 50%, transparent 65%, transparent 100%);`
 </script>

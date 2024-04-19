@@ -4,31 +4,15 @@
     import Cursors from "./Cursors.svelte";
     import Fluid from "./Fluid.svelte";
     import { onMount } from "svelte";
-    import gameData from "../src/assets/gameData.json";
     import themes from "../src/assets/themes.json";
     import { displayNumber } from "../src/utils";
 
-    let itemCount = +localStorage.getItem("itemCount") || 0;
-    let itemsPerSecond = +localStorage.getItem("itemsPerSecond") || 0;
-    let totalItemsCollected = +localStorage.getItem("totalItemsCollected") || 0;
-    let itemsPerClick = +localStorage.getItem("itemsPerClick") || 1;
+    import { game } from "./store/game";
+
     let theme = themes.find(t => t.id == +localStorage.getItem("theme")) || themes[0];
     let clickedItem = false;
     let cursors = [];
 
-    let upgrades = JSON.parse(localStorage.getItem("upgrades")) ?? [...gameData]
-
-    function resetGame() {
-        localStorage.removeItem("itemCount");
-        localStorage.removeItem("itemsPerSecond");
-        localStorage.removeItem("itemsPerClick");
-        localStorage.removeItem("totalItemsCollected");
-        localStorage.removeItem("upgrades");
-        upgrades = [...gameData]
-        upgrades = upgrades
-        itemsPerClick = 1;
-        itemCount = itemsPerSecond = 0;
-    }
 
     function chooseTheme(idTheme) {
         theme = themes.find(t => t.id == idTheme)
@@ -36,54 +20,22 @@
     }
 
     onMount(() => {
-        const saveInterval = setInterval(saveData, 2000);
+        const saveInterval = setInterval(game.saveData, 2000);
         return () => clearInterval(saveInterval);
     });
 
     function clickItem(event) {
-        itemCount += itemsPerClick;
-            const clickText = document.createElement('div');
-            clickText.textContent = '+' + displayNumber(itemsPerClick);
-            clickText.classList.add('click-text');
-            clickText.style.left = event.clientX + 'px';
-            clickText.style.top = event.clientY + 'px';
-            document.body.appendChild(clickText);
-            setTimeout(() => clickText.remove(), 500);
-            clickedItem = true;
-            setTimeout(() => clickedItem = false, 250);
+        game.clickItem()
+        const clickText = document.createElement('div');
+        clickText.textContent = '+' + displayNumber($game.itemsPerClick);
+        clickText.classList.add('click-text');
+        clickText.style.left = event.clientX + 'px';
+        clickText.style.top = event.clientY + 'px';
+        document.body.appendChild(clickText);
+        setTimeout(() => clickText.remove(), 500);
+        clickedItem = true;
+        setTimeout(() => clickedItem = false, 250);
     }
-
-    function saveData() {
-        localStorage.setItem("itemCount", "" + Math.floor(itemCount));
-        localStorage.setItem("itemsPerSecond", "" + itemsPerSecond);
-        localStorage.setItem("itemsPerClick", "" + itemsPerClick);
-    }
-
-    let generationInterval;
-    function getItems() {
-        generationInterval = setInterval(() => {
-            let result = 0;
-            upgrades
-                .filter((u) => u.stock >= 1)
-                .forEach((u) => {
-                    switch (u.type) {
-                        case "amount":
-                        case "cursor":
-                            result += u.increase * u.stock;
-                            break;
-                        case "percent":
-                            result +=
-                                itemsPerSecond *
-                                (1 + (u.increase * u.stock) / 100);
-                            break;
-                    }
-                });
-            itemsPerSecond = result;
-            itemCount += itemsPerSecond / 5;
-            totalItemsCollected += itemsPerSecond / 5;
-        }, 200);
-    }
-    getItems();
 </script>
 
 <div id="plate">
@@ -91,27 +43,27 @@
 
     <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
         <img src="./img/items/{theme.img}" alt="item" id="item-img" />
-        <Cursors bind:cursors bind:upgrades />
+        <Cursors bind:cursors />
     </button>
     <div class="lighting-overlay"></div>
-    <Items {itemsPerSecond} {theme}/>
-    <Fluid {theme} {upgrades}/>
+    <Items {theme}/>
+    <Fluid {theme}/>
 
     <hr>
     <div id="plate-info">
         <span class="item-count">
-            {displayNumber(itemCount)} <strong>{theme.name}s</strong>
+            {displayNumber($game.itemCount)} <strong>{theme.name}s</strong>
         </span><br>
         <small>
-            {displayNumber(itemsPerSecond)} <strong>Bps</strong>
+            {displayNumber($game.itemsPerSecond)} <strong>Bps</strong>
         </small>
         <br>
-        <button on:click={resetGame}>Reset Game</button>
+        <button on:click={game.resetGame}>Reset Game</button>
         <button on:click={() => chooseTheme(1)}>Banane</button>
         <button on:click={() => chooseTheme(2)}>Gland</button>
     </div>
 </div>
-<Shop bind:itemCount bind:upgrades bind:itemsPerClick {theme} />
+<Shop {theme} />
 <style>
     #plate {
         width: fit-content;
