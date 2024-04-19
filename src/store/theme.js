@@ -4,11 +4,8 @@ import themes from "../assets/themes.json";
 const CHOOSABLE_THEME = (!!+import.meta.env.VITE_CHOOSABLE_THEME) ?? true
 
 function createTheme() {
-    const theme = themes.find(t => t.code == localStorage.getItem("theme"))
-        || themes.find(t => t.code === import.meta.env.VITE_DEFAULT_THEME)
-        || themes[0]
     const { subscribe, update, set } = writable({
-        ...theme,
+        ...(themes.find(t => t.code == (localStorage.getItem("theme") ?? import.meta.env.VITE_DEFAULT_THEME)) || themes[0]),
     })
 
     const chooseTheme = code => CHOOSABLE_THEME && changeTheme(code)
