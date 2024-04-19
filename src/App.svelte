@@ -87,31 +87,31 @@
 </script>
 
 <div id="plate">
-    <h1>{theme.name} Clicker</h1>
+    <h1 id="plate-title">{theme.name} Clicker</h1>
 
     <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
-        <img src="./img/items/{theme.img}" alt="Cookie" id="item-img" />
+        <img src="./img/items/{theme.img}" alt="item" id="item-img" />
         <Cursors bind:cursors bind:upgrades />
     </button>
+    <div class="lighting-overlay"></div>
+    <Items {itemsPerSecond} {theme}/>
+    <Fluid {theme} {upgrades}/>
 
     <hr>
-    <div>
-        <span class="cookie-count">
-            {displayNumber(itemCount)} <strong>itemCount</strong>
+    <div id="plate-info">
+        <span class="item-count">
+            {displayNumber(itemCount)} <strong>{theme.name}s</strong>
         </span><br>
         <small>
             {displayNumber(itemsPerSecond)} <strong>Bps</strong>
         </small>
+        <br>
+        <button on:click={resetGame}>Reset Game</button>
+        <button on:click={() => chooseTheme(1)}>Banane</button>
+        <button on:click={() => chooseTheme(2)}>Gland</button>
     </div>
-    <button on:click={resetGame}>Reset Game</button>
-
-    <button on:click={() => chooseTheme(1)}>Banane</button>
-    <button on:click={() => chooseTheme(2)}>Gland</button>
 </div>
-
-<Shop bind:itemCount bind:upgrades bind:itemsPerClick />
-<Items bind:itemsPerSecond {theme}/>
-<Fluid {theme} {upgrades}/>
+<Shop bind:itemCount bind:upgrades bind:itemsPerClick {theme} />
 <style>
     #plate {
         width: fit-content;
@@ -123,7 +123,9 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        width: 50%;
+        width: 60%;
+        background: url('/img/bg/banana.jpg') no-repeat center center fixed;
+        background-size: cover;
     }
 
     #item-container {
@@ -140,7 +142,11 @@
         position: relative;
     }
 
-    .cookie-count {
+    #plate-info, #item-container, #plate-title {
+        z-index: 1;
+    }
+
+    .item-count {
         font-size: 24px;
     }
 
@@ -170,7 +176,17 @@
     }
 
     #item-img {
-        width: 500px;
+        height: 300px;
+    }
+
+    .lighting-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.5) 100%);
     }
 
 </style>

@@ -12,6 +12,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   touch-action: manipulation;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 a {
@@ -68,7 +69,6 @@ h1 {
   opacity: 1;
   z-index: 2;
   font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   animation: riseAndFade 0.5s ease-in-out;
 }
 

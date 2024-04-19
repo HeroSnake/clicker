@@ -1,6 +1,6 @@
 <script>
     import { displayNumber } from "./utils"
-    export let itemCount, upgrades, itemsPerClick
+    export let itemCount, upgrades, itemsPerClick, theme
 
     const MAX_LEVELS = 30
 
@@ -75,12 +75,12 @@
                 <div class="flex-c upgradeButtons">
                     <button class="shop-btn" on:click={() => buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor(itemCount)}">
                         <span>Buy</span><br>
-                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/banana.png" alt="banana"></small>
+                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/{theme.img}" alt="currency"></small>
                     </button>
                     {#if upgrade.level < MAX_LEVELS}
                         <button class="shop-btn" on:click={() => enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor(itemCount)}">
                             <span>Up</span><br>
-                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/banana.png" alt="banana"></small>
+                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{theme.img}" alt="currency"></small>
                         </button>
                     {/if}
                 </div>

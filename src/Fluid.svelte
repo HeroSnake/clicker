@@ -3,59 +3,50 @@
 
     const BASE_HEIGHT = 502
 
-    $: height = Math.min(300, - 0 + upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0))
+    $: height = Math.min(300, - BASE_HEIGHT + upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0))
 
     $: style = `background: linear-gradient(to top, white, rgba(255, 255, 255, 0.05) 50%, transparent 65%, transparent 100%);`
 </script>
 
-<div class="container" style="bottom: {height}px; {style}">
-    <div class="fluid-1 fluid-mask {theme.name}" style="bottom: 0px"></div>
-    <div class="fluid-2 fluid-mask {theme.name}" style="bottom: 0px"></div>
+<div class="fluid-container" style="bottom: {height}px; {style}">
+    <div class="fluid-mask {theme.name}" style="bottom: 0px"></div>
 </div>
 
 <style>
-    .container {
+    .fluid-container {
         overflow: hidden;
-        position: fixed;
+        position: absolute;
         width: 100%;
         height: 100%;
         left: 0;
     }
 
-    .fluid-1, .fluid-2 {
+    .fluid-mask {
         height: 560px;
-        width: 5076px;
+        width: 200vw;
         position: absolute;
         left: 0;
-        opacity: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1)); /* Set opacity gradient from transparent to opaque */
+        opacity: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        background: url("/img/fluids/water.gif") repeat-x;
+        background-size: auto 60%;
     }
-    .fluid-mask {
-        opacity: 0.7;
-    }
-
-    .fluid-1 {
-        background: url("/img/fluids/fluid-1.png") repeat-x;
-        animation: slide 65s linear infinite;
-    }
-
-    /* .fluid-2 {
-        background: url("/img/fluids/fluid-2.png") repeat-x;
-        animation: slide 45s linear infinite;
-    } */
 
     @keyframes slide {
         0% {
-            transform: translate3d(0, 0, 0);
+            transform: translateX(0);
         }
         100% {
-            transform: translate3d(-1692px, 0, 0);
+            transform: translateX(-50%);
         }
     }
-
     .Banana {
-        filter: saturate(0%) sepia(100%) hue-rotate(300deg) brightness(100%) contrast(100%);
+        filter: hue-rotate(104deg);
+        opacity: 0.7;
+        animation: slide 30s linear infinite;
     }
     .Gland {
-        filter: brightness(100%) saturate(0%) invert(100%) sepia(0%) hue-rotate(0deg);
+        filter: brightness(190%) grayscale(1);
+        opacity: 0.9;
+        animation: slide 100s linear infinite;
     }
 </style>
