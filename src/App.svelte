@@ -47,8 +47,8 @@
             <button on:click={game.resetGame}>Reset Game</button>
         {/if}
         {#if theme.CHOOSABLE_THEME}
-            <button on:click={() => theme.chooseTheme(1)}>Banane</button>
-            <button on:click={() => theme.chooseTheme(2)}>Gland</button>
+            <button on:click={() => theme.chooseTheme('banana')}>Banane</button>
+            <button on:click={() => theme.chooseTheme('acorn')}>Gland</button>
         {/if}
     </div>
 </div>
