@@ -3,16 +3,13 @@ import themes from "../assets/themes.json";
 
 function createTheme() {
     const { subscribe, update, set } = writable({
-        ...(themes.find(t => t.id == +localStorage.getItem("theme")) || structuredClone(themes[0]))
+        ...(themes.find(t => t.id == +localStorage.getItem("theme")) || themes[0])
     })
 
-
-    const chooseTheme = idTheme => update(theme => {
-        theme = themes.find(t => t.id == idTheme)
-        localStorage.setItem("theme", "" + idTheme)
-
-        return theme
-    })
+    const chooseTheme = idTheme => {
+        localStorage.setItem("theme", `${idTheme}`)
+        set(themes.find(t => t.id == idTheme))
+    }
 
     return { subscribe, chooseTheme }
 }

@@ -3,17 +3,11 @@
     import Shop from "./Shop.svelte";
     import Cursors from "./Cursors.svelte";
     import Fluid from "./Fluid.svelte";
-    import { onMount } from "svelte";
     import { theme } from "./store/theme";
     import { game } from "./store/game";
     import { displayNumber } from "../src/utils";
 
     let clickedItem = false;
-
-    onMount(() => {
-        const saveInterval = setInterval(game.saveData, 2000);
-        return () => clearInterval(saveInterval);
-    });
 
     function clickItem(event) {
         game.clickItem()

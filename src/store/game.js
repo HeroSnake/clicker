@@ -9,6 +9,13 @@ function createGame() {
         totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
         itemsPerClick: +localStorage.getItem("itemsPerClick") || 1,
         upgrades: JSON.parse(localStorage.getItem("upgrades")) ?? structuredClone(gameData)
+    }, () => {
+        const saveInterval = setInterval(saveData, 2000);
+        const generationInterval = setInterval(tickGame, 200);
+        return () => {
+            clearTimeout(saveInterval)
+            clearTimeout(generationInterval)
+        }
     });
 
     const buyUpgrade = id => update(game => {
@@ -74,9 +81,6 @@ function createGame() {
         return game
     })
 
-    let generationInterval;
-    const getItems = () => generationInterval = setInterval(tickGame, 200);
-
     const tickGame = () => update(game => {
         let result = 0;
         game.upgrades
@@ -101,9 +105,7 @@ function createGame() {
         return game
     })
 
-    getItems();
-
-    return { subscribe , resetGame, saveData, enhanceUpgrade, buyUpgrade, getItems, tickGame, clickItem }
+    return { subscribe , resetGame, enhanceUpgrade, buyUpgrade, clickItem }
 }
 
 export const game = createGame()
