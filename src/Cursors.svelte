@@ -1,5 +1,5 @@
 <script>
-    export let cursors;
+    let cursors = [];
 
     function rotation(count) {
 

@@ -3,7 +3,6 @@ import gameData from "../assets/gameData.json";
 import config from "../config.json";
 
 function createGame() {
-
     const { subscribe, update, set } = writable({
         itemCount: +localStorage.getItem("itemCount") || 0,
         itemsPerSecond: +localStorage.getItem("itemsPerSecond") || 0,

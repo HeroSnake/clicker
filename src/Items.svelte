@@ -1,6 +1,6 @@
 <script>
-    export let theme;
     import { game } from "./store/game";
+    import { theme } from "./store/theme";
 
     $: numItems = Math.min(30, Math.floor(10 + ($game.itemsPerSecond / 100)))
     let itemCount = [];
@@ -23,8 +23,8 @@
 
 {#each itemCount as item}
     <img
-        src="./img/items/{theme.img}"
-        alt="{theme.name}"
+        src="./img/items/{$theme.img}"
+        alt="{$theme.name}"
         class="item"
         style="
             left: {item.x}px;

@@ -1,7 +1,6 @@
 <script>
     import { game } from "./store/game";
-
-    export let theme
+    import { theme } from "./store/theme";
 
     const BASE_HEIGHT = 502
 
@@ -11,7 +10,7 @@
 </script>
 
 <div class="fluid-container" style="bottom: {height}px; {style}">
-    <div class="fluid-mask {theme.name}" style="bottom: 0px"></div>
+    <div class="fluid-mask {$theme.name}" style="bottom: 0px"></div>
 </div>
 
 <style>

@@ -4,20 +4,11 @@
     import Cursors from "./Cursors.svelte";
     import Fluid from "./Fluid.svelte";
     import { onMount } from "svelte";
-    import themes from "../src/assets/themes.json";
+    import { theme } from "./store/theme";
+    import { game } from "./store/game";
     import { displayNumber } from "../src/utils";
 
-    import { game } from "./store/game";
-
-    let theme = themes.find(t => t.id == +localStorage.getItem("theme")) || themes[0];
     let clickedItem = false;
-    let cursors = [];
-
-
-    function chooseTheme(idTheme) {
-        theme = themes.find(t => t.id == idTheme)
-        localStorage.setItem("theme", "" + idTheme)
-    }
 
     onMount(() => {
         const saveInterval = setInterval(game.saveData, 2000);
@@ -39,31 +30,31 @@
 </script>
 
 <div id="plate">
-    <h1 id="plate-title">{theme.name} Clicker</h1>
+    <h1 id="plate-title">{$theme.name} Clicker</h1>
 
     <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
-        <img src="./img/items/{theme.img}" alt="item" id="item-img" />
-        <Cursors bind:cursors />
+        <img src="./img/items/{$theme.img}" alt="item" id="item-img" />
+        <Cursors />
     </button>
     <div class="lighting-overlay"></div>
-    <Items {theme}/>
-    <Fluid {theme}/>
+    <Items/>
+    <Fluid/>
 
     <hr>
     <div id="plate-info">
         <span class="item-count">
-            {displayNumber($game.itemCount)} <strong>{theme.name}s</strong>
+            {displayNumber($game.itemCount)} <strong>{$theme.name}s</strong>
         </span><br>
         <small>
             {displayNumber($game.itemsPerSecond)} <strong>Bps</strong>
         </small>
         <br>
         <button on:click={game.resetGame}>Reset Game</button>
-        <button on:click={() => chooseTheme(1)}>Banane</button>
-        <button on:click={() => chooseTheme(2)}>Gland</button>
+        <button on:click={() => theme.chooseTheme(1)}>Banane</button>
+        <button on:click={() => theme.chooseTheme(2)}>Gland</button>
     </div>
 </div>
-<Shop {theme} />
+<Shop/>
 <style>
     #plate {
         width: fit-content;

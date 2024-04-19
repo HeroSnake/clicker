@@ -1,9 +1,9 @@
 <script>
     import { displayNumber } from "./utils"
     import { game } from "./store/game";
+    import { theme } from "./store/theme";
     import config from "./config.json"
 
-    export let theme
 
     function upgradeInfo(type) {
         switch (type) {
@@ -45,12 +45,12 @@
                 <div class="flex-c upgradeButtons">
                     <button class="shop-btn" on:click={() => game.buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor($game.itemCount)}">
                         <span>Buy</span><br>
-                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/{theme.img}" alt="currency"></small>
+                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/{$theme.img}" alt="currency"></small>
                     </button>
                     {#if upgrade.level < config.maxUpgrades}
                         <button class="shop-btn" on:click={() => game.enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor($game.itemCount)}">
                             <span>Up</span><br>
-                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{theme.img}" alt="currency"></small>
+                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{$theme.img}" alt="currency"></small>
                         </button>
                     {/if}
                 </div>
