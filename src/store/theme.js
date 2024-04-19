@@ -11,11 +11,20 @@ function createTheme() {
         ...theme,
     })
 
-    const chooseTheme = idTheme => {
-        if (CHOOSABLE_THEME) {
-            localStorage.setItem("theme", `${idTheme}`)
-            set(themes.find(t => t.id == idTheme))
-        }
+    const chooseTheme = idTheme => CHOOSABLE_THEME && changeTheme(idTheme)
+
+    function changeTheme(idTheme) {
+        localStorage.setItem("theme", `${idTheme}`)
+        const theme = themes.find(t => t.id == idTheme)
+        changeMetas(theme)
+        set(theme)
+    }
+
+    function changeMetas(theme) {
+        let link = document.querySelector("link[rel='icon']");
+        link.href = `./public/img/items/${theme.img}`;
+
+        document.title = `${theme.name} clicker`
     }
 
     return { subscribe, chooseTheme, CHOOSABLE_THEME }
