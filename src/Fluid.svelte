@@ -29,7 +29,7 @@
         left: 0;
         opacity: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
         background: url("/img/fluids/water.gif") repeat-x;
-        background-size: auto 60%;
+        background-size: auto 100%;
     }
 
     @keyframes slide {

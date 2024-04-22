@@ -23,11 +23,11 @@
     }
 </script>
 
-<div id="plate">
+<div id="plate" style="background: url('/img/bg/{$theme.code}.jpg') no-repeat center center;">
     <h1 id="plate-title">{$theme.name} Clicker</h1>
 
-    <button id="item-container" class:wiggle={clickedItem} on:click={clickItem}>
-        <img src="./img/items/{$theme.img}" alt="item" id="item-img" />
+    <button id="item-container" on:click={clickItem}>
+        <img class:wiggle={clickedItem} src="./img/items/{$theme.img}" alt="item" id="item-img" />
         <Cursors />
     </button>
     <div class="lighting-overlay"></div>
@@ -65,7 +65,6 @@
         justify-content: space-evenly;
         align-items: center;
         width: 60%;
-        background: url('/img/bg/banana.jpg') no-repeat center center fixed;
         background-size: cover;
     }
 
