@@ -47,6 +47,7 @@
     }
 
     $: enhancedUpgrades = $game.upgrades.filter(upgrade => {
+        if (upgrade.level === 0) return false;
         return upgrade.stock >= ENHANCE_TRESHOLD * upgrade.level;
     });
 

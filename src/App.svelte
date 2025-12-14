@@ -111,6 +111,9 @@
     #item-img {
         height: 300px;
         display: block;
+        pointer-events: none; /* Prevent drag and drop */
+        user-drag: none;
+        -webkit-user-drag: none;
     }
     .item-count {
         font-size: 24px;

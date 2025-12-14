@@ -6,6 +6,7 @@ const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 const TICK_RATE = 200;
 const SAVE_RATE = 2000;
 const ENHANCE_BONUS = 0.01; // +1% per level (Cookie Clicker style)
+const CURSOR_CLICK_MULT = 1; // multiplier for itemsPerClick from cursor upgrades
 
 function createGame() {
     const { subscribe, update } = writable(initGame(), startLoops);
@@ -91,6 +92,11 @@ function createGame() {
             game.itemCount -= Math.floor(cost);
             u.stock += amount;
 
+            // Boost itemsPerClick for cursor upgrades immediately
+            if (u.type === "cursor") {
+                game.itemsPerClick += u.increase * CURSOR_CLICK_MULT * amount;
+            }
+
             saveUpgrades(game.upgrades);
             return game;
         });
@@ -105,6 +111,11 @@ function createGame() {
 
             game.itemCount -= cost;
             u.level++;
+
+            // Increase itemsPerClick for cursor upgrades by 1% per level
+            if (u.type === "cursor") {
+                game.itemsPerClick += u.increase * CURSOR_CLICK_MULT * ENHANCE_BONUS;
+            }
 
             saveUpgrades(game.upgrades);
             return game;
