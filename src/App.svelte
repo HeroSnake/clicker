@@ -103,6 +103,10 @@
         padding: 0;
         cursor: pointer;
         z-index: 1;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
     #item-img {
         height: 300px;
@@ -114,15 +118,19 @@
     .wiggle {
         animation: wiggle 0.3s;
     }
+    #item-button.wiggle {
+        transform: translate(-50%, -50%) scale(1.05);
+        animation: wiggle 0.3s;
+    }
     @keyframes wiggle {
         0% {
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
         }
         50% {
-            transform: scale(1.05);
+            transform: translate(-50%, -50%) scale(1.05);
         }
         100% {
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1);
         }
     }
     .lighting-overlay {

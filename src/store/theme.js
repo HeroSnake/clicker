@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store'
 import themes from "../assets/themes.json";
 
-const CHOOSABLE_THEME = (!!+(import.meta.env.VITE_CHOOSABLE_THEME ?? true))
+const CHOOSABLE_THEME = import.meta.env.DEV ?? !!import.meta.env.VITE_CHOOSABLE_THEME
 
 function createTheme() {
-    const theme = themes.find(t => t.code == (localStorage.getItem("theme") ?? import.meta.env.VITE_DEFAULT_THEME)) || themes[0];
+    const theme = themes.find(t => t.code == (localStorage.getItem("theme") ?? import.meta.env.VITE_DEFAULT_THEME)) || themes[1];
     const { subscribe, update, set } = writable({
         name: '',
         code: '',
