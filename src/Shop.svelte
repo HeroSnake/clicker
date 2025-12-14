@@ -47,8 +47,6 @@
     }
 
     $: enhancedUpgrades = $game.upgrades.filter((upgrade, i, arr) => {
-        const lastOwnedIdx = arr.map(u => u.stock >= 1).lastIndexOf(true);
-        const nextUnlocks = 2;
         return upgrade.stock >= 100;
     });
 
