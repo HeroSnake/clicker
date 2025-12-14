@@ -1,139 +1,176 @@
-import { writable } from 'svelte/store';
-import gameData from "../assets/gameData.json";
+import { writable } from "svelte/store";
+import upgrades from "../assets/upgrades.json";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
+const TICK_RATE = 200;
+const SAVE_RATE = 2000;
+const ENHANCE_BONUS = 0.01; // +1% per level (Cookie Clicker style)
+
 function createGame() {
-    const { subscribe, update, set } = writable({
-        itemCount: +localStorage.getItem("itemCount") || 0,
-        itemsPerSecond: +localStorage.getItem("itemsPerSecond") || 0,
-        totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-        itemsPerClick: +localStorage.getItem("itemsPerClick") || 1,
-        upgrades: mergeUpgrades()
-    }, () => {
-        const saveInterval = setInterval(saveData, 2000);
-        const generationInterval = setInterval(tickGame, 200);
+    const { subscribe, update } = writable(initGame(), startLoops);
+
+    /* ---------------- INIT ---------------- */
+
+    function initGame() {
+        return {
+            itemCount: +localStorage.getItem("itemCount") || 0,
+            itemsPerSecond: 0,
+            totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
+            itemsPerClick: +localStorage.getItem("itemsPerClick") || 1,
+            upgrades: mergeUpgrades()
+        };
+    }
+
+    function startLoops() {
+        const saveInterval = setInterval(saveData, SAVE_RATE);
+        const tickInterval = setInterval(tickGame, TICK_RATE);
         return () => {
             clearInterval(saveInterval);
-            clearInterval(generationInterval);
-        }
-    });
+            clearInterval(tickInterval);
+        };
+    }
 
-    // Merge saved upgrades with full gameData
     function mergeUpgrades() {
         const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
-        return gameData.map(u => {
+        return upgrades.map(u => {
             const s = saved.find(su => su.id === u.id);
-            if (s) return { ...u, stock: s.stock, level: s.level }; // keep original increase untouched
-            return { ...u };
+            return {
+                ...u,
+                stock: s?.stock ?? 0,
+                level: s?.level ?? 0
+            };
         });
     }
 
-    // Compute effective increase dynamically based on level
-    function getEffectiveIncrease(upgrade) {
-        switch (upgrade.type) {
-            case "cursor":
-            case "amount":
-                return upgrade.increase * Math.pow(1.5, upgrade.level);
-            default:
-                return upgrade.increase;
-        }
+    /* ---------------- CORE MATH ---------------- */
+
+    function enhancementMultiplier(u) {
+        return 1 + u.level * ENHANCE_BONUS;
     }
 
-    const buyUpgrade = (id, cost, multiple = 1) => update(game => {
-        const upgrade = game.upgrades.find(u => u.id === id);
-        if (!upgrade) return game;
-        if (game.itemCount < cost) return game;
+    function baseProduction(u) {
+        return u.increase * u.stock;
+    }
 
-        if (upgrade.type === "amount") {
-            game.itemsPerSecond += getEffectiveIncrease(upgrade) * multiple;
+    function computeProduction(game) {
+        let base = 0;
+        let percentMultiplier = 1;
+
+        for (const u of game.upgrades) {
+            if (u.stock <= 0) continue;
+
+            const enhance = enhancementMultiplier(u);
+
+            switch (u.type) {
+                case "amount":
+                    base += baseProduction(u) * enhance;
+                    break;
+
+                case "cursor":
+                    base += baseProduction(u) * enhance;
+                    break;
+
+                case "percent":
+                    percentMultiplier += (u.increase * u.stock * enhance) / 100;
+                    break;
+            }
         }
 
-        if (upgrade.type === "cursor") {
-            game.itemsPerClick += getEffectiveIncrease(upgrade) * multiple;
-        }
+        return base * percentMultiplier;
+    }
 
-        upgrade.stock += multiple;
-        game.itemCount -= Math.floor(cost);
+    /* ---------------- ACTIONS ---------------- */
 
-        saveUpgrades(game.upgrades);
-        return game;
-    });
+    const buyUpgrade = (id, cost, amount = 1) =>
+        update(game => {
+            const u = game.upgrades.find(x => x.id === id);
+            if (!u) return game;
+            if (!GOD_MODE && game.itemCount < cost) return game;
 
-    const enhanceUpgrade = id => update(game => {
-        const upgrade = game.upgrades.find(u => u.id == id);
-        if (!upgrade) return game;
+            game.itemCount -= Math.floor(cost);
+            u.stock += amount;
 
-        const enhancementCost = Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
-
-        if (game.itemCount >= enhancementCost) {
-            game.itemCount -= enhancementCost;
-            upgrade.level++; // store only level, bonus computed dynamically
             saveUpgrades(game.upgrades);
-        }
-        return game;
-    });
+            return game;
+        });
 
-    const resetGame = () => update(game => {
-        localStorage.removeItem("itemCount");
-        localStorage.removeItem("itemsPerSecond");
-        localStorage.removeItem("itemsPerClick");
-        localStorage.removeItem("totalItemsCollected");
-        localStorage.removeItem("upgrades");
+    const enhanceUpgrade = id =>
+        update(game => {
+            const u = game.upgrades.find(x => x.id === id);
+            if (!u) return game;
 
-        game.itemCount = 0;
-        game.itemsPerSecond = 0;
-        game.totalItemsCollected = 0;
-        game.itemsPerClick = 1;
-        game.upgrades = structuredClone(gameData);
+            const cost = Math.floor(u.cost * Math.pow(1.5, u.level));
+            if (!GOD_MODE && game.itemCount < cost) return game;
 
-        return game;
-    });
+            game.itemCount -= cost;
+            u.level++;
 
-    const saveData = () => update(game => {
-        localStorage.setItem("itemCount", `${Math.floor(game.itemCount)}`);
-        localStorage.setItem("itemsPerSecond", `${game.itemsPerSecond}`);
-        localStorage.setItem("itemsPerClick", `${game.itemsPerClick}`);
-        saveUpgrades(game.upgrades);
-        return game;
-    });
+            saveUpgrades(game.upgrades);
+            return game;
+        });
 
-    // Save only minimal info: id, stock, level
-    function saveUpgrades(upgrades) {
-        const minimal = upgrades.map(u => ({
-            id: u.id,
-            stock: u.stock,
-            level: u.level
-        }));
-        localStorage.setItem("upgrades", JSON.stringify(minimal));
+    const clickItem = () =>
+        update(game => {
+            game.itemCount += game.itemsPerClick;
+            game.totalItemsCollected += game.itemsPerClick;
+            return game;
+        });
+
+    const resetGame = () =>
+        update(() => {
+            localStorage.clear();
+            return initGame();
+        });
+
+    /* ---------------- TICK ---------------- */
+
+    const tickGame = () =>
+        update(game => {
+            const ips = computeProduction(game);
+
+            game.itemsPerSecond = ips;
+            const delta = ips / (1000 / TICK_RATE);
+
+            game.itemCount += delta;
+            game.totalItemsCollected += delta;
+
+            return game;
+        });
+
+    /* ---------------- SAVE ---------------- */
+
+    function saveData() {
+        update(game => {
+            localStorage.setItem("itemCount", Math.floor(game.itemCount).toString());
+            localStorage.setItem("itemsPerClick", game.itemsPerClick.toString());
+            localStorage.setItem("totalItemsCollected", game.totalItemsCollected.toString());
+            saveUpgrades(game.upgrades);
+            return game;
+        });
     }
 
-    const clickItem = () => update(game => {
-        game.itemCount += game.itemsPerClick;
-        return game;
-    });
+    function saveUpgrades(upgrades) {
+        localStorage.setItem(
+            "upgrades",
+            JSON.stringify(
+                upgrades.map(u => ({
+                    id: u.id,
+                    stock: u.stock,
+                    level: u.level
+                }))
+            )
+        );
+    }
 
-    const tickGame = () => update(game => {
-        let result = 0;
-        game.upgrades
-            .filter(u => u.stock >= 1)
-            .forEach(u => {
-                const eff = getEffectiveIncrease(u);
-                switch (u.type) {
-                    case "amount":
-                    case "cursor":
-                        result += eff * u.stock;
-                        break;
-                }
-            });
-        game.itemsPerSecond = result;
-        game.itemCount += game.itemsPerSecond / 5;
-        game.totalItemsCollected += game.itemsPerSecond / 5;
-
-        return game;
-    });
-
-    return { subscribe, resetGame, enhanceUpgrade, buyUpgrade, clickItem, GOD_MODE, getEffectiveIncrease };
+    return {
+        subscribe,
+        buyUpgrade,
+        enhanceUpgrade,
+        clickItem,
+        resetGame,
+        GOD_MODE
+    };
 }
 
 export const game = createGame();

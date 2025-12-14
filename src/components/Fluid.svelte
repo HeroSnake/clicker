@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { game } from "./store/game";
+    import { game } from "./../store/game";
 
     let canvas;
     let ctx;

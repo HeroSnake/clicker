@@ -1,9 +1,9 @@
 <script>
-    import RainingItems from "./RainingItems.svelte";
-    import Shop from "./Shop.svelte";
-    import GodRays from "./GodRays.svelte";
-    import Cursors from "./Cursors.svelte";
-    import Fluid from "./Fluid.svelte";
+    import RainingItems from "./components/RainingItems.svelte";
+    import Shop from "./components/Shop.svelte";
+    import GodRays from "./components/GodRays.svelte";
+    import Cursors from "./components/Cursors.svelte";
+    import Fluid from "./components/Fluid.svelte";
     import { theme } from "./store/theme";
     import { game } from "./store/game";
     import { displayNumber } from "../src/utils";

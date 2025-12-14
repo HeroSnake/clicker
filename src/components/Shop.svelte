@@ -1,14 +1,15 @@
 <script>
     import { fly } from 'svelte/transition';
-    import { displayNumber } from "./utils";
-    import { game } from "./store/game";
-    import { theme } from "./store/theme";
+    import { displayNumber } from "./../utils";
+    import { game } from "./../store/game";
+    import { theme } from "./../store/theme";
     import Icon from 'svelte-awesome';
     import chevronLeft from 'svelte-awesome/icons/chevronLeft';
     import chevronRight from 'svelte-awesome/icons/chevronRight';
     import { onMount, onDestroy } from 'svelte';
 
     const COST_MULT = 1.15;
+    const ENHANCE_TRESHOLD = 50;
 
     let collapsed = false;
     let multiples = [1, 10, 100];
@@ -28,7 +29,6 @@
     }
 
     function effectiveIncrease(upgrade) {
-        // compute increase dynamically based on level
         return upgrade.increase * Math.pow(2, upgrade.level);
     }
 
@@ -46,8 +46,8 @@
         }
     }
 
-    $: enhancedUpgrades = $game.upgrades.filter((upgrade, i, arr) => {
-        return upgrade.stock >= 100;
+    $: enhancedUpgrades = $game.upgrades.filter(upgrade => {
+        return upgrade.stock >= ENHANCE_TRESHOLD * upgrade.level;
     });
 
     $: upgrades = $game.upgrades.filter((upgrade, i, arr) => {
@@ -91,7 +91,7 @@
                 >
                     <!-- <small>Cost: {displayNumber(enhancementCost(upgrade))}</small> -->
                     <!-- <small>+{displayNumber(effectiveIncrease(upgrade))}</small> -->
-                     <small>{upgrade.level}</small>
+                    <small>{upgrade.level}</small>
                 </button>
             {/each}
         </div>
