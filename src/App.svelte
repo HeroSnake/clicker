@@ -1,6 +1,7 @@
 <script>
-    import Items from "./Items.svelte";
+    import RainingItems from "./RainingItems.svelte";
     import Shop from "./Shop.svelte";
+    import GodRays from "./GodRays.svelte";
     import Cursors from "./Cursors.svelte";
     import Fluid from "./Fluid.svelte";
     import { theme } from "./store/theme";
@@ -23,37 +24,46 @@
     }
 </script>
 
-<div id="plate" style="background: url('/img/bg/{$theme.code}.jpg') no-repeat center center;">
-    <h1 id="plate-title">{$theme.name} Clicker</h1>
+<div id="game" style="background: url('/img/bg/{$theme.code}.jpg') no-repeat center center/cover;">
+    <div id="plate">
+        <div id="item-container">
+            <button on:click={clickItem} type="button" class:wiggle={clickedItem} id="item-button">
+                <img src="./img/items/{$theme.img}" alt="item" id="item-img" />
+            </button>
+            <GodRays />
+            <Cursors />
+        </div>
+        <div class="lighting-overlay"></div>
+        <RainingItems/>
+        <Fluid/>
 
-    <button id="item-container" on:click={clickItem}>
-        <img class:wiggle={clickedItem} src="./img/items/{$theme.img}" alt="item" id="item-img" />
-        <Cursors />
-    </button>
-    <div class="lighting-overlay"></div>
-    <Items/>
-    <Fluid/>
-
-    <hr>
-    <div id="plate-info">
-        <span class="item-count">
-            {displayNumber($game.itemCount)} <strong>{$theme.name}s</strong>
-        </span><br>
-        <small>
-            {displayNumber($game.itemsPerSecond)} <strong>Bps</strong>
-        </small>
-        <br>
-        {#if game.GOD_MODE}
-            <button on:click={game.resetGame}>Reset Game</button>
-        {/if}
-        {#if theme.CHOOSABLE_THEME}
-            <button on:click={() => theme.chooseTheme('banana')}>Banane</button>
-            <button on:click={() => theme.chooseTheme('acorn')}>Gland</button>
-        {/if}
+        <hr>
+        <div id="plate-info">
+            <h1 id="plate-title">{$theme.name} Clicker</h1>
+            <span class="item-count">
+                {displayNumber($game.itemCount, true)} <strong>{$theme.name}s</strong>
+            </span><br>
+            <small>
+                {displayNumber($game.itemsPerSecond, true)} <strong>{$theme.unit}ps</strong>
+            </small>
+            <br>
+            {#if game.GOD_MODE}
+                <button on:click={game.resetGame}>Reset Game</button>
+            {/if}
+            {#if theme.CHOOSABLE_THEME}
+                <button on:click={() => theme.chooseTheme('banana')}>Banane</button>
+                <button on:click={() => theme.chooseTheme('acorn')}>Gland</button>
+            {/if}
+        </div>
     </div>
+    <Shop/>
 </div>
-<Shop/>
+
 <style>
+    #game {
+        display: flex;
+        width: 100%;
+    }
     #plate {
         width: fit-content;
         text-align: center;
@@ -64,36 +74,46 @@
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        width: 60%;
+        width: 100%;
         background-size: cover;
     }
-
     #item-container {
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         display: inline-block;
-        cursor: pointer;
-        margin-bottom: 50px;
-        width: fit-content;
-        height: fit-content;
-        touch-action: none;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        margin-top: 15%;
     }
-
-    #plate-info, #item-container, #plate-title {
+    #plate-info, #item-container {
         z-index: 1;
     }
-
+    #plate-info {
+        color: #000;
+        position: absolute;
+        bottom: 5%;
+    }
+    #item-button {
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        z-index: 1;
+    }
+    #item-img {
+        height: 300px;
+        display: block;
+    }
     .item-count {
         font-size: 24px;
     }
-
     .wiggle {
         animation: wiggle 0.3s;
     }
-
     @keyframes wiggle {
         0% {
             transform: scale(1);
@@ -105,20 +125,6 @@
             transform: scale(1);
         }
     }
-
-    #item-container {
-        background: none;
-        border: none;
-        padding: 0;
-        font: inherit;
-        cursor: pointer;
-        outline: inherit;
-    }
-
-    #item-img {
-        height: 300px;
-    }
-
     .lighting-overlay {
         position: absolute;
         top: 50%;

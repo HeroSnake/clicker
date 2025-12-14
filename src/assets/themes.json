@@ -2,11 +2,65 @@
     {
         "code": "banana",
         "name": "Banana",
-        "img": "banana.png"
+        "img": "banana.png",
+        "unit": "B",
+        "augments" : [
+            "Cursor",
+            "Monkey",
+            "Banana Tree",
+            "Premium Banana Tree",
+            "Banana-Hoarding Chimp",
+            "Banana Jungle",
+            "Coconut Cannon",
+            "Banana Factory",
+            "Monkey Army",
+            "Banana Fortress",
+            "Banana Rocket Launchpad",
+            "Banana Cloning Lab",
+            "Banana-topia",
+            "Quantum Banana Grove",
+            "Quantum Banana Reactor",
+            "Banana Nebula",
+            "Galactic Banana",
+            "Banana Singularity",
+            "Time-Traveling Banana",
+            "Interdimensional Banana Portal",
+            "Cosmic Banana Generator",
+            "Banana God",
+            "Eternal Banana Universe",
+            "Infinite Banana Dimensions"
+        ]
     },
     {
         "code": "acorn",
         "name": "Gland",
-        "img": "acorn.png"
+        "img": "acorn.png",
+        "unit": "G",
+        "augments" : [
+            "Cursor",
+            "Squirrel",
+            "Nut Farm",
+            "Forest Grove",
+            "Chipmunk Patrol",
+            "Treehouse Village",
+            "Nut Catapult",
+            "Nut Factory",
+            "Squirrel Army",
+            "Nut Fortress",
+            "Nut Rocket Launchpad",
+            "Nut Cloning Lab",
+            "Nutopia",
+            "Quantum Forest",
+            "Quantum Nut Reactor",
+            "Nut Nebula",
+            "Galactic Nut",
+            "Nut Singularity",
+            "Time-Traveling Nut",
+            "Interdimensional Nut Portal",
+            "Cosmic Nut Generator",
+            "Nut God",
+            "Eternal Nut Universe",
+            "Infinite Nut Dimensions"
+        ]
     }
 ]

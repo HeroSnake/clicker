@@ -1,201 +1,305 @@
 <script>
-    import { displayNumber } from "./utils"
+    import { fly } from 'svelte/transition';
+    import { displayNumber } from "./utils";
     import { game } from "./store/game";
     import { theme } from "./store/theme";
+    import Icon from 'svelte-awesome';
+    import chevronLeft from 'svelte-awesome/icons/chevronLeft';
+    import chevronRight from 'svelte-awesome/icons/chevronRight';
+    import { onMount, onDestroy } from 'svelte';
 
-    function upgradeInfo(type) {
-        switch (type) {
-            case 'percent':
-                return '% Bps'
-            case 'amount':
-                return ' Bps'
-            case 'cursor':
-                return ` Bps <strong>(${displayNumber($game.itemsPerClick)} Bpc)</strong>`
+    const COST_MULT = 1.15;
+
+    let collapsed = false;
+    let multiples = [1, 10, 100];
+    let multipleBuy = 1;
+
+    function upgradeCost(upgrade) {
+        const n = multipleBuy;
+        const s = upgrade.stock;
+
+        return upgrade.cost *
+            (Math.pow(COST_MULT, s) * (Math.pow(COST_MULT, n) - 1)) /
+            (COST_MULT - 1);
+    }
+
+    function enhancementCost(upgrade) {
+        return Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
+    }
+
+    function effectiveIncrease(upgrade) {
+        // compute increase dynamically based on level
+        return upgrade.increase * Math.pow(2, upgrade.level);
+    }
+
+    function upgradeName(upgrade) {
+        if (upgrade.id < 3 || upgrade.stock >= 1) {
+            return $theme.augments[upgrade.id]
+        }
+        return '???';
+    }
+
+    function handleKeydown(event) {
+        if (event.key === "Tab") {
+            event.preventDefault();
+            collapsed = !collapsed;
         }
     }
+
+    $: enhancedUpgrades = $game.upgrades.filter((upgrade, i, arr) => {
+        const lastOwnedIdx = arr.map(u => u.stock >= 1).lastIndexOf(true);
+        const nextUnlocks = 2;
+        return upgrade.stock >= 100;
+    });
+
+    $: upgrades = $game.upgrades.filter((upgrade, i, arr) => {
+        const lastOwnedIdx = arr.map(u => u.stock >= 1).lastIndexOf(true);
+        return upgrade.stock >= 1 || (i > lastOwnedIdx && i <= lastOwnedIdx + 2);
+    });
+
+    onMount(() => {
+        window.addEventListener('keydown', handleKeydown);
+    });
+
+    onDestroy(() => {
+        window.removeEventListener('keydown', handleKeydown);
+    });
 </script>
 
-<div class="shop">
-    <h2>Shop</h2>
-    <div class="upgrades">
-        {#each $game.upgrades as upgrade}
-            <div class="upgrade">
-                <div class="upgradeInfo {upgrade.stock == 0 ? 'locked' : ''}">
-                    <div class="flex">
-                        <div class="upgradeImg">
-                            <img src="./img/upgrades/{upgrade.image}.png" alt="img">
-                            <span class="upgradeStock">x{upgrade.stock}</span>
-                        </div>
-                        <div>
-                            <strong>{upgrade.name} </strong><br>
-                            <small>+{displayNumber(upgrade.increase)} {@html `${upgradeInfo(upgrade.type)}`}</small>
-                        </div>
-                    </div>
-                    {#if upgrade.stock > 0}
-                        <div class="upgradeLevel">
-                            <div class="xp-bar">
-                                <div class="fill" style="width: {upgrade.stock == 0 ? 0 : upgrade.level / game.MAX_UPGRADES * 100}%"></div>
+{#if !collapsed}
+<div class="shop-wrapper" transition:fly={{ x: 300, duration: 300 }}>
+    <button class="collapse-btn" on:click={() => collapsed = !collapsed} aria-label="Toggle shop">
+        <span>
+            <Icon data={collapsed ? chevronLeft : chevronRight}/>
+        </span>
+    </button>
+
+    <div class="shop">
+        <div class="header">
+            <span class="title">SHOP</span>
+            {#each multiples as multiple}
+                <button class="{multipleBuy == multiple ? 'selected' : ''}" on:click={() => multipleBuy = multiple}>{multiple}</button>
+            {/each}
+        </div>
+
+        <div class="augments">
+            {#each enhancedUpgrades as upgrade}
+                <button
+                    type="button"
+                    class="augment-btn"
+                    on:click={() => game.enhanceUpgrade(upgrade.id)}
+                    disabled="{upgrade.stock == 0 || enhancementCost(upgrade) > $game.itemCount}"
+                    style="background-image: url('./img/upgrades/{$theme.code}/{upgrade.id}.png'); background-size: cover; filter: saturate({1 + (upgrade.level ?? 0) * 0.15});"
+                >
+                    <!-- <small>Cost: {displayNumber(enhancementCost(upgrade))}</small> -->
+                    <!-- <small>+{displayNumber(effectiveIncrease(upgrade))}</small> -->
+                     <small>{upgrade.level}</small>
+                </button>
+            {/each}
+        </div>
+
+        <div class="upgrades">
+            {#each upgrades as upgrade, i}
+                <div class="upgrade">
+                    <button class="upgrade-info" on:click={() => game.buyUpgrade(upgrade.id, upgradeCost(upgrade), multipleBuy)} disabled={upgradeCost(upgrade) > $game.itemCount || upgrades[i -1]?.stock == 0}>
+                        <div class="flex">
+                            <div
+                                class="upgrade-img"
+                                style="background-image: url('./img/upgrades/{$theme.code}/{upgrade.id}.png');"
+                            ></div>
+                            <div class="upgrade-data">
+                                <span class="name">{upgradeName(upgrade)}</span>
+                                {#if upgrade.stock > 0}
+                                    <span class="increase">(lvl {upgrade.level})</span>
+                                {/if}
+                                <span class="cost">
+                                    <img src="./img/items/{$theme.img}" alt="currency">
+                                    <span class="value">{displayNumber(upgradeCost(upgrade), true)}</span>
+                                    <span class="increase">
+                                        +{displayNumber(effectiveIncrease(upgrade) * multipleBuy)} {$theme.unit}ps
+                                    </span>
+                                </span>
                             </div>
-                            <span>{upgrade.level}</span>
                         </div>
-                    {/if}
-                </div>
-                <div class="flex-c upgradeButtons">
-                    <button class="shop-btn" on:click={() => game.buyUpgrade(upgrade.id)} disabled="{Math.floor(upgrade.cost) > Math.floor($game.itemCount)}">
-                        <span>Buy</span><br>
-                        <small>{displayNumber(upgrade.cost)}<img src="./img/items/{$theme.img}" alt="currency"></small>
+                        <span class="upgrade-stock">{upgrade.stock}</span>
                     </button>
-                    {#if upgrade.level < game.MAX_UPGRADES}
-                        <button class="shop-btn" on:click={() => game.enhanceUpgrade(upgrade.id)} disabled="{upgrade.stock == 0 || Math.floor(upgrade.baseCost * Math.exp(upgrade.level)) > Math.floor($game.itemCount)}">
-                            <span>Up</span><br>
-                            <small>{displayNumber(upgrade.baseCost * Math.exp(upgrade.level))}<img src="./img/items/{$theme.img}" alt="currency"></small>
-                        </button>
-                    {/if}
                 </div>
-            </div>
-        {/each}
+            {/each}
+        </div>
     </div>
 </div>
+{:else}
+<div class="shop-wrapper-collapse" transition:fly={{ x: 300, duration: 300 }}>
+    <button class="collapse-btn alone" on:click={() => collapsed = !collapsed} aria-label="Toggle shop">
+        <span>
+            <Icon data={collapsed ? chevronLeft : chevronRight}/>
+        </span>
+    </button>
+</div>
+{/if}
 
 <style>
-    .shop {
-        border-left: 2px solid #333;
-        background-color: #242424;
-        width: 40%;
-        height: 100vh;
-        overflow-y: scroll;
-        z-index: 1;
-    }
+.selected {
+    /* Glow effect for selected button */
+    box-shadow: 0 0 8px 3px #fff, 0 0 14px 3px #ffe56666;
+    background: #353430;
+    border-radius: 6px;
+    border: 1.5px solid #fff;
+    transition: box-shadow 0.15s, background 0.15s;
+}
+.shop-wrapper {
+    width: 60%;
+    min-width: 230px;
+}
+.shop-wrapper-collapse {
+    width: 12px;
+}
+.shop-wrapper, .shop-wrapper-collapse {
+    background-color: #2e2e2eeb;
+    position: relative;
+    height: 100vh;
+}
+.collapse-btn {
+    position: absolute;
+    top: 10px;
+    left: -11px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    outline: none;
+    border: none;
+    transform: rotate(45deg);
+}
 
-    .upgrades {
-        display: flex;
-        flex-direction: column;
-        border-top: 1px solid rgb(129, 129, 129);
-        height: 100%;
-    }
+.collapse-btn span {
+    transform: rotate(-45deg);
+    position: absolute;
+    top: 3px;
+    right: 4px;
+}
+.augments {
+    display: flex;
+    gap: 1px;
+    flex-wrap: wrap;
+}
+.augment-btn {
+    width: 50px;
+    height: 50px;
+    position: relative;
+}
+.augment-btn:not(:disabled) {
+    cursor: pointer;
+}
+.augment-btn:disabled, .upgrade-info:disabled {
+    filter: grayscale(100) !important;
+}
+.augment-btn small {
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    color: #fff;
+    text-shadow: 0px 0px 5px rgb(0, 0, 0);
+}
+.alone {
+    right: 0;
+    left: auto;
+}
 
-    .flex {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        align-items: center;
-    }
+.alone span {
+    top: 5px;
+    right: 6px;
+}
 
-    .flex-c {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+.shop {
+    background-color: #2e2e2eeb;
+    height: 100%;
+    overflow-y: auto;
+    z-index: 1;
+    position: relative;
+}
+.header {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+    background-color: #2e2e2ed1;
+}
+.title {
+    font-weight: bold;
+    padding: 10px 20px;
+    display: block;
+}
+.flex {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
 
-    .upgradeImg {
-        position: relative;
-        width: 50px;
-    }
-    .upgradeImg img {
-        width: 100%;
-    }
+.upgrade-info {
+    width: 100%;
+    cursor: pointer;
+    border: none;
+    position: relative;
+    padding: 0;
+}
+.upgrade-img {
+    min-width: 60px;
+    height: 60px;
+    background-size: cover;
+}
+.upgrade-data {
+    width: 100%;
+    text-align: left;
+}
+.name {
+    font-size: 18px;
+    font-weight: bold;
+}
+.cost {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.increase {
+    opacity: 0.4;
+    font-size: 8px;
+}
+.cost img {
+    width: 15px;
+}
+.cost .value {
+    font-size: 10px;
+    font-weight: bold;
+}
+.upgrade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+.upgrades {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 
-    .upgrade {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid rgb(129, 129, 129);
-        padding: 5px 20px;
-        gap: 20px;
-    }
-
-    .upgradeInfo {
-        width: 100%;
-    }
-
-    .upgradeLevel {
-        display: flex;
-        align-items: center;
-    }
-
-    .upgradeLevel > span {
-        border: 1px solid;
-        width: 26px;
-        height: 26px;
-        text-align: center;
-    }
-
-    .upgradeButtons {
-        position: relative;
-    }
-
-    .shop-btn {
-        background-color: #4caf50;
-        color: white;
-        padding: 10px;
-        border: none;
-        cursor: pointer;
-        width: 95px;
-    }
-
-    .shop-btn:not(:disabled)::after{
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        animation: rotateGlow 4s linear infinite; /* Adjust the duration and timing function as needed */
-        box-shadow: 0 0 20px 10px rgba(0, 255, 0, 0.7); /* Adjust the color and blur radius as needed */
-    }
-
-    @keyframes rotateGlow {
-        from {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-        to {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-    }
-
-    .locked {
-        opacity: 0.5;
-    }
-
-    .shop-btn:hover {
-        background-color: #45a049;
-    }
-
-    .shop-btn:disabled {
-        background-color: #7f7f7f;
-        cursor: not-allowed;
-    }
-
-    .shop-btn img {
-        height: 14px;
-    }
-
-    .xp-bar {
-        width: 100%;
-        height: 9px;
-        overflow: hidden;
-        border: 1px solid;
-        border-right: none;
-    }
-
-    .fill {
-        height: 100%;
-        background: #f4e800;
-        transition: width 0.5s ease;
-    }
-
-    .upgradeStock {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        border-radius: 5px;
-        width: 23px;
-        height: 18px;
-        font-size: 12px;
-        text-align: center;
-        font-weight: bold;
-        color: #f4e800;
-        background: #2d2d2d;
-    }
+.upgrade-stock {
+    position: absolute;
+    font-size: 50px;
+    text-align: center;
+    font-weight: bold;
+    right: 5px;
+    z-index: 1;
+    top: 0;
+    opacity: 0.1;
+}
 </style>

@@ -9,6 +9,8 @@ function createTheme() {
         name: '',
         code: '',
         img: '',
+        unit: '',
+        augments: []
     })
 
     changeTheme(theme.code);
