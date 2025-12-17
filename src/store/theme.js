@@ -8,9 +8,8 @@ function createTheme() {
     const { subscribe, update, set } = writable({
         name: '',
         code: '',
-        img: '',
         unit: '',
-        augments: []
+        upgrades: []
     })
 
     changeTheme(theme.code);
@@ -25,7 +24,9 @@ function createTheme() {
 
     function changeMetas(theme) {
         let link = document.querySelector("link[rel='icon']");
-        link.href = `./public/img/items/${theme.img}`;
+        if (link instanceof HTMLLinkElement) {
+            link.href = `./img/items/${theme.code}-sm.png`;
+        }
 
         document.title = `${theme.name} clicker`
     }

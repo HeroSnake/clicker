@@ -105,3 +105,17 @@ export function displayNumber(number, full = false) {
 
     return formatted + suffix;
 }
+
+export function enhancementCost(upgrade) {
+    return Math.floor(upgrade.cost * Math.pow(3, upgrade.level));
+}
+
+export function enhancedUpgradeCost(upgrade) {
+    return Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
+}
+
+export function upgradeCost(upgrade, multiple) {
+    let costMultiplier = 1.15;
+
+    return upgrade.cost * (Math.pow(costMultiplier, upgrade.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1);
+}

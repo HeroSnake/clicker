@@ -46,8 +46,18 @@
             ctx.save();
             ctx.translate(this.x, this.y);
             ctx.rotate((this.rotation * Math.PI) / 180);
+
             const width = this.img.width * this.scale;
             const height = this.img.height * this.scale;
+
+            // Calculate brightness: smallest = 0.02 scale → 1.5 (150%)
+            // largest = 0.12 scale → 0.5 (50%)
+            const minScale = 0.02;
+            const maxScale = 0.12;
+            let brightness = 0.5 + (maxScale - this.scale) / (maxScale - minScale) * 1.0;
+            brightness = Math.min(Math.max(brightness, 0.5), 1.5); // clamp 50%-150%
+            ctx.filter = `brightness(${brightness})`;
+
             ctx.drawImage(this.img, -width/2, -height/2, width, height);
             ctx.restore();
         }
@@ -61,7 +71,7 @@
     }
 
     function resetImg() {
-        img.src = `./img/items/${$theme.img}`;
+        img.src = `./img/items/${$theme.code}.png`;
     }
 
     function initDrops() {
@@ -103,4 +113,4 @@
     });
 </script>
 
-<canvas bind:this={canvas} style="position:absolute; top:0; left:0; height:100%; pointer-events:none;"></canvas>
+<canvas bind:this={canvas} id="rain" style="position:absolute; top:0; left:0; height:100%; pointer-events:none;"></canvas>

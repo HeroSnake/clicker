@@ -26,6 +26,7 @@
     });
 
     function resize() {
+        if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
@@ -85,16 +86,16 @@
     }
 </script>
 
-<canvas bind:this={canvas} class="cursor-canvas"></canvas>
+<canvas bind:this={canvas} id="cursors"></canvas>
 
 <style>
-.cursor-canvas {
-    position: absolute;
-    top: 40%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: auto;
-    height: 110vh;
-    pointer-events: none;
-}
+    #cursors {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: auto;
+        height: 110vh;
+        pointer-events: none;
+    }
 </style>
