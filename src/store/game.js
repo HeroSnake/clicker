@@ -1,35 +1,35 @@
 import { get, writable } from "svelte/store";
 import upgrades from "../assets/upgrades.json";
-import enhancements from "../assets/enhancements.json";
+import bonuses from "../assets/bonuses.json";
 import { theme } from "./theme";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
 const TICK_RATE = 200;
 const SAVE_RATE = 2000;
-const ENHANCE_BONUS = 0.01;
 
 function createGame() {
-    const currentTheme = get(theme);
     const { subscribe, update } = writable(initGame(), startLoops);
 
     /* ---------------- INIT ---------------- */
 
     function initGame() {
-        const upgradesState = mergeUpgrades();
-        const cursor = upgradesState.find(u => u.type === "cursor");
-        const cursorLevel = cursor?.level ?? 1;
+        const upgrades = mergeUpgrades();
 
         return {
             itemCount: +localStorage.getItem("itemCount") || 0,
-            itemsPerSecond: 0,
+            production: 0,
+            itemsPerClick: 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-            upgrades: upgradesState,
-            itemsPerClick: 1 * cursorLevel,
-            critChance: 0.01 + (cursorLevel - 1) * 0.01,
-            critMultiplier: 2,
+            upgrades: upgrades,
             activeBoosts: [],
-            enhancements: mergeEnhancements(),
+            bonuses: mergeBonuses(),
+            productionBonus: 0,
+            goldenItemBoostPower: 0,
+            goldenItemBoostDuration: 0,
+            goldenItemSpawnChance: 0,
+            crit: {},
+            isProductionBoosted: false,
         };
     }
 
@@ -42,130 +42,115 @@ function createGame() {
         };
     }
 
-    const getUpgrade = upgrade => {
-        if (upgrade.id < 3 || upgrade.stock >= 1) {
-            return {
-                name: currentTheme.upgrades[upgrade.id].name,
-                description: currentTheme.upgrades[upgrade.id].description,
-            }
-        }
-        return { name: '???', description: '???' };
-    };
-
     function mergeUpgrades() {
         const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
+        const currentTheme = get(theme);
+
         return upgrades.map(u => {
             const s = saved.find(su => su.id === u.id);
             return {
                 ...u,
-                stock: s?.stock ?? u.stock ?? 0,
-                level: s?.level ?? u.level ?? 1
+                name: currentTheme.upgrades[u.id].name,
+                description: currentTheme.upgrades[u.id].description,
+                stock: s?.stock ?? u.stock,
+                level: s?.level ?? u.level
             };
         });
     }
 
-    function mergeEnhancements() {
-        const saved = JSON.parse(localStorage.getItem("enhancements")) || [];
-        return enhancements.map(e => {
-            const s = saved.find(se => se.id === e.id);
+    function mergeBonuses() {
+        const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
+        return bonuses.map(bonus => {
+            const s = saved.find(s => s.id === bonus.id);
             return {
-                ...e,
-                level: s?.level ?? e.level ?? 1,
+                ...bonus,
+                level: s?.level ?? bonus.level,
             };
         });
     }
 
     /* ---------------- CORE MATH ---------------- */
 
-    function enhancementMultiplier(u) {
-        return 1 + (u.level ?? 1) * ENHANCE_BONUS;
-    }
+    function getProduction(upgrade, base = false) {
+        if (upgrade.stock <= 0 && !base) return 0;
 
-    function baseProduction(u) {
-        return u.increase * u.stock;
-    }
+        const stock = base ? 1 : upgrade.stock;
 
-    // central computation for total IPS
-    function computeProduction(game) {
-        let base = 0;
-        let percentMultiplier = 1;
-
-        for (const u of game.upgrades) {
-            if (u.stock <= 0) continue;
-            const enhance = enhancementMultiplier(u);
-
-            switch (u.type) {
-                case "amount":
-                case "cursor":
-                    base += baseProduction(u) * enhance;
-                    break;
-                case "percent":
-                    percentMultiplier += (u.increase * u.stock * enhance) / 100;
-                    break;
-            }
+        let levelMult = 1;
+        if (upgrade.level > 1) {
+            levelMult = Math.pow(2, upgrade.level - 1);
         }
 
-        return base * percentMultiplier;
+        return upgrade.production * levelMult * stock;
     }
 
-    function getUpgradeStats(upgrade, game) {
-        const upgradesList = game?.upgrades ?? [];
+    function getCrit(upgrade) {
+        let chance = 0;
+        let bonus = 0;
+        let multiplier = 0;
 
-        if (upgrade.stock <= 0) return { ips: 0, crit: 0 };
-        const enhance = enhancementMultiplier(upgrade);
-
-        let base = 0;
-        if (upgrade.type === "amount" || upgrade.type === "cursor") {
-            base = baseProduction(upgrade) * enhance;
+        if (upgrade.type === "cursor") {
+            chance = upgrade.crit.chance + (upgrade.level - 1) * upgrade.crit.bonus,
+            bonus = upgrade.crit.bonus
+            multiplier = upgrade.crit.multiplier
         }
-
-        const percentMultiplier = upgradesList
-            .filter(u => u.type === "percent")
-            .reduce((mult, u) => mult + (u.increase * u.stock * enhancementMultiplier(u)) / 100, 1);
-
         return {
-            ips: base * percentMultiplier,
-            crit: upgrade.type === "cursor" ? 0.01 + (upgrade.level - 1) * 0.01 : 0
+            chance,
+            bonus,
+            multiplier,
         };
     }
 
-    function updateCursorStats(game) {
-        const cursor = game.upgrades.find(u => u.type === "cursor");
-        if (!cursor) return;
-
-        const stats = getUpgradeStats(cursor, game);
-        game.itemsPerClick = Math.max(1, stats.ips);
-        game.critChance = stats.crit;
-    }
-
-    function getTotalBoost(game) {
+    function getBoost(game) {
         const now = Date.now();
+
         game.activeBoosts = game.activeBoosts.filter(b => b.expiresAt > now);
+        game.isProductionBoosted = game.activeBoosts.length > 0;
+
         return game.activeBoosts.reduce((total, b) => total + (b.multiplier - 1), 1);
     }
 
-    function computeEnhancementBonuses(game) {
-        const bonuses = { productionBonus: 0, boostPower: 0, boostDuration: 0, spawnChance: 0 };
-        for (const e of game.enhancements) {
-            bonuses[e.id] += 0.01 * e.level;
-        }
+    function getBonuses(game) {
+        let bonuses = {};
+
+        game.bonuses.forEach(b => {
+            if (b.level == 1) {
+                bonuses[b.id] = 0;
+            } else {
+                bonuses[b.id] = b.increase * (b.level - 1);
+            }
+        });
+
         return bonuses;
     }
 
-    function getEnhancementBonus(game, id) {
-        if (!game?.enhancements) return 0;
+    // COMPUTE ITEMS PER CLICK
+    function getItemsPerClick(cursor) {
+        let levelMult = 1;
 
-        return game.enhancements
-            .filter(e => e.id === id) // string comparison
-            .reduce((sum, e) => sum + (e.increase ?? 0) * (e.level ?? 1), 0);
+        if (cursor.level > 1) {
+            levelMult = Math.pow(2, cursor.level - 1);
+        }
+
+        return 1 * levelMult;
+    }
+
+    // COMPUTE PRODUCTION
+    function getTotalProduction(game) {
+        let production = 0;
+
+        for (const u of game.upgrades) {
+            production = production + getProduction(u);
+        }
+
+        return production;
     }
 
     /* ---------------- ACTIONS ---------------- */
 
     const buyUpgrade = (id, cost, amount = 1) => update(game => {
         const u = game.upgrades.find(u => u.id === id);
-        if (!u) return game;
-        if (!GOD_MODE && game.itemCount < cost) return game;
+        if (!u || (!GOD_MODE && game.itemCount < cost)) return game;
 
         game.itemCount -= Math.floor(cost);
         u.stock += amount;
@@ -174,7 +159,7 @@ function createGame() {
         return game;
     });
 
-    const enhanceUpgrade = id => update(game => {
+    const buyEnhancement = id => update(game => {
         const u = game.upgrades.find(x => x.id === id);
         if (!u) return game;
 
@@ -184,24 +169,21 @@ function createGame() {
         game.itemCount -= cost;
         u.level++;
 
-        if (u.type === "cursor") updateCursorStats(game);
         saveUpgrades(game.upgrades);
         return game;
     });
 
-    const buyEnhancement = id => update(game => {
-        const e = game.enhancements.find(x => x.id === id);
+    const buyBonus = id => update(game => {
+        const e = game.bonuses.find(b => b.id === id);
         if (!e) return game;
 
         const cost = Math.floor(e.cost * Math.pow(1.6, e.level));
-        if (!GOD_MODE && (game.itemCount < cost)) return game;
+        if (!GOD_MODE && game.itemCount < cost) return game;
 
         game.itemCount -= cost;
         e.level++;
 
-        localStorage.setItem("enhancements", JSON.stringify(
-            game.enhancements.map(e => ({ id: e.id, level: e.level }))
-        ));
+        saveBonuses(game.bonuses);
         return game;
     });
 
@@ -212,28 +194,24 @@ function createGame() {
 
     const clickItem = () => {
         let critResult = { clickValue: 0, isCrit: false };
-        update(gameState => {
-            const baseClick = gameState.itemsPerClick;
-            const isCrit = Math.random() < gameState.critChance;
-            const clickValue = isCrit ? baseClick * gameState.critMultiplier : baseClick;
+        update(game => {
+            const baseClick = game.itemsPerClick;
+            const isCrit = Math.random() < game.crit.chance;
+            const clickValue = isCrit ? baseClick * game.crit.multiplier : baseClick;
 
-            gameState.itemCount += clickValue;
-            gameState.totalItemsCollected += clickValue;
+            game.itemCount += clickValue;
+            game.totalItemsCollected += clickValue;
 
             critResult = { clickValue, isCrit };
-            return gameState;
+            return game;
         });
         return critResult;
     };
 
-    const boostProduction = (baseMultiplier, baseDuration) => update(game => {
-        const bonuses = computeEnhancementBonuses(game);
-        const powerBonus = 1 + bonuses.boostPower / 100;
-        const durationBonus = 1 + bonuses.boostDuration / 100;
-
+    const boostProduction = () => update(game => {
         game.activeBoosts.push({
-            multiplier: baseMultiplier * powerBonus,
-            expiresAt: Date.now() + baseDuration * durationBonus
+            multiplier: 5 * (1 + game.goldenItemBoostPower),
+            expiresAt: Date.now() + 5000 * (1 + game.goldenItemBoostDuration)
         });
 
         return game;
@@ -242,15 +220,24 @@ function createGame() {
     /* ---------------- TICK ---------------- */
 
     const tickGame = () => update(game => {
-        const bonuses = computeEnhancementBonuses(game);
-        const permanentBonus = 1 + (bonuses.productionBonus || 0);
-        const boostMultiplier = getTotalBoost(game);
+        const bonuses = getBonuses(game);
+        const boostMultiplier = getBoost(game);
 
-        game.itemsPerSecond = computeProduction(game) * permanentBonus * boostMultiplier;
-        game.itemCount += game.itemsPerSecond / (1000 / TICK_RATE);
-        game.totalItemsCollected += game.itemsPerSecond / (1000 / TICK_RATE);
+        game.productionBonus = bonuses.productionBonus;
+        game.goldenItemBoostPower = bonuses.goldenItemBoostPower;
+        game.goldenItemBoostDuration = bonuses.goldenItemBoostDuration;
+        game.goldenItemSpawnChance = 0.01 + bonuses.goldenItemSpawnChance;
 
-        updateCursorStats(game);
+        game.production = getTotalProduction(game) * (1 + game.productionBonus) * boostMultiplier;
+
+        game.itemCount += game.production / (1000 / TICK_RATE);
+        game.totalItemsCollected += game.production / (1000 / TICK_RATE);
+
+        const cursor = game.upgrades.find(u => u.type == "cursor");
+        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier;
+
+        game.crit = getCrit(cursor);
+
         return game;
     });
 
@@ -271,17 +258,21 @@ function createGame() {
         ));
     }
 
+    function saveBonuses(bonuses) {
+        localStorage.setItem("bonuses", JSON.stringify(
+            bonuses.map(b => ({ id: b.id, level: b.level }))
+        ));
+    }
+
     return {
         subscribe,
-        getUpgrade,
         buyUpgrade,
-        enhanceUpgrade,
+        buyEnhancement,
+        buyBonus,
         clickItem,
         resetGame,
         boostProduction,
-        buyEnhancement,
-        getEnhancementBonus,
-        getUpgradeStats,
+        getProduction,
         GOD_MODE
     };
 }

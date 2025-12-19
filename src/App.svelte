@@ -1,10 +1,20 @@
 <script>
-    import Plate from "./components/Plate.svelte";
-    import RainingItems from "./components/RainingItems.svelte";
-    import Shop from "./components/Shop.svelte";
-    import Fluid from "./components/Fluid.svelte";
-    import GoldenItem from "./components/GoldenItem.svelte";
+    import { onMount, onDestroy } from "svelte";
     import { theme } from "./store/theme";
+    import { displayMode } from "./store/display";
+    import Plate from "./components/Plate/Plate.svelte";
+    import RainingItems from "./components/Effects/RainingItems.svelte";
+    import Shop from "./components/Shop/Shop.svelte";
+    import Fluid from "./components/Effects/Fluid.svelte";
+    import GoldenItem from "./components/Effects/GoldenItem.svelte";
+
+    onMount(() => {
+        displayMode.init();
+    });
+
+    onDestroy(() => {
+        displayMode.destroy();
+    });
 </script>
 
 <div id="game" style="background: url('/img/bg/{$theme.code}.png') no-repeat center center/cover;">

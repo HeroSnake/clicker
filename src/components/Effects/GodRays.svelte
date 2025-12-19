@@ -1,25 +1,33 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    export let size = 600;       // Canvas size (pixels)
     export let color = "255,255,230";
+    export let size = window.innerWidth * 1.1;
 
     let raysCanvas;
     let ctx;
     let raf;
 
-    const CENTER = () => size / 2;
+    const dpr = window.devicePixelRatio || 1;
 
-    // Ray layers: inner/outer will scale with size
     const layers = [
-        { rays: 6, inner: 0.05, outer: 0.25, speed: 0.0015, opacity: 0.25, rotation: 0 },
-        { rays: 10, inner: 0.04, outer: 0.22, speed: -0.0022, opacity: 0.18, rotation: 0 },
-        { rays: 14, inner: 0.03, outer: 0.20, speed: 0.003, opacity: 0.12, rotation: 0 }
+        { rays: 8,  inner: 0.06, outer: 0.38, speed:  0.0013, opacity: 0.28, rotation: 0 },
+        { rays: 12, inner: 0.05, outer: 0.34, speed: -0.0020, opacity: 0.20, rotation: 0 },
+        { rays: 18, inner: 0.04, outer: 0.30, speed:  0.0028, opacity: 0.14, rotation: 0 }
     ];
+
+    function computeSize() {
+        raysCanvas.width  = size * dpr;
+        raysCanvas.height = size * dpr;
+        raysCanvas.style.width  = `${size}px`;
+        raysCanvas.style.height = `${size}px`;
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     function drawLayer(layer) {
         ctx.save();
-        ctx.translate(CENTER(), CENTER());
+        ctx.translate(size / 2, size / 2);
         ctx.rotate(layer.rotation);
 
         const inner = layer.inner * size;
@@ -53,25 +61,32 @@
         raf = requestAnimationFrame(draw);
     }
 
+    function handleResize() {
+        computeSize();
+    }
+
     onMount(() => {
-        raysCanvas.width = size;
-        raysCanvas.height = size;
         ctx = raysCanvas.getContext("2d");
+        computeSize();
+        window.addEventListener("resize", handleResize);
         draw();
     });
 
-    onDestroy(() => cancelAnimationFrame(raf));
+    onDestroy(() => {
+        window.removeEventListener("resize", handleResize);
+        cancelAnimationFrame(raf);
+    });
 </script>
 
-<canvas bind:this={raysCanvas} id="godrays"></canvas>
+<canvas bind:this={raysCanvas} class="godrays"></canvas>
 
 <style>
-    #godrays {
-        position: absolute;
-        top: 50%;
-        left: 50%;
+    .godrays {
+        position: fixed;
+        inset: 50% auto auto 50%;
         transform: translate(-50%, -50%);
         pointer-events: none;
-        z-index: 2;
+        z-index: -1;
+        will-change: transform;
     }
 </style>

@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
-    import { theme } from "./../store/theme";
-    import { game } from "./../store/game";
+    import { theme } from "../../store/theme";
+    import { game } from "../../store/game";
 
     let canvas;
     let ctx;

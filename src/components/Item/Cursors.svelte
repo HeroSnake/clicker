@@ -1,13 +1,12 @@
 <script>
     import { onMount } from "svelte";
-    import { game } from "./../store/game";
+    import { game } from "../../store/game";
 
     let canvas;
     let ctx;
     let cursorImg;
     let rotation = 0;
 
-    const INNER_RADIUS = 180; // empty center
     const SIZE = 20;          // cursor size and spacing
     const RING_SPACING = 20;  // distance between rings
 
@@ -45,9 +44,10 @@
 
         let remainingCursors = totalCursors;
         let ring = 0;
+        let innerRadius = document.getElementById('item-button').clientWidth * 0.7;
 
         while (remainingCursors > 0) {
-            const radius = INNER_RADIUS + ring * RING_SPACING;
+            const radius = innerRadius + ring * RING_SPACING;
             const circumference = 2 * Math.PI * radius;
             const maxOnRing = Math.floor(circumference / SIZE); // max cursors for no overlap
             const cursorsOnRing = Math.min(remainingCursors, maxOnRing);

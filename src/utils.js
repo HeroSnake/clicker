@@ -1,4 +1,4 @@
-export function displayNumber(number, full = false) {
+export function displayNumber(number, full = false, decimal = false) {
     if (number === Infinity) return 'Infinity';
 
     const fullNames = [
@@ -88,7 +88,16 @@ export function displayNumber(number, full = false) {
 
     const suffix = full ? fullNames[magnitude] : suffixes[magnitude];
 
-    if (!suffix) return new Intl.NumberFormat('fr-FR').format(Math.floor(number));
+    if (!suffix) {
+        if (decimal) {
+            return number.toLocaleString('fr-FR', {
+                maximumFractionDigits: 1
+            });
+        } else {
+            return new Intl.NumberFormat('fr-FR').format(Math.floor(number));
+        }
+
+    }
 
     const divisor = Math.pow(10, magnitude * 3);
     const shortNumber = number / divisor;
@@ -106,16 +115,16 @@ export function displayNumber(number, full = false) {
     return formatted + suffix;
 }
 
-export function enhancementCost(upgrade) {
-    return Math.floor(upgrade.cost * Math.pow(3, upgrade.level));
+export function getBonusCost(bonus) {
+    return Math.floor(bonus.cost * Math.pow(3, bonus.level));
 }
 
-export function enhancedUpgradeCost(upgrade) {
-    return Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
+export function getEnhancementCost(enhancement) {
+    return Math.floor(enhancement.cost * Math.pow(1.5, enhancement.level));
 }
 
-export function upgradeCost(upgrade, multiple) {
+export function getUpgradeCost(upgrade, multiple) {
     let costMultiplier = 1.15;
 
-    return upgrade.cost * (Math.pow(costMultiplier, upgrade.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1);
+    return Math.floor(upgrade.cost * (Math.pow(costMultiplier, upgrade.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
 }

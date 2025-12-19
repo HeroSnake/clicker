@@ -4,8 +4,8 @@
       "name": "Banana",
       "unit": "B",
       "upgrades": [
-            {"name": "Cursor", "description": "Click bananas manually to earn more."},
-            {"name": "Monkey", "description": "Monkeys help gather bananas automatically."},
+            {"name": "Cursor", "description": "Click bananas every second to earn more."},
+            {"name": "Monkey", "description": "Monkeys help gather bananas !"},
             {"name": "Banana Tree", "description": "Grow banana trees that produce bananas over time."},
             {"name": "Premium Banana Tree", "description": "Stronger banana trees that yield more bananas."},
             {"name": "Banana-Hoarding Chimp", "description": "Chimps that collect extra bananas passively."},
@@ -35,8 +35,8 @@
       "name": "Gland",
       "unit": "G",
       "upgrades": [
-            {"name": "Cursor", "description": "Click glands manually to earn more."},
-            {"name": "Squirrel", "description": "Squirrels gather glands automatically."},
+            {"name": "Cursor", "description": "Click glands every second to earn more."},
+            {"name": "Squirrel", "description": "Squirrels gather glands !"},
             {"name": "Nut Farm", "description": "Farm glands for continuous income."},
             {"name": "Forest Grove", "description": "Expand forests to increase gland production."},
             {"name": "Chipmunk Patrol", "description": "Chipmunks help collect glands efficiently."},

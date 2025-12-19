@@ -1,11 +1,12 @@
 <script>
     import { fly } from 'svelte/transition';
-    import { theme } from "../store/theme";
-    import { game } from "../store/game";
-    import { displayNumber } from "../utils";
-    import GodRays from "./GodRays.svelte";
-    import Cursors from "./Cursors.svelte";
-    import Stats from './Stats.svelte';
+    import { game } from "../../store/game";
+    import { displayNumber } from "../../utils";
+    import GodRays from "./../Effects/GodRays.svelte";
+    import Cursors from "./../Item/Cursors.svelte";
+    import Stats from './../Plate/Stats.svelte';
+    import Item from './../Item/Item.svelte';
+    import Boost from '../Effects/Boost.svelte';
 
     let clickedItem = false;
 
@@ -41,12 +42,13 @@
 <div id="plate" transition:fly={{ x: 300, duration: 300 }}>
     <div id="item-container">
         <button class="no-btn" on:click={clickItem} type="button" class:wiggle={clickedItem} id="item-button">
-            <img src="./img/items/{$theme.code}.png" alt="item" id="item-img" />
+            <Item />
+            <GodRays size={800} color="255,200,150" />
         </button>
-        <GodRays size={2000} color="255,200,150" />
         <Cursors />
     </div>
     <Stats />
+    <Boost />
 </div>
 
 <style>
@@ -54,13 +56,13 @@
         text-align: center;
         position: relative;
         z-index: 1;
-        height: 90%;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
         width: 100%;
         background-size: cover;
+        overflow: hidden;
     }
     #item-container {
         user-select: none;
@@ -81,16 +83,11 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        width: 280px;
     }
     #item-button:hover {
         transform: translate(-50%, -50%) scale(1.1);
         transition: transform 0.3s ease-in-out;
-    }
-    #item-img {
-        height: 300px;
-        display: block;
-        pointer-events: none; /* Prevent drag and drop */
-        -webkit-user-drag: none;
     }
     .wiggle {
         transform: translate(-50%, -50%) scale(1.1);
@@ -133,5 +130,22 @@
     @keyframes CritfloatUp {
         0% { transform: translate(-50%, -50%) translateY(0); opacity: 1; }
         100% { transform: translate(-50%, -50%) translateY(-150px); opacity: 0; }
+    }
+    @media (max-width: 768px) {
+        #item-button {
+            width: 180px;
+        }
+        .wiggle {
+            /* keep wiggle on mobile a bit less aggressive */
+            animation: wiggle 0.2s;
+        }
+        :global(.click-text) {
+            font-size: 15px;
+            text-shadow: 0 0 3px #000;
+        }
+        :global(.click-text.crit) {
+            font-size: 19px;
+            text-shadow: 0 0 5px #000;
+        }
     }
 </style>

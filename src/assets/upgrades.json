@@ -3,15 +3,20 @@
         "id": 0,
         "type": "cursor",
         "cost": 15,
-        "increase": 1,
+        "production": 0.1,
         "stock": 0,
-        "level": 1
+        "level": 1,
+        "crit": {
+            "chance": 0.01,
+            "bonus": 0.01,
+            "multiplier": 2
+        }
     },
     {
         "id": 1,
         "type": "amount",
         "cost": 100,
-        "increase": 1,
+        "production": 1,
         "stock": 0,
         "level": 1
     },
@@ -19,7 +24,7 @@
         "id": 2,
         "type": "amount",
         "cost": 1100,
-        "increase": 8,
+        "production": 8,
         "stock": 0,
         "level": 1
     },
@@ -27,7 +32,7 @@
         "id": 3,
         "type": "amount",
         "cost": 12000,
-        "increase": 47,
+        "production": 47,
         "stock": 0,
         "level": 1
     },
@@ -35,7 +40,7 @@
         "id": 4,
         "type": "amount",
         "cost": 130000,
-        "increase": 260,
+        "production": 260,
         "stock": 0,
         "level": 1
     },
@@ -43,7 +48,7 @@
         "id": 5,
         "type": "amount",
         "cost": 1400000,
-        "increase": 1400,
+        "production": 1400,
         "stock": 0,
         "level": 1
     },
@@ -51,7 +56,7 @@
         "id": 6,
         "type": "amount",
         "cost": 20000000,
-        "increase": 7800,
+        "production": 7800,
         "stock": 0,
         "level": 1
     },
@@ -59,7 +64,7 @@
         "id": 7,
         "type": "amount",
         "cost": 330000000,
-        "increase": 44000,
+        "production": 44000,
         "stock": 0,
         "level": 1
     },
@@ -67,7 +72,7 @@
         "id": 8,
         "type": "amount",
         "cost": 5100000000,
-        "increase": 260000,
+        "production": 260000,
         "stock": 0,
         "level": 1
     },
@@ -75,7 +80,7 @@
         "id": 9,
         "type": "amount",
         "cost": 75000000000,
-        "increase": 1600000,
+        "production": 1600000,
         "stock": 0,
         "level": 1
     },
@@ -83,7 +88,7 @@
         "id": 10,
         "type": "amount",
         "cost": 1200000000000,
-        "increase": 10000000,
+        "production": 10000000,
         "stock": 0,
         "level": 1
     },
@@ -91,7 +96,7 @@
         "id": 11,
         "type": "amount",
         "cost": 20000000000000,
-        "increase": 65000000,
+        "production": 65000000,
         "stock": 0,
         "level": 1
     },
@@ -99,7 +104,7 @@
         "id": 12,
         "type": "amount",
         "cost": 330000000000000,
-        "increase": 450000000,
+        "production": 450000000,
         "stock": 0,
         "level": 1
     },
@@ -107,7 +112,7 @@
         "id": 13,
         "type": "amount",
         "cost": 5500000000000000,
-        "increase": 3200000000,
+        "production": 3200000000,
         "stock": 0,
         "level": 1
     },
@@ -115,7 +120,7 @@
         "id": 14,
         "type": "amount",
         "cost": 90000000000000000,
-        "increase": 25000000000,
+        "production": 25000000000,
         "stock": 0,
         "level": 1
     },
@@ -123,7 +128,7 @@
         "id": 15,
         "type": "amount",
         "cost": 1600000000000000000,
-        "increase": 200000000000,
+        "production": 200000000000,
         "stock": 0,
         "level": 1
     },
@@ -131,7 +136,7 @@
         "id": 16,
         "type": "amount",
         "cost": 30000000000000000000,
-        "increase": 1600000000000,
+        "production": 1600000000000,
         "stock": 0,
         "level": 1
     },
@@ -139,7 +144,7 @@
         "id": 17,
         "type": "amount",
         "cost": 600000000000000000000,
-        "increase": 13000000000000,
+        "production": 13000000000000,
         "stock": 0,
         "level": 1
     },
@@ -147,7 +152,7 @@
         "id": 18,
         "type": "amount",
         "cost": 13000000000000000000000,
-        "increase": 110000000000000,
+        "production": 110000000000000,
         "stock": 0,
         "level": 1
     },
@@ -155,7 +160,7 @@
         "id": 19,
         "type": "amount",
         "cost": 300000000000000000000000,
-        "increase": 1000000000000000,
+        "production": 1000000000000000,
         "stock": 0,
         "level": 1
     },
@@ -163,7 +168,7 @@
         "id": 20,
         "type": "amount",
         "cost": 7000000000000000000000000,
-        "increase": 10000000000000000,
+        "production": 10000000000000000,
         "stock": 0,
         "level": 1
     },
@@ -171,7 +176,7 @@
         "id": 21,
         "type": "amount",
         "cost": 180000000000000000000000000,
-        "increase": 120000000000000000,
+        "production": 120000000000000000,
         "stock": 0,
         "level": 1
     },
@@ -179,7 +184,7 @@
         "id": 22,
         "type": "amount",
         "cost": 5000000000000000000000000000,
-        "increase": 1500000000000000000,
+        "production": 1500000000000000000,
         "stock": 0,
         "level": 1
     },
@@ -187,7 +192,7 @@
         "id": 23,
         "type": "amount",
         "cost": 150000000000000000000000000000,
-        "increase": 20000000000000000000,
+        "production": 20000000000000000000,
         "stock": 0,
         "level": 1
     }
