@@ -1,6 +1,6 @@
 <script>
     import { onMount, tick } from "svelte";
-    import { displayNumber, getEnhancementCost, getBonusCost, getUpgradeCost } from "../../utils";
+    import { displayNumber } from "../../utils";
     import { game } from "../../store/game";
     import Cost from "./Cost.svelte";
 

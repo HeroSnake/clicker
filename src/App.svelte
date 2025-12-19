@@ -20,10 +20,10 @@
 <div id="game" style="background: url('/img/bg/{$theme.code}.png') no-repeat center center/cover;">
     <div class="lighting-overlay"></div>
     <GoldenItem />
-    <RainingItems/>
-    <Fluid/>
-    <Plate/>
-    <Shop/>
+    <RainingItems />
+    <Fluid />
+    <Plate />
+    <Shop />
 </div>
 
 <style>
