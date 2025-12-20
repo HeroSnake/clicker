@@ -83,18 +83,18 @@ export function displayNumber(number, full = false, decimal = false) {
     // Special handling: for thousands (magnitude === 1), always show full number, no suffix
     if (magnitude === 1) {
         // Display as full number (e.g., 1 235 for 1235)
-        return Math.floor(number).toLocaleString('fr-FR');
+        return Math.floor(number).toLocaleString('en-EN');
     }
 
     const suffix = full ? fullNames[magnitude] : suffixes[magnitude];
 
     if (!suffix) {
         if (decimal) {
-            return number.toLocaleString('fr-FR', {
+            return number.toLocaleString('en-EN', {
                 maximumFractionDigits: 1
             });
         } else {
-            return new Intl.NumberFormat('fr-FR').format(Math.floor(number));
+            return new Intl.NumberFormat('en-EN').format(Math.floor(number));
         }
 
     }
@@ -104,12 +104,12 @@ export function displayNumber(number, full = false, decimal = false) {
 
     let formatted;
     if (magnitude > 1) {
-        formatted = shortNumber.toLocaleString('fr-FR', {
+        formatted = shortNumber.toLocaleString('en-EN', {
             minimumFractionDigits: 3,
             maximumFractionDigits: 3
         });
     } else {
-        formatted = Math.floor(number).toLocaleString('fr-FR');
+        formatted = Math.floor(number).toLocaleString('en-EN');
     }
 
     return formatted + suffix;

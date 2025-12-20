@@ -4,6 +4,7 @@
     import { game } from "../../store/game";
     import Tooltip from './Tooltip.svelte';
     import Cost from "./Cost.svelte";
+    import UpgradeLogo from "./UpgradeLogo.svelte";
 
     export let multiple = 1;
 
@@ -16,15 +17,19 @@
         game.buyUpgrade(upgrade.id, getUpgradeCost(upgrade, multiple), multiple);
     }
 
+    $: img = id => {
+        return `./img/${$theme.code}/upgrades/${id}.png`;
+    }
+
 </script>
 
 
 <div class="upgrades">
     {#each upgrades as upgrade, i}
-        <Tooltip {upgrade} cost={getUpgradeCost(upgrade, multiple)} type="upgrade">
+        <Tooltip img={img(upgrade.id)} {upgrade} cost={getUpgradeCost(upgrade, multiple)} type="upgrade">
             <button class="no-btn upgrade" on:click={() => handleBuyUpgrade(upgrade)} disabled={getUpgradeCost(upgrade, multiple) > $game.itemCount || upgrades[i -1]?.stock == 0}>
                 <div class="flex">
-                    <div class="upgrade-img" style="background-image: url('./img/upgrades/{$theme.code}/{upgrade.id}.png');"></div>
+                    <UpgradeLogo img={img(upgrade.id)} />
                     <div class="upgrade-data">
                         <span class="name">{upgrade.name}</span>
                         <Cost value={getUpgradeCost(upgrade, multiple)} />
@@ -70,24 +75,20 @@
         position: absolute;
         top: 50%;
         transform: translate(0, -50%);
-        font-size: 50px;
+        font-size: 4.2rem;
         text-align: center;
         font-weight: bold;
         right: 5px;
         z-index: 1;
         opacity: 0.1;
     }
-    .upgrade-img {
-        min-width: 60px;
-        height: 60px;
-        background-size: cover;
-    }
     .upgrade-data {
         width: 100%;
         text-align: left;
+        line-height: 1rem;
     }
     .name {
-        font-size: 18px;
+        font-size: 1.5rem;
         font-weight: bold;
     }
 </style>

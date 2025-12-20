@@ -1,6 +1,7 @@
 <script>
     import { fly } from 'svelte/transition';
     import { onMount, onDestroy } from 'svelte';
+    import { theme } from '../../store/theme';
     import { displayMode } from "./../../store/display";
     import Augments from './Augments.svelte';
     import Upgrades from './Upgrades.svelte';
@@ -46,9 +47,8 @@
 </script>
 
 {#if $displayMode === "desktop" && !collapsed}
-    <div id="shop" transition:fly={{ x: 150, duration: 150 }}>
+    <div id="shop" class="cracked-border" transition:fly={{ x: 150, duration: 150 }} style="--bg: url('./img/{$theme.code}/textures/wood-vertical.png');">
         <div class="header">
-            <span class="title">SHOP</span>
             {#each multiples as m}
                 <button class="{m == multiple ? 'selected' : ''}" on:click={() => multiple = m}>{m}</button>
             {/each}
@@ -61,13 +61,24 @@
 
 <style>
     #shop {
-        background-color: #2e2e2ecc;
-        width: 500px;
+        width: 480px;
         height: 100vh;
         overflow-x: hidden;
-        z-index: 1;
-        position: relative;
+        z-index: 2;
+        /* position: fixed; */
+        top: 0;
+        right: 0;
         overflow-y: scroll;
+        padding: 6px;
+        position: relative;
+    }
+    #shop::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--bg);
+        filter: brightness(0.35);
+        z-index: 0;
     }
     .selected {
         box-shadow: 0 0 8px 3px #fff, 0 0 14px 3px #ffe56666;
@@ -76,6 +87,7 @@
         border: 1.5px solid #fff;
         transition: box-shadow 0.15s, background 0.15s;
     }
+
     .header {
         display: flex;
         flex-direction: row;
@@ -86,12 +98,8 @@
         top: 0;
         width: 100%;
         z-index: 2;
-        background-color: #2e2e2ed1;
     }
-    .title {
-        font-weight: bold;
-        display: block;
-    }
+
     @media (max-width: 768px) {
         #shop {
             width: 100%;
@@ -102,9 +110,6 @@
             flex-wrap: wrap;
             gap: 7px;
             padding: 8px;
-        }
-        .title {
-            font-size: 16px;
         }
     }
 </style>

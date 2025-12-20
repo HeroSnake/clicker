@@ -28,6 +28,12 @@
             {"name": "Banana God", "description": "Divine banana power increases production massively."},
             {"name": "Eternal Banana Universe", "description": "A universe made entirely of bananas."},
             {"name": "Infinite Banana Dimensions", "description": "Infinite realms of banana riches."}
+      ],
+      "bonuses": [
+        {"id": "1", "name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total banana production"},
+        {"id": "2", "name": "Golden Surge", "description": "Golden banana boosts are more powerful.", "detail": "golden nut boost power"},
+        {"id": "3", "name": "Lasting Fortune", "description": "Golden banana boosts last longer.", "detail": "golden nut boost duration"},
+        {"id": "4", "name": "Gilded Chance", "description": "Golden banana appear more often.", "detail": "golden nut spawn chance"}
       ]
     },
     {
@@ -59,6 +65,12 @@
             {"name": "Nut God", "description": "Divine nut power increases gland production massively."},
             {"name": "Eternal Nut Universe", "description": "A universe made entirely of glands."},
             {"name": "Infinite Nut Dimensions", "description": "Infinite realms of nut riches."}
+      ],
+      "bonuses": [
+        {"id": "1", "name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total nut production"},
+        {"id": "2", "name": "Golden Surge", "description": "Golden nut boosts are more powerful.", "detail": "golden nut boost power"},
+        {"id": "3", "name": "Lasting Fortune", "description": "Golden nut boosts last longer.", "detail": "golden nut boost duration"},
+        {"id": "4", "name": "Gilded Chance", "description": "Golden nut boosts last longer.", "detail": "golden nut spawn chance"}
       ]
     }
   ]

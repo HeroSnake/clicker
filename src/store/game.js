@@ -1,12 +1,14 @@
 import { get, writable } from "svelte/store";
 import upgrades from "../assets/upgrades.json";
 import bonuses from "../assets/bonuses.json";
+import seasons from "../assets/seasons.json";
 import { theme } from "./theme";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
 const TICK_RATE = 200;
 const SAVE_RATE = 2000;
+const TITLE_RATE = 5000;
 
 function createGame() {
     const { subscribe, update } = writable(initGame(), startLoops);
@@ -20,6 +22,9 @@ function createGame() {
             itemCount: +localStorage.getItem("itemCount") || 0,
             production: 0,
             itemsPerClick: 0,
+            clickCount: +localStorage.getItem("clickCount") || 0,
+            critCount: +localStorage.getItem("critCount") || 0,
+            maxItemsCollected: +localStorage.getItem("maxItemsCollected") || 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
             upgrades: upgrades,
             activeBoosts: [],
@@ -30,11 +35,18 @@ function createGame() {
             goldenItemSpawnChance: 0,
             crit: {},
             isProductionBoosted: false,
+            seasons,
+            seasonId: initSeason(),
         };
+    }
+
+    function initSeason() {
+        return parseInt(localStorage.getItem("seasonId")) || 1;
     }
 
     function startLoops() {
         const saveInterval = setInterval(saveData, SAVE_RATE);
+        const titleInterval = setInterval(updateTitle, TITLE_RATE);
         const tickInterval = setInterval(tickGame, TICK_RATE);
         return () => {
             clearInterval(saveInterval);
@@ -60,10 +72,14 @@ function createGame() {
 
     function mergeBonuses() {
         const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
+        const currentTheme = get(theme);
+
         return bonuses.map(bonus => {
             const s = saved.find(s => s.id === bonus.id);
             return {
                 ...bonus,
+                name: currentTheme.upgrades[bonus.id].name,
+                description: currentTheme.upgrades[bonus.id].description,
                 level: s?.level ?? bonus.level,
             };
         });
@@ -115,9 +131,9 @@ function createGame() {
 
         game.bonuses.forEach(b => {
             if (b.level == 1) {
-                bonuses[b.id] = 0;
+                bonuses[b.code] = 0;
             } else {
-                bonuses[b.id] = b.increase * (b.level - 1);
+                bonuses[b.code] = b.increase * (b.level - 1);
             }
         });
 
@@ -147,6 +163,11 @@ function createGame() {
     }
 
     /* ---------------- ACTIONS ---------------- */
+
+    const setSeason = id => update(game => {
+        game.seasonId = id;
+        return game;
+    });
 
     const buyUpgrade = (id, cost, amount = 1) => update(game => {
         const u = game.upgrades.find(u => u.id === id);
@@ -201,6 +222,15 @@ function createGame() {
 
             game.itemCount += clickValue;
             game.totalItemsCollected += clickValue;
+            game.clickCount++;
+
+            if (game.itemCount > game.maxItemsCollected) {
+                game.maxItemsCollected = game.itemCount;
+            }
+
+            if (isCrit) {
+                game.critCount++;
+            }
 
             critResult = { clickValue, isCrit };
             return game;
@@ -241,12 +271,20 @@ function createGame() {
         return game;
     });
 
+    const updateTitle = () => {
+
+    }
+
     /* ---------------- SAVE ---------------- */
 
     function saveData() {
         update(game => {
             localStorage.setItem("itemCount", Math.floor(game.itemCount).toString());
             localStorage.setItem("totalItemsCollected", game.totalItemsCollected.toString());
+            localStorage.setItem("maxItemsCollected", game.maxItemsCollected.toString());
+            localStorage.setItem("clickCount", game.clickCount.toString());
+            localStorage.setItem("critCount", game.critCount.toString());
+            localStorage.setItem("seasonId", game.seasonId.toString());
             saveUpgrades(game.upgrades);
             return game;
         });
@@ -273,6 +311,7 @@ function createGame() {
         resetGame,
         boostProduction,
         getProduction,
+        setSeason,
         GOD_MODE
     };
 }

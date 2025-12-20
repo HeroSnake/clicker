@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "code": "spring"
+    },
+    {
+        "id": 2,
+        "code": "summer"
+    },
+    {
+        "id": 3,
+        "code": "autumn"
+    },
+    {
+        "id": 4,
+        "code": "winter"
+    }
+]

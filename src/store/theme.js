@@ -9,7 +9,8 @@ function createTheme() {
         name: '',
         code: '',
         unit: '',
-        upgrades: []
+        upgrades: [],
+        bonuses: [],
     })
 
     changeTheme(theme.code);
@@ -25,7 +26,7 @@ function createTheme() {
     function changeMetas(theme) {
         let link = document.querySelector("link[rel='icon']");
         if (link instanceof HTMLLinkElement) {
-            link.href = `./img/items/${theme.code}-sm.png`;
+            link.href = `./img/${theme.code}/items/item-sm.png`;
         }
 
         document.title = `${theme.name} clicker`

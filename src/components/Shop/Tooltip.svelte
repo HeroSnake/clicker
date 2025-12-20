@@ -2,10 +2,13 @@
     import { onMount, tick } from "svelte";
     import { displayNumber } from "../../utils";
     import { game } from "../../store/game";
+    import { theme } from "../../store/theme";
     import Cost from "./Cost.svelte";
+    import UpgradeLogo from "./UpgradeLogo.svelte";
 
     export let type = '';
     export let upgrade = {};
+    export let img = '';
     export let cost = 0;
     export let offset = 8; // spacing from the shop
 
@@ -58,31 +61,40 @@
 </button>
 
 {#if visible}
-    <div bind:this={tooltipEl} class="tooltip" style="top:{y}px; left:{x}px;">
-
-        {#if type === "enhancement"}
-            <b class="bonus">Double</b> {upgrade.name} efficiency <br>
-
-            {#if upgrade.type === "cursor"}
-                <span class="bonus">+{upgrade.crit.bonus * 100}%</span> crit chance <br>
-            {/if}
-
-            <Cost value={cost} />
-
-        {:else if type === "bonus"}
-
-            <span class="bonus">+{upgrade.increase * 100}%</span> {upgrade.description} <br>
-            <span class="total">{$game[upgrade.id] * 100}%</span> total <br>
-            <Cost value={cost} />
-
-        {:else if type === "upgrade"}
-
-            <div class="upgrade-tooltip">
-                <div class="head">
+    <div bind:this={tooltipEl} class="tooltip cracked-border" style="top:{y}px; left:{x}px; --bg: url('./img/{$theme.code}/textures/wooden-logs.png')">
+        <div class="head">
+            <UpgradeLogo {img} />
+            <div>
+                <div class="info">
                     <span class="name">{upgrade.name}</span>
                     <Cost value={cost} />
                 </div>
                 <span class="description">{upgrade.description}</span>
+            </div>
+        </div>
+        <div class="body">
+            {#if type === "enhancement"}
+
+                <span>
+                    <b class="bonus">Double</b> {upgrade.name} efficiency
+                </span>
+
+                {#if upgrade.type === "cursor"}
+                    <span>
+                        <span class="bonus">+{upgrade.crit.bonus * 100}%</span> crit chance
+                    </span>
+                {/if}
+
+            {:else if type === "bonus"}
+
+                    <span>
+                        <span class="bonus">+{upgrade.increase * 100}%</span> {upgrade.detail}
+                    </span>
+                    <span>
+                        <span class="total">{$game[upgrade.code] * 100}%</span> total
+                    </span>
+
+            {:else if type === "upgrade"}
                 {#if upgrade.stock > 0}
                     <span>
                         each {upgrade.name} produces <b class="bonus">{displayNumber(game.getProduction(upgrade, true), false, true)}</b> per second
@@ -99,9 +111,8 @@
                 {:else}
                     <span>???</span>
                 {/if}
-            </div>
-
-        {/if}
+            {/if}
+        </div>
     </div>
 {/if}
 
@@ -109,38 +120,50 @@
     .tooltip {
         position: fixed;
         pointer-events: none;
-        background: rgba(0,0,0,0.85);
-        color: #fff;
-        padding: 6px 10px;
-        border-radius: 4px;
-        font-size: 10px;
-        white-space: nowrap;
+        background: #000000;
+        color: #a7a7a7;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 1.5rem;
+        white-space: normal;
         z-index: 1000;
+        width: 500px;
+        line-height: 1.4rem;
     }
-
-    .upgrade-tooltip {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
+    .tooltip::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: var(--bg);
+        background-size: cover;
+        filter: blur(1px) brightness(0.35);
+        z-index: 0;
     }
-
+    .tooltip > * {
+        position: relative;
+        z-index: 1;
+    }
     .head {
         display: flex;
-        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .info {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .body {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
     }
 
     .name {
-        font-size: 15px;
+        font-size: 2rem;
     }
 
     .description {
-        font-size: 8px;
-        opacity: 0.5;
-        margin-bottom: 10px;
-        border-bottom: 1px solid #fff;
-    }
-
-    .total {
-        color: blueviolet;
+        font-size: 1.1rem;
     }
 </style>

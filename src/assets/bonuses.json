@@ -1,28 +1,28 @@
 [
     {
-        "id": "productionBonus",
-        "description": "Total production",
+        "id": 1,
+        "code": "productionBonus",
         "cost": 1000,
         "increase": 0.01,
         "level": 1
     },
     {
-        "id": "goldenItemBoostPower",
-        "description": "Boost power",
+        "id": 2,
+        "code": "goldenItemBoostPower",
         "cost": 2000,
         "increase": 0.01,
         "level": 1
     },
     {
-        "id": "goldenItemBoostDuration",
-        "description": "Boost duration",
+        "id": 3,
+        "code": "goldenItemBoostDuration",
         "cost": 1500,
         "increase": 0.01,
         "level": 1
     },
     {
-        "id": "goldenItemSpawnChance",
-        "description": "Golden item spawn chance",
+        "id": 4,
+        "code": "goldenItemSpawnChance",
         "cost": 2500,
         "increase": 0.01,
         "level": 1

@@ -6,7 +6,7 @@
 </script>
 
 <span class="cost">
-    <Item mode="small" style="width:15px;" /> {displayNumber(value, false, true)}
+    <Item mode="small" style="width:15px;" /> {displayNumber(value, true, true)}
 </span>
 
 <style>
@@ -14,8 +14,7 @@
         display: flex;
         align-items: center;
         gap: 5px;
-        font-size: 10px;
-        font-weight: bold;
+        font-size: 1rem;
         color: #df7d24;
     }
 </style>
