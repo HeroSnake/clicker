@@ -20,7 +20,7 @@
                     libelle: "enhancement",
                     ...upgrade,
                     cost: getEnhancementCost({ ...upgrade, level: displayLevel }),
-                    img: `./img/${$theme.code}/upgrades/${upgrade.id}.png`,
+                    img: `/img/${$theme.code}/upgrades/${upgrade.id}.png`,
                     disabled: upgrade.level < requiresLevel || upgrade.cost > $game.itemCount,
                 };
             });
@@ -34,7 +34,7 @@
                     libelle: "bonus",
                     ...bonus,
                     cost: getBonusCost({ ...bonus, level: displayLevel }),
-                    img: `./img/${$theme.code}/upgrades/${bonus.code}.png`,
+                    img: `/img/${$theme.code}/upgrades/${bonus.code}.png`,
                     disabled: bonus.level < requiresLevel || bonus.cost > $game.itemCount,
                 };
             });

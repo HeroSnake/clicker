@@ -37,7 +37,7 @@
     }
 </script>
 
-<div id="plate" transition:fly={{ x: 300, duration: 300 }} style="background: url('./img/{$theme.code}/bg/{$game.seasonId}.png') no-repeat center center/cover;">
+<div id="plate" transition:fly={{ x: 300, duration: 300 }} style="background: url('/img/{$theme.code}/bg/{$game.seasonId}.png') no-repeat center center/cover;">
     {#if game.GOD_MODE}
         <button class="resetbtn" on:click={game.resetGame}>Reset Game</button>
     {/if}

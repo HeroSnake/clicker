@@ -133,7 +133,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: url('./img/textures/wooden-logs.png');
+        background: url('/img/textures/wooden-logs.png');
         background-size: cover;
         filter: blur(1px) brightness(0.35);
         z-index: 0;

@@ -18,7 +18,7 @@
     }
 
     $: img = id => {
-        return `./img/${$theme.code}/upgrades/${id}.png`;
+        return `/img/${$theme.code}/upgrades/${id}.png`;
     }
 
 </script>

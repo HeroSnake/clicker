@@ -19,7 +19,7 @@
                 break;
         }
 
-        return `./img/${$theme.code}/items/item${suffix}.${ext}`;
+        return `/img/${$theme.code}/items/item${suffix}.${ext}`;
     }
 </script>
 
