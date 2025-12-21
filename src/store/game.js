@@ -3,12 +3,12 @@ import upgrades from "../assets/upgrades.json";
 import bonuses from "../assets/bonuses.json";
 import seasons from "../assets/seasons.json";
 import { theme } from "./theme";
+import { displayMode } from "./display";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
 const TICK_RATE = 200;
 const SAVE_RATE = 2000;
-const TITLE_RATE = 5000;
 
 function createGame() {
     const { subscribe, update } = writable(initGame(), startLoops);
@@ -16,8 +16,6 @@ function createGame() {
     /* ---------------- INIT ---------------- */
 
     function initGame() {
-        const upgrades = mergeUpgrades();
-
         return {
             itemCount: +localStorage.getItem("itemCount") || 0,
             production: 0,
@@ -26,7 +24,7 @@ function createGame() {
             critCount: +localStorage.getItem("critCount") || 0,
             maxItemsCollected: +localStorage.getItem("maxItemsCollected") || 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-            upgrades: upgrades,
+            upgrades: mergeUpgrades(),
             activeBoosts: [],
             bonuses: mergeBonuses(),
             productionBonus: 0,
@@ -37,6 +35,7 @@ function createGame() {
             isProductionBoosted: false,
             seasons,
             seasonId: initSeason(),
+            displayShop: get(displayMode) === "desktop",
         };
     }
 
@@ -46,7 +45,6 @@ function createGame() {
 
     function startLoops() {
         const saveInterval = setInterval(saveData, SAVE_RATE);
-        const titleInterval = setInterval(updateTitle, TITLE_RATE);
         const tickInterval = setInterval(tickGame, TICK_RATE);
         return () => {
             clearInterval(saveInterval);
@@ -74,13 +72,14 @@ function createGame() {
         const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
         const currentTheme = get(theme);
 
-        return bonuses.map(bonus => {
-            const s = saved.find(s => s.id === bonus.id);
+        return bonuses.map(b => {
+            const s = saved.find(s => s.id === b.id);
             return {
-                ...bonus,
-                name: currentTheme.upgrades[bonus.id].name,
-                description: currentTheme.upgrades[bonus.id].description,
-                level: s?.level ?? bonus.level,
+                ...b,
+                name: currentTheme.bonuses[b.id].name,
+                description: currentTheme.bonuses[b.id].description,
+                detail: currentTheme.bonuses[b.id].detail,
+                level: s?.level ?? b.level,
             };
         });
     }
@@ -166,6 +165,11 @@ function createGame() {
 
     const setSeason = id => update(game => {
         game.seasonId = id;
+        return game;
+    });
+
+    const toggleShop = () => update(game => {
+        game.displayShop = !game.displayShop;
         return game;
     });
 
@@ -271,10 +275,6 @@ function createGame() {
         return game;
     });
 
-    const updateTitle = () => {
-
-    }
-
     /* ---------------- SAVE ---------------- */
 
     function saveData() {
@@ -312,6 +312,7 @@ function createGame() {
         boostProduction,
         getProduction,
         setSeason,
+        toggleShop,
         GOD_MODE
     };
 }

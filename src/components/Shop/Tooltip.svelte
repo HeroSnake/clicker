@@ -1,8 +1,8 @@
 <script>
     import { onMount, tick } from "svelte";
+    import { fly } from 'svelte/transition';
     import { displayNumber } from "../../utils";
     import { game } from "../../store/game";
-    import { theme } from "../../store/theme";
     import Cost from "./Cost.svelte";
     import UpgradeLogo from "./UpgradeLogo.svelte";
 
@@ -61,7 +61,7 @@
 </button>
 
 {#if visible}
-    <div bind:this={tooltipEl} class="tooltip cracked-border" style="top:{y}px; left:{x}px; --bg: url('./img/{$theme.code}/textures/wooden-logs.png')">
+    <div bind:this={tooltipEl} class="tooltip cracked-border" style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
         <div class="head">
             <UpgradeLogo {img} />
             <div>
@@ -86,7 +86,6 @@
                 {/if}
 
             {:else if type === "bonus"}
-
                     <span>
                         <span class="bonus">+{upgrade.increase * 100}%</span> {upgrade.detail}
                     </span>
@@ -121,20 +120,20 @@
         position: fixed;
         pointer-events: none;
         background: #000000;
-        color: #a7a7a7;
+        color: #d1d1d1;
         padding: 10px;
-        border-radius: 5px;
-        font-size: 1.5rem;
+        border-radius: 2px;
+        font-size: 1rem;
         white-space: normal;
         z-index: 1000;
         width: 500px;
-        line-height: 1.4rem;
+        line-height: 1.2rem;
     }
     .tooltip::before {
         content: "";
         position: absolute;
         inset: 0;
-        background: var(--bg);
+        background: url('./img/textures/wooden-logs.png');
         background-size: cover;
         filter: blur(1px) brightness(0.35);
         z-index: 0;
@@ -165,5 +164,13 @@
 
     .description {
         font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .tooltip {
+            width: 100%;
+            bottom: 0;
+            top: auto !important;
+        }
     }
 </style>

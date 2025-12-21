@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { game } from "../../store/game";
+    import { displayMode } from "../../store/display";
 
     let canvas;
     let ctx;
@@ -13,6 +14,14 @@
     const ROTATION_SPEED = 0.00015;
 
     $: totalCursors = Math.max(0, $game.upgrades.find(u => u.id === 0)?.stock || 0);
+
+    let lastTotal = 0;
+    let ringSpeeds = [];
+    let ringCount = 0;
+
+    $: innerRadius = $displayMode === "desktop" ? document.getElementById("item-button")?.clientWidth * 0.7 : 100;
+
+    const startTime = performance.now();
 
     function easeOutCubic(t) {
         return 1 - Math.pow(1 - t, 3);
@@ -28,94 +37,104 @@
         resize();
         window.addEventListener("resize", resize);
 
-        initRings();
-
+        updateRings();
         requestAnimationFrame(draw);
     });
 
     function resize() {
-        if (!canvas) return;
+        if(!canvas) return;
+
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    let startTime = performance.now();
-    let ringSpeeds = [];
+    $: if (totalCursors !== lastTotal) {
+        lastTotal = totalCursors;
+        updateRings();
+    }
 
-    function initRings() {
-        ringSpeeds = [];
-
-        let remainingCursors = totalCursors;
+    function updateRings() {
+        let remaining = totalCursors;
         let ring = 0;
-        const innerRadius = document.getElementById('item-button')?.clientWidth * 0.7 || 100;
 
-        while (remainingCursors > 0) {
+        while (remaining > 0) {
             const radius = innerRadius + ring * RING_SPACING;
             const circumference = 2 * Math.PI * radius;
             const maxOnRing = Math.floor(circumference / SIZE);
-            const cursorsOnRing = Math.min(remainingCursors, maxOnRing);
+            const count = Math.min(remaining, maxOnRing);
 
-            ringSpeeds.push((Math.random() * 0.5 + 0.5) * ROTATION_SPEED);
+            if (ring >= ringCount) {
+                ringSpeeds[ring] =
+                    (Math.random() * 0.5 + 0.5) * ROTATION_SPEED;
+            }
 
-            remainingCursors -= cursorsOnRing;
+            remaining -= count;
             ring++;
         }
+
+        ringCount = ring;
     }
 
-    function draw(now = performance.now()) {
-        if (!canvas) return;
+    function draw(now) {
+        if(!canvas) return;
 
-        const w = canvas.width / (window.devicePixelRatio || 1);
-        const h = canvas.height / (window.devicePixelRatio || 1);
+        const dpr = window.devicePixelRatio || 1;
+
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
+
         ctx.clearRect(0, 0, w, h);
 
         const cx = w / 2;
         const cy = h / 2;
 
-        let remainingCursors = totalCursors;
+        let remaining = totalCursors;
         let ring = 0;
-        const innerRadius = document.getElementById('item-button')?.clientWidth * 0.7 || 100;
 
-        let ringCursorStartIndex = 0;
+        const elapsed = now - startTime;
 
-        while (remainingCursors > 0) {
+        while (remaining > 0) {
             const radius = innerRadius + ring * RING_SPACING;
             const circumference = 2 * Math.PI * radius;
             const maxOnRing = Math.floor(circumference / SIZE);
-            const cursorsOnRing = Math.min(remainingCursors, maxOnRing);
+            const count = Math.min(remaining, maxOnRing);
 
             let startAngle, step;
-            if (cursorsOnRing < maxOnRing) {
-                const totalArc = (cursorsOnRing * SIZE) / radius;
-                startAngle = -totalArc / 2;
-                step = totalArc / cursorsOnRing;
+            if (count < maxOnRing) {
+                const arc = (count * SIZE) / radius;
+                startAngle = -arc / 2;
+                step = arc / count;
             } else {
                 startAngle = 0;
-                step = (2 * Math.PI) / cursorsOnRing;
+                step = (2 * Math.PI) / count;
             }
 
-            for (let i = 0; i < cursorsOnRing; i++) {
-                const rotation = now * ringSpeeds[ring];
-                const angle = startAngle + i * step + rotation;
+            const rotation = now * (ringSpeeds[ring] ?? 0);
 
-                const elapsed = now - startTime;
-                const half = Math.floor(cursorsOnRing / 2);
-                const pairIndex = Math.floor(elapsed / CURSOR_DURATION) % half;
+            const half = Math.floor(count / 2);
+            const pairIndex =
+                half > 0
+                    ? Math.floor(elapsed / CURSOR_DURATION) % half
+                    : -1;
 
-                const isActivePair =
-                    i === pairIndex ||
-                    i === (pairIndex + half) % cursorsOnRing;
-
+            for (let i = 0; i < count; i++) {
                 let pulse = 0;
-                if (isActivePair) {
+
+                if (
+                    half > 0 &&
+                    (i === pairIndex ||
+                        i === (pairIndex + half) % count)
+                ) {
                     const t = (elapsed % CURSOR_DURATION) / CURSOR_DURATION;
                     pulse =
-                        easeOutCubic(t <= 0.5 ? t * 2 : (1 - t) * 2) *
-                        PULSE_AMPLITUDE;
+                        easeOutCubic(
+                            t <= 0.5 ? t * 2 : (1 - t) * 2
+                        ) * PULSE_AMPLITUDE;
                 }
 
+                const angle = startAngle + i * step + rotation;
                 const animatedRadius = radius - pulse;
 
                 ctx.save();
@@ -123,14 +142,18 @@
                 ctx.rotate(angle);
                 ctx.translate(0, -animatedRadius);
                 ctx.rotate(Math.PI);
-                ctx.drawImage(cursorImg, -SIZE / 2, -SIZE / 2, SIZE, SIZE);
+                ctx.drawImage(
+                    cursorImg,
+                    -SIZE / 2,
+                    -SIZE / 2,
+                    SIZE,
+                    SIZE
+                );
                 ctx.restore();
             }
 
-
-            remainingCursors -= cursorsOnRing;
+            remaining -= count;
             ring++;
-            ringCursorStartIndex += cursorsOnRing;
         }
 
         requestAnimationFrame(draw);
@@ -145,8 +168,6 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: auto;
-        height: 110vh;
         pointer-events: none;
         z-index: 2;
     }

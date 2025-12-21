@@ -1,53 +1,81 @@
 <script>
     import { fly } from 'svelte/transition';
     import { onMount, onDestroy } from 'svelte';
-    import { theme } from '../../store/theme';
     import { displayMode } from "./../../store/display";
     import Augments from './Augments.svelte';
     import Upgrades from './Upgrades.svelte';
+    import { game } from '../../store/game';
 
-    let collapsed = false;
     let multiples = [1, 10, 100];
     let multiple = 1;
 
+    // --- Keyboard controls ---
     function handleKeyDown(event) {
-        if (event.key === "Shift") {
-            multiple = multiples[2];
-        }
-        if (event.key === "Control") {
-            multiple = multiples[1];
-        }
+        if (event.key === "Shift") multiple = multiples[2];
+        if (event.key === "Control") multiple = multiples[1];
 
         if ($displayMode === "desktop") {
             if (event.key === "Tab") {
                 event.preventDefault();
-                collapsed = !collapsed;
+                game.toggleShop();
             }
         }
     }
 
     function handleKeyUp(event) {
-        if (event.key === "Shift") {
-            multiple = multiples[0];
+        if (event.key === "Shift" || event.key === "Control") multiple = multiples[0];
+    }
+
+    // --- Mobile swipe controls ---
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const SWIPE_THRESHOLD = 150;
+
+    function handleTouchStart(e) {
+        touchStartX = e.touches[0].clientX;
+        touchEndX = e.touches[0].clientX;
+    }
+
+    function handleTouchMove(e) {
+        touchEndX = e.touches[0].clientX;
+    }
+
+    function handleTouchEnd() {
+        const deltaX = touchEndX - touchStartX;
+
+        if (deltaX < -SWIPE_THRESHOLD && !$game.displayShop) {
+            game.toggleShop();
         }
-        if (event.key === "Control") {
-            multiple = multiples[0];
+        if (deltaX > SWIPE_THRESHOLD && $game.displayShop) {
+            game.toggleShop();
         }
+
+        touchStartX = 0;
+        touchEndX = 0;
     }
 
     onMount(() => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
+
+        // Mobile swipe events
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchmove', handleTouchMove, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd);
     });
 
     onDestroy(() => {
         window.removeEventListener('keydown', handleKeyDown);
         window.removeEventListener('keyup', handleKeyUp);
+
+        window.removeEventListener('touchstart', handleTouchStart);
+        window.removeEventListener('touchmove', handleTouchMove);
+        window.removeEventListener('touchend', handleTouchEnd);
     });
 </script>
 
-{#if $displayMode === "desktop" && !collapsed}
-    <div id="shop" class="cracked-border" transition:fly={{ x: 150, duration: 150 }} style="--bg: url('./img/{$theme.code}/textures/wood-vertical.png');">
+{#if $game.displayShop}
+    <div id="shop" class="cracked-border" transition:fly={{ x: 150, duration: 150 }}>
         <div class="header">
             {#each multiples as m}
                 <button class="{m == multiple ? 'selected' : ''}" on:click={() => multiple = m}>{m}</button>
@@ -65,7 +93,6 @@
         height: 100vh;
         overflow-x: hidden;
         z-index: 2;
-        /* position: fixed; */
         top: 0;
         right: 0;
         overflow-y: scroll;
@@ -76,9 +103,10 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: var(--bg);
+        background: url('./img/textures/wood-vertical.png');
         filter: brightness(0.35);
-        z-index: 0;
+        z-index: -1;
+        box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
     }
     .selected {
         box-shadow: 0 0 8px 3px #fff, 0 0 14px 3px #ffe56666;
@@ -87,7 +115,6 @@
         border: 1.5px solid #fff;
         transition: box-shadow 0.15s, background 0.15s;
     }
-
     .header {
         display: flex;
         flex-direction: row;
@@ -99,12 +126,12 @@
         width: 100%;
         z-index: 2;
     }
-
     @media (max-width: 768px) {
         #shop {
             width: 100%;
-            height: 100%;
             position: fixed;
+            top: auto;
+            right: auto;
         }
         .header {
             flex-wrap: wrap;

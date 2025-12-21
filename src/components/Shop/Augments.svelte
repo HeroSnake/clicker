@@ -4,7 +4,7 @@
     import { game } from "../../store/game";
     import Tooltip from "./Tooltip.svelte";
 
-    const ENHANCE_TRESHOLD = 50;
+    const ENHANCE_TRESHOLD = 25;
     const LEVELS_AHEAD = 1;
 
     // Combine enhancements and bonuses into one array
@@ -19,7 +19,6 @@
                 return {
                     libelle: "enhancement",
                     ...upgrade,
-                    displayLevel,
                     cost: getEnhancementCost({ ...upgrade, level: displayLevel }),
                     img: `./img/${$theme.code}/upgrades/${upgrade.id}.png`,
                     disabled: upgrade.level < requiresLevel || upgrade.cost > $game.itemCount,
@@ -28,13 +27,12 @@
         }),
         ...$game.bonuses.flatMap(bonus => {
             return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
-                const displayLevel = bonus.level + 1 + i;
+                const displayLevel = bonus.level;
                 const requiresLevel = displayLevel - 1;
 
                 return {
                     libelle: "bonus",
                     ...bonus,
-                    displayLevel,
                     cost: getBonusCost({ ...bonus, level: displayLevel }),
                     img: `./img/${$theme.code}/upgrades/${bonus.code}.png`,
                     disabled: bonus.level < requiresLevel || bonus.cost > $game.itemCount,

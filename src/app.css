@@ -54,6 +54,7 @@
 
 :root .cracked-border {
     border: 6px solid #3a3a3a;
+    border-radius: 2px;
 
     box-shadow:
         inset 1px 1px 0 rgba(255,255,255,0.06),
@@ -68,13 +69,10 @@
     position: relative;
     cursor: pointer;
     background-size: cover;
-    transition: filter 0.15s ease;
-    will-change: transform;
 }
 
 :root button.interactive:hover:not(:disabled) {
-    animation: heartbeat 0.9s ease-in-out infinite;
-    animation-play-state: running;
+    filter: brightness(1.5);
 }
 
 :root button.interactive:not(:hover):not(:disabled) {
@@ -128,4 +126,16 @@ body {
     all: unset;
     cursor: pointer;
     user-select: none;
+}
+
+@media (min-width: 769px) {
+    :root button.interactive {
+        transition: filter 0.15s ease;
+        will-change: transform;
+    }
+
+    :root button.interactive:hover:not(:disabled) {
+        animation: heartbeat 0.9s ease-in-out infinite;
+        animation-play-state: running;
+    }
 }

@@ -4,7 +4,6 @@
     import { displayNumber } from "../../utils";
 </script>
 
-
 <div id="stats">
     <span class="item-count">
         <b>{displayNumber($game.itemCount, true)}</b> {$theme.name}s
@@ -28,10 +27,22 @@
         padding: 10px;
         line-height: 2.5rem;
     }
+
     .item-count {
         font-size: 3rem;
     }
+
     .item-per-click {
         font-size: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .item-count {
+            font-size: 2.5rem;
+        }
+
+        .item-per-click {
+            font-size: 1.5rem;
+        }
     }
 </style>

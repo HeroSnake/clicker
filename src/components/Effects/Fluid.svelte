@@ -7,116 +7,133 @@
     let animationFrame;
 
     let fluidHeight = 0;
+    let width = 0;
+    let height = 0;
 
-    const BASE_HEIGHT = 502;
+    // Resolution of the wave (lower = faster, still smooth)
+    const STEP = 3;
 
-    // Multiple sine waves for natural motion
     const waves = [
-        { amplitude: 10, length: 600, speed: 0.02 },
-        { amplitude: 6, length: 300, speed: 0.015 },
-        { amplitude: 4, length: 150, speed: 0.01 },
+        { amp: 10, len: 600, speed: 0.02, freq: 0 },
+        { amp: 6,  len: 300, speed: 0.015, freq: 0 },
+        { amp: 4,  len: 150, speed: 0.01, freq: 0 }
     ];
 
-    let offsetsFront = waves.map(() => 0);
-    let offsetsBack = waves.map(() => 0);
+    const offsetsFront = waves.map(() => 0);
+    const offsetsBack  = waves.map(() => 0);
 
-    $: fluidHeight = Math.min(
-        300,
-        $game.upgrades.filter(u => u.stock >= 1).reduce((acc, u) => acc + u.stock, 0)
-    );
+    let topEdgeY = [];
 
-    function drawFluid() {
-        const width = canvas.width;
-        const height = canvas.height;
-        ctx.clearRect(0, 0, width, height);
+    let gradientFront;
+    let gradientBack;
 
+    $: fluidHeight = $game.upgrades.reduce((a, u) => a + (u.stock || 0), 0);
+
+    function rebuildGradients() {
         const baseYFront = height - fluidHeight + 30;
-        const baseYBack = height - fluidHeight; // slightly higher for depth
+        const baseYBack  = height - fluidHeight;
 
-        // --- BACK FLUID (darker milk) ---
-        const gradientBack = ctx.createLinearGradient(0, baseYBack - 20, 0, height);
+        gradientBack = ctx.createLinearGradient(0, baseYBack - 20, 0, height);
         gradientBack.addColorStop(0, "rgba(230,230,200,0.8)");
         gradientBack.addColorStop(0.4, "rgba(240,240,210,0.7)");
         gradientBack.addColorStop(1, "rgba(220,220,180,0.6)");
+
+        gradientFront = ctx.createLinearGradient(0, baseYFront - 30, 0, height);
+        gradientFront.addColorStop(0, "rgba(255,255,240,1)");
+        gradientFront.addColorStop(0.2, "rgba(255,255,240,0.8)");
+        gradientFront.addColorStop(0.4, "rgba(255,250,230,0.7)");
+        gradientFront.addColorStop(0.7, "rgba(255,245,220,0.6)");
+        gradientFront.addColorStop(1, "rgba(255,240,210,0.5)");
+    }
+
+    function drawWave(baseY, offsets, storeTopEdge = false) {
+        ctx.beginPath();
+        ctx.moveTo(0, height);
+        let index = 0;
+
+        for (let x = 0; x <= width; x += STEP) {
+            let y = baseY;
+            for (let i = 0; i < waves.length; i++) {
+                y += Math.sin(x * waves[i].freq + offsets[i]) * waves[i].amp;
+            }
+            ctx.lineTo(x, y);
+            if (storeTopEdge) topEdgeY[index++] = y;
+        }
+
+        ctx.lineTo(width, height);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function drawFluid() {
+        ctx.clearRect(0, 0, width, height);
+
+        const baseYFront = height - fluidHeight + 30;
+        const baseYBack  = height - fluidHeight;
+
+        // Back layer
         ctx.fillStyle = gradientBack;
+        drawWave(baseYBack, offsetsBack);
 
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-        for (let x = 0; x <= width; x++) {
-            let y = baseYBack;
-            waves.forEach((wave, i) => {
-                y += Math.sin((x / wave.length) * 2 * Math.PI + offsetsBack[i]) * wave.amplitude;
-            });
-            ctx.lineTo(x, y);
-        }
-        ctx.lineTo(width, height);
-        ctx.closePath();
-        ctx.fill();
-
-        // --- FRONT FLUID (milk cartoonish with soft edge) ---
-        const gradientFront = ctx.createLinearGradient(0, baseYFront - 30, 0, height);
-        gradientFront.addColorStop(0, "rgba(255, 255, 240, 1)");     // top fully opaque
-        gradientFront.addColorStop(0.2, "rgba(255, 255, 240, 0.8)");
-        gradientFront.addColorStop(0.4, "rgba(255, 250, 230, 0.7)");
-        gradientFront.addColorStop(0.7, "rgba(255, 245, 220, 0.6)");
-        gradientFront.addColorStop(1, "rgba(255, 240, 210, 0.5)");
+        // Front layer
         ctx.fillStyle = gradientFront;
+        drawWave(baseYFront, offsetsFront, true);
 
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-        const topEdgeY = [];
-        for (let x = 0; x <= width; x++) {
-            let y = baseYFront;
-            waves.forEach((wave, i) => {
-                y += Math.sin((x / wave.length) * 2 * Math.PI + offsetsFront[i]) * wave.amplitude;
-            });
-            topEdgeY.push(y);      // save top edge for glow
-            ctx.lineTo(x, y);
-        }
-        ctx.lineTo(width, height);
-        ctx.closePath();
-        ctx.fill();
-
-        // --- Soft glow along top edge ---
+        // Glow
         ctx.save();
         ctx.strokeStyle = "white";
-        ctx.lineWidth = 20;
-        ctx.shadowBlur = 10;
+        ctx.lineWidth = 12;
+        ctx.shadowBlur = 6;
         ctx.shadowColor = "white";
-        ctx.globalAlpha = 1;
+        ctx.globalAlpha = 0.4;
         ctx.beginPath();
-        for (let x = 0; x <= width; x++) {
-            if (x === 0) ctx.moveTo(x, topEdgeY[x]);
-            else ctx.lineTo(x, topEdgeY[x]);
+
+        for (let i = 0, x = 0; x <= width; x += STEP, i++) {
+            if (i === 0) ctx.moveTo(x, topEdgeY[i]);
+            else ctx.lineTo(x, topEdgeY[i]);
         }
+
         ctx.stroke();
         ctx.restore();
 
-        // Advance offsets
-        waves.forEach((wave, i) => {
-            offsetsFront[i] += wave.speed;
-            offsetsBack[i] += wave.speed; // same animation for both layers
-        });
+        // Animate
+        for (let i = 0; i < waves.length; i++) {
+            offsetsFront[i] += waves[i].speed;
+            offsetsBack[i]  += waves[i].speed;
+        }
 
         animationFrame = requestAnimationFrame(drawFluid);
     }
 
+    function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        width  = window.innerWidth;
+        height = window.innerHeight;
+
+        canvas.width  = width * dpr;
+        canvas.height = height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        topEdgeY.length = Math.ceil(width / STEP) + 1;
+
+        rebuildGradients();
+    }
+
     onMount(() => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
         ctx = canvas.getContext("2d");
+
+        waves.forEach(w => {
+            w.freq = (2 * Math.PI) / w.len;
+        });
+
+        resize();
+        window.addEventListener("resize", resize);
 
         drawFluid();
 
-        const handleResize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        };
-
-        window.addEventListener("resize", handleResize);
         return () => {
             cancelAnimationFrame(animationFrame);
-            window.removeEventListener("resize", handleResize);
+            window.removeEventListener("resize", resize);
         };
     });
 </script>
@@ -125,12 +142,10 @@
 
 <style>
     #fluid {
-        position:absolute;
-        bottom:0;
-        left:0;
-        width:100%;
-        height:100%;
-        pointer-events:none;
-        z-index:1;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        pointer-events: none;
+        z-index: 1;
     }
 </style>

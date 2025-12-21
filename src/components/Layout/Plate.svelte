@@ -4,7 +4,7 @@
     import { game } from "../../store/game";
     import { displayNumber } from "../../utils";
     import Fluid from "../Effects/Fluid.svelte";
-    import GoldenItem from "../Effects/GoldenItem.svelte";
+    import GoldenItems from "../Effects/GoldenItems.svelte";
     import Rain from "../Effects/Rain.svelte";
     import RainingItems from "../Effects/RainingItems.svelte";
     import GodRays from "../Effects/GodRays.svelte";
@@ -17,6 +17,7 @@
 
     let clickedItem = false;
     let clickCanvas;
+    let plateRef;
 
     function clickItem(event) {
         const { clickValue, isCrit } = game.clickItem();
@@ -50,7 +51,10 @@
     <Stats />
     <Boost />
     <ClickText bind:this={clickCanvas} />
-    <GoldenItem />
+    <div bind:this={plateRef} style="position: absolute; width: 100%; height: 100%;">
+        <!-- other plate content -->
+        <GoldenItems plateEl={plateRef} />
+    </div>
     <RainingItems />
     <Fluid />
     <div id="lighting-overlay"></div>
@@ -72,7 +76,7 @@
         justify-content: space-evenly;
         align-items: center;
         width: 100%;
-        background-size: cover;
+        height: 100%;
         overflow: hidden;
     }
 
@@ -96,11 +100,6 @@
         left: 50%;
         transform: translate(-50%, -50%);
         width: 280px;
-    }
-
-    #item-button:hover {
-        transform: translate(-50%, -50%) scale(1.1);
-        transition: transform 0.3s ease-in-out;
     }
 
     #lighting-overlay {
