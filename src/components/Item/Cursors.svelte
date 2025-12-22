@@ -6,6 +6,7 @@
     let canvas;
     let ctx;
     let cursorImg;
+    let innerRadius;
 
     const SIZE = 20;
     const RING_SPACING = 20;
@@ -13,33 +14,29 @@
     const PULSE_AMPLITUDE = 8;
     const ROTATION_SPEED = 0.00015;
 
-    $: totalCursors = Math.max(0, $game.upgrades.find(u => u.id === 0)?.stock || 0);
+    $: totalCursors = Math.max(0, $game.buildings.find(b => b.id === 0)?.stock || 0);
 
     let lastTotal = 0;
     let ringSpeeds = [];
     let ringCount = 0;
+    let startTime = 0;
 
-    $: innerRadius = $displayMode === "desktop" ? document.getElementById("item-button")?.clientWidth * 0.7 : 100;
-
-    const startTime = performance.now();
+    $: if (totalCursors !== lastTotal) {
+        lastTotal = totalCursors;
+        updateRings();
+    }
 
     function easeOutCubic(t) {
         return 1 - Math.pow(1 - t, 3);
     }
 
-    onMount(async () => {
-        ctx = canvas.getContext("2d");
-
-        cursorImg = new Image();
-        cursorImg.src = "/img/cursor/cursor-small.png";
-        await cursorImg.decode();
-
-        resize();
-        window.addEventListener("resize", resize);
-
-        updateRings();
-        requestAnimationFrame(draw);
-    });
+    function updateInnerRadius() {
+        const itemButton = document.getElementById("item-button");
+        innerRadius =
+            $displayMode === "desktop" && itemButton
+                ? itemButton.clientWidth * 0.7
+                : 100;
+    }
 
     function resize() {
         if(!canvas) return;
@@ -48,11 +45,6 @@
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    $: if (totalCursors !== lastTotal) {
-        lastTotal = totalCursors;
-        updateRings();
     }
 
     function updateRings() {
@@ -158,6 +150,25 @@
 
         requestAnimationFrame(draw);
     }
+
+    onMount(() => {
+        ctx = canvas.getContext("2d");
+
+        cursorImg = new Image();
+        cursorImg.src = "/img/cursor/cursor-small.png";
+        cursorImg.decode().then(() => {
+            resize();
+            updateInnerRadius();
+            updateRings();
+            requestAnimationFrame(draw);
+        });
+
+        window.addEventListener("resize", () => {
+            resize();
+            updateInnerRadius();
+            updateRings();
+        });
+    });
 </script>
 
 <canvas bind:this={canvas} id="cursors"></canvas>
@@ -169,6 +180,6 @@
         left: 50%;
         transform: translate(-50%, -50%);
         pointer-events: none;
-        z-index: 2;
+        z-index: 1;
     }
 </style>

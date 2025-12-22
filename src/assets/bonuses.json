@@ -26,5 +26,12 @@
         "cost": 2500,
         "increase": 0.01,
         "level": 1
+    },
+    {
+        "id": 4,
+        "code": "cursorProductionPercentage",
+        "cost": 5000,
+        "increase": 0.01,
+        "level": 1
     }
 ]

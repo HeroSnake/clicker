@@ -9,7 +9,7 @@ function createTheme() {
         name: '',
         code: '',
         unit: '',
-        upgrades: [],
+        buildings: [],
         bonuses: [],
     })
 

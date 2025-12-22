@@ -10,7 +10,7 @@
     let numDrops = 0;
 
     $: {
-        const totalStock = $game.upgrades.reduce((sum, upgrade) => sum + (upgrade.stock || 0), 0);
+        const totalStock = $game.buildings.reduce((sum, building) => sum + (building.stock || 0), 0);
         numDrops = Math.max(1, Math.min(totalStock / 10000 * 100));
     }
 

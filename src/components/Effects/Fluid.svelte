@@ -27,7 +27,7 @@
     let gradientFront;
     let gradientBack;
 
-    $: fluidHeight = $game.upgrades.reduce((a, u) => a + (u.stock || 0), 0);
+    $: fluidHeight = $game.achievements.length;
 
     function rebuildGradients() {
         const baseYFront = height - fluidHeight + 30;

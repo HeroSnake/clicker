@@ -114,17 +114,3 @@ export function displayNumber(number, full = false, decimal = false) {
 
     return formatted + suffix;
 }
-
-export function getBonusCost(bonus) {
-    return Math.floor(bonus.cost * Math.pow(3, bonus.level));
-}
-
-export function getEnhancementCost(enhancement) {
-    return Math.floor(enhancement.cost * Math.pow(1.5, enhancement.level));
-}
-
-export function getUpgradeCost(upgrade, multiple) {
-    let costMultiplier = 1.15;
-
-    return Math.floor(upgrade.cost * (Math.pow(costMultiplier, upgrade.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
-}

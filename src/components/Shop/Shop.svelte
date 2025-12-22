@@ -2,17 +2,18 @@
     import { fly } from 'svelte/transition';
     import { onMount, onDestroy } from 'svelte';
     import { displayMode } from "./../../store/display";
-    import Augments from './Augments.svelte';
     import Upgrades from './Upgrades.svelte';
+    import Buildings from './Buildings.svelte';
     import { game } from '../../store/game';
+    import Button from '../Layout/Button.svelte';
 
-    let multiples = [1, 10, 100];
-    let multiple = 1;
+    let amounts = [1, 10, 100];
+    let amount = 1;
 
     // --- Keyboard controls ---
     function handleKeyDown(event) {
-        if (event.key === "Shift") multiple = multiples[2];
-        if (event.key === "Control") multiple = multiples[1];
+        if (event.key === "Shift") amount = amounts[2];
+        if (event.key === "Control") amount = amounts[1];
 
         if ($displayMode === "desktop") {
             if (event.key === "Tab") {
@@ -23,7 +24,7 @@
     }
 
     function handleKeyUp(event) {
-        if (event.key === "Shift" || event.key === "Control") multiple = multiples[0];
+        if (event.key === "Shift" || event.key === "Control") amount = amounts[0];
     }
 
     // --- Mobile swipe controls ---
@@ -77,44 +78,32 @@
 {#if $game.displayShop}
     <div id="shop" class="cracked-border" transition:fly={{ x: 150, duration: 150 }}>
         <div class="header">
-            {#each multiples as m}
-                <button class="{m == multiple ? 'selected' : ''}" on:click={() => multiple = m}>{m}</button>
+            {#each amounts as m}
+                <Button selected={m == amount} onclick={() => amount = m}>
+                    <span>{m}</span>
+                </Button>
             {/each}
         </div>
 
-        <Augments />
-        <Upgrades {multiple} />
+        <Upgrades />
+        <Buildings {amount} />
     </div>
 {/if}
 
 <style>
     #shop {
+        z-index: 1;
         width: 480px;
-        height: 100vh;
-        overflow-x: hidden;
-        z-index: 2;
-        top: 0;
-        right: 0;
-        overflow-y: scroll;
-        padding: 6px;
+        height: 100%;
+        padding: 10px;
         position: relative;
-    }
-    #shop::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: url('/img/textures/wood-vertical.png');
-        filter: brightness(0.35);
-        z-index: -1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        background: url('/img/textures/wood-vertical-dark.png');
+        background-repeat: repeat;
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
     }
-    .selected {
-        box-shadow: 0 0 8px 3px #fff, 0 0 14px 3px #ffe56666;
-        background: #353430;
-        border-radius: 6px;
-        border: 1.5px solid #fff;
-        transition: box-shadow 0.15s, background 0.15s;
-    }
+
     .header {
         display: flex;
         flex-direction: row;
@@ -124,14 +113,13 @@
         position: sticky;
         top: 0;
         width: 100%;
-        z-index: 2;
+        z-index: 1;
     }
+
     @media (max-width: 768px) {
         #shop {
             width: 100%;
             position: fixed;
-            top: auto;
-            right: auto;
         }
         .header {
             flex-wrap: wrap;

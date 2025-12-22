@@ -67,6 +67,9 @@
 
 
 <style>
+    .resetbtn {
+        z-index: 2;
+    }
     #plate {
         text-align: center;
         position: relative;
@@ -94,7 +97,7 @@
 
     #item-button {
         cursor: pointer;
-        z-index: 3;
+        z-index: 2;
         position: absolute;
         top: 50%;
         left: 50%;

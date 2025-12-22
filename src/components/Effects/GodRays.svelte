@@ -7,6 +7,7 @@
     let canvas;
     let ctx;
     let raf;
+    let resizeTimeout;
 
     const isMobile = window.innerWidth < 768;
     const dpr = isMobile ? 1 : (window.devicePixelRatio || 1);
@@ -75,6 +76,7 @@
         }
         lastTime = time;
 
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);  // reset transform first
         ctx.clearRect(0, 0, size, size);
         ctx.translate(size / 2, size / 2);
 
@@ -86,13 +88,17 @@
             layer.rotation += layer.speed;
         });
 
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         raf = requestAnimationFrame(draw);
     }
 
     function handleResize() {
-        size = Math.min(window.innerWidth * 1.1, 600);
-        setupCanvas();
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            size = Math.min(window.innerWidth * 1.1, 600);
+            setupCanvas();
+            layerCanvases.length = 0;
+            layers.forEach(l => layerCanvases.push(prerenderLayer(l)));
+        }, 100);
     }
 
     onMount(() => {

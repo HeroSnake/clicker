@@ -1,94 +1,86 @@
 <script>
-    import { getUpgradeCost } from "../../utils";
     import { theme } from "../../store/theme";
     import { game } from "../../store/game";
-    import Tooltip from './Tooltip.svelte';
-    import Cost from "./Cost.svelte";
-    import UpgradeLogo from "./UpgradeLogo.svelte";
+    import Tooltip from "./Tooltip.svelte";
 
-    export let multiple = 1;
+    const ENHANCE_TRESHOLD = 25;
+    const LEVELS_AHEAD = 1;
 
-    $: upgrades = $game.upgrades.filter((upgrade, i, arr) => {
-        const lastOwnedIdx = arr.map(u => u.stock >= 1).lastIndexOf(true);
-        return upgrade.stock >= 1 || (i > lastOwnedIdx && i <= lastOwnedIdx + 2);
-    });
+    $: bonuses = [
+        ...$game.bonuses.flatMap(bonus => {
+            return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
+                const displayLevel = bonus.level;
+                const requiresLevel = displayLevel - 1;
+                const cost = game.getBonusCost({ ...bonus, level: displayLevel });
 
-    function handleBuyUpgrade(upgrade) {
-        game.buyUpgrade(upgrade.id, getUpgradeCost(upgrade, multiple), multiple);
-    }
+                return {
+                    ...bonus,
+                    __original: bonus,
+                    libelle: "bonus",
+                    cost,
+                    img: `/img/${$theme.code}/bonuses/${bonus.code}.png`,
+                    disabled: bonus.level < requiresLevel || cost > $game.itemCount,
+                };
+            });
+        })
+    ];
 
-    $: img = id => {
-        return `/img/${$theme.code}/upgrades/${id}.png`;
-    }
+    $: upgrades = [
+        ...$game.buildings.flatMap(building => {
+            if (building.stock < ENHANCE_TRESHOLD * building.level) return [];
 
+            return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
+                const displayLevel = building.level + 1 + i;
+                const requiresLevel = displayLevel - 1;
+                const cost = game.getUpgradeCost({ ...building, level: displayLevel });
+
+                return {
+                    ...building,
+                    __original: building,
+                    libelle: "upgrade",
+                    cost,
+                    img: `/img/${$theme.code}/buildings/${building.id}.png`,
+                    disabled: building.level < requiresLevel || cost > $game.itemCount,
+                    buy: () => game.buyUpgrade(building),
+                };
+            });
+        })
+    ].sort((a, b) => a.cost - b.cost);
 </script>
 
-
 <div class="upgrades">
-    {#each upgrades as upgrade, i}
-        <Tooltip img={img(upgrade.id)} {upgrade} cost={getUpgradeCost(upgrade, multiple)} type="upgrade">
-            <button class="no-btn upgrade" on:click={() => handleBuyUpgrade(upgrade)} disabled={getUpgradeCost(upgrade, multiple) > $game.itemCount || upgrades[i -1]?.stock == 0}>
-                <div class="flex">
-                    <UpgradeLogo img={img(upgrade.id)} />
-                    <div class="upgrade-data">
-                        <span class="name">{upgrade.name}</span>
-                        <Cost value={getUpgradeCost(upgrade, multiple)} />
-                    </div>
-                </div>
-                {#if upgrade.stock > 0}
-                    <span class="stock">{upgrade.stock}</span>
-                {/if}
+    {#each bonuses as bonus}
+        <Tooltip data={bonus}>
+            <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
+                disabled={bonus.disabled}
+                on:click={() => game.buyBonus(bonus.__original)}
+                style="background-image: url('{bonus.img}');"
+            >
+            </button>
+        </Tooltip>
+    {/each}
+    {#each upgrades as upgrade}
+        <Tooltip data={upgrade}>
+            <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
+                disabled={upgrade.disabled}
+                on:click={() => game.buyUpgrade(upgrade.__original)}
+                style="background-image: url('{upgrade.img}');"
+            >
             </button>
         </Tooltip>
     {/each}
 </div>
 
 <style>
-    .flex {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        align-items: center;
-    }
     .upgrades {
         display: flex;
-        flex-direction: column;
+        flex-wrap: wrap;
         gap: 5px;
     }
+
     .upgrade {
-        width: 100%;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
-        background-color: #353430;
-    }
-    .upgrade:hover:not(:disabled) {
-        background-color: #666561;
-    }
-    .upgrade:disabled {
-        filter: grayscale(100) brightness(0.8);
-        cursor: auto;
-    }
-    .stock {
-        position: absolute;
-        top: 50%;
-        transform: translate(0, -50%);
-        font-size: 4.2rem;
-        text-align: center;
-        font-weight: bold;
-        right: 5px;
-        z-index: 1;
-        opacity: 0.1;
-    }
-    .upgrade-data {
-        width: 100%;
-        text-align: left;
-        line-height: 1rem;
-    }
-    .name {
-        font-size: 1.5rem;
-        font-weight: bold;
+        width: 60px;
+        height: 60px;
+        box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
     }
 </style>

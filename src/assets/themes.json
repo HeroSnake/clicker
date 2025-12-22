@@ -3,7 +3,7 @@
       "code": "banana",
       "name": "Banana",
       "unit": "B",
-      "upgrades": [
+      "buildings": [
             {"name": "Cursor", "description": "Click bananas every second to earn more."},
             {"name": "Monkey", "description": "Monkeys help gather bananas !"},
             {"name": "Banana Tree", "description": "Grow banana trees that produce bananas over time."},
@@ -33,14 +33,15 @@
         {"name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total banana production"},
         {"name": "Golden Surge", "description": "Golden banana boosts are more powerful.", "detail": "golden nut boost power"},
         {"name": "Lasting Fortune", "description": "Golden banana boosts last longer.", "detail": "golden nut boost duration"},
-        {"name": "Gilded Chance", "description": "Golden banana appear more often.", "detail": "golden nut spawn chance"}
+        {"name": "Gilded Chance", "description": "Golden banana appear more often.", "detail": "golden nut spawn chance"},
+        {"name": "Golden click", "description": "Your clicks scale with your production !", "detail": "bonus production per click"}
       ]
     },
     {
       "code": "acorn",
       "name": "Gland",
       "unit": "G",
-      "upgrades": [
+      "buildings": [
             {"name": "Cursor", "description": "Click glands every second to earn more."},
             {"name": "Squirrel", "description": "Squirrels gather glands !"},
             {"name": "Nut Farm", "description": "Farm glands for continuous income."},
@@ -70,7 +71,8 @@
         {"name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total nut production"},
         {"name": "Golden Surge", "description": "Golden nut boosts are more powerful.", "detail": "golden nut boost power"},
         {"name": "Lasting Fortune", "description": "Golden nut boosts last longer.", "detail": "golden nut boost duration"},
-        {"name": "Gilded Chance", "description": "Golden nut boosts last longer.", "detail": "golden nut spawn chance"}
+        {"name": "Gilded Chance", "description": "Golden nut boosts last longer.", "detail": "golden nut spawn chance"},
+        {"name": "Golden click", "description": "Your clicks scale with your production !", "detail": "bonus production per click"}
       ]
     }
   ]

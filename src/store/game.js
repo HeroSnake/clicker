@@ -1,8 +1,9 @@
 import { get, writable } from "svelte/store";
-import upgrades from "../assets/upgrades.json";
+import buildings from "../assets/buildings.json";
 import bonuses from "../assets/bonuses.json";
 import seasons from "../assets/seasons.json";
 import { theme } from "./theme";
+import { achievements } from "./achievements";
 import { displayMode } from "./display";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
@@ -22,17 +23,20 @@ function createGame() {
             itemsPerClick: 0,
             clickCount: +localStorage.getItem("clickCount") || 0,
             critCount: +localStorage.getItem("critCount") || 0,
+            goldenItemCount: +localStorage.getItem("goldenItemCount") || 0,
             maxItemsCollected: +localStorage.getItem("maxItemsCollected") || 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-            upgrades: mergeUpgrades(),
-            activeBoosts: [],
+            buildings: mergeBuildings(),
             bonuses: mergeBonuses(),
+            activeBoosts: [],
+            isProductionBoosted: false,
             productionBonus: 0,
             goldenItemBoostPower: 0,
             goldenItemBoostDuration: 0,
             goldenItemSpawnChance: 0,
+            cursorProductionPercentage: 0,
             crit: {},
-            isProductionBoosted: false,
+            achievements: [],
             seasons,
             seasonId: initSeason(),
             displayShop: get(displayMode) === "desktop",
@@ -52,18 +56,18 @@ function createGame() {
         };
     }
 
-    function mergeUpgrades() {
+    function mergeBuildings() {
         const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
         const currentTheme = get(theme);
 
-        return upgrades.map(u => {
-            const s = saved.find(su => su.id === u.id);
+        return buildings.map(b => {
+            const s = saved.find(s => s.id === b.id);
             return {
-                ...u,
-                name: currentTheme.upgrades[u.id].name,
-                description: currentTheme.upgrades[u.id].description,
-                stock: s?.stock ?? u.stock,
-                level: s?.level ?? u.level
+                ...b,
+                name: currentTheme.buildings[b.id].name,
+                description: currentTheme.buildings[b.id].description,
+                stock: s?.stock ?? b.stock,
+                level: s?.level ?? b.level
             };
         });
     }
@@ -74,11 +78,12 @@ function createGame() {
 
         return bonuses.map(b => {
             const s = saved.find(s => s.id === b.id);
+            const bonus = currentTheme.bonuses[b.id];
             return {
                 ...b,
-                name: currentTheme.bonuses[b.id].name,
-                description: currentTheme.bonuses[b.id].description,
-                detail: currentTheme.bonuses[b.id].detail,
+                name: bonus.name,
+                description: bonus.description,
+                detail: bonus.detail,
                 level: s?.level ?? b.level,
             };
         });
@@ -86,28 +91,28 @@ function createGame() {
 
     /* ---------------- CORE MATH ---------------- */
 
-    function getProduction(upgrade, base = false) {
-        if (upgrade.stock <= 0 && !base) return 0;
+    function getBuildingProduction(building, base = false) {
+        if (building.stock <= 0 && !base) return 0;
 
-        const stock = base ? 1 : upgrade.stock;
+        const stock = base ? 1 : building.stock;
 
         let levelMult = 1;
-        if (upgrade.level > 1) {
-            levelMult = Math.pow(2, upgrade.level - 1);
+        if (building.level > 1) {
+            levelMult = Math.pow(2, building.level - 1);
         }
 
-        return upgrade.production * levelMult * stock;
+        return building.production * levelMult * stock;
     }
 
-    function getCrit(upgrade) {
+    function getBuildingCrit(building) {
         let chance = 0;
         let bonus = 0;
         let multiplier = 0;
 
-        if (upgrade.type === "cursor") {
-            chance = upgrade.crit.chance + (upgrade.level - 1) * upgrade.crit.bonus,
-            bonus = upgrade.crit.bonus
-            multiplier = upgrade.crit.multiplier
+        if (building.type === "cursor") {
+            chance = building.crit.chance + (building.level - 1) * building.crit.bonus,
+            bonus = building.crit.bonus
+            multiplier = building.crit.multiplier
         }
         return {
             chance,
@@ -154,11 +159,41 @@ function createGame() {
     function getTotalProduction(game) {
         let production = 0;
 
-        for (const u of game.upgrades) {
-            production = production + getProduction(u);
+        for (const u of game.buildings) {
+            production = production + getBuildingProduction(u);
         }
 
         return production;
+    }
+
+    function getBonusCost(bonus) {
+        let costMultiplier = 10;
+        return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
+    }
+
+    function getUpgradeCost(upgrade) {
+        let costMultiplier = 2;
+        return Math.floor(upgrade.cost * (Math.pow(costMultiplier, upgrade.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
+    }
+
+    function getBuildingCost(building, multiple) {
+        let costMultiplier = 1.15;
+        return Math.floor(building.cost * (Math.pow(costMultiplier, building.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
+    }
+
+    function computeAchievements(game) {
+        achievements.evaluate({
+            clicks: game.clickCount,
+            critical_clicks: game.critCount,
+            critical_chance: game.crit?.chance ?? 0,
+            items_total: game.totalItemsCollected,
+            production: game.production,
+            golden_clicks: game.goldenItemCount,
+            buildings_total: game.buildings.reduce((a, b) => a + b.stock, 0),
+            bonuses_total: game.bonuses.length,
+            buildings: game.buildingsById, // optional
+            upgrades: game.upgradesById    // optional
+        });
     }
 
     /* ---------------- ACTIONS ---------------- */
@@ -173,40 +208,35 @@ function createGame() {
         return game;
     });
 
-    const buyUpgrade = (id, cost, amount = 1) => update(game => {
-        const u = game.upgrades.find(u => u.id === id);
-        if (!u || (!GOD_MODE && game.itemCount < cost)) return game;
+    const buyBuilding = (building, amount = 1) => update(game => {
+        const cost = getBuildingCost(building, amount);
+        if (!GOD_MODE && game.itemCount < cost) return game;
 
         game.itemCount -= Math.floor(cost);
-        u.stock += amount;
+        building.stock += amount;
 
-        saveUpgrades(game.upgrades);
+        saveUpgrades(game.buildings);
         return game;
     });
 
-    const buyEnhancement = id => update(game => {
-        const u = game.upgrades.find(x => x.id === id);
-        if (!u) return game;
-
-        const cost = Math.floor(u.cost * Math.pow(1.5, u.level));
+    const buyUpgrade = upgrade => update(game => {
+        const cost = getUpgradeCost(upgrade);
         if (!GOD_MODE && game.itemCount < cost) return game;
 
         game.itemCount -= cost;
-        u.level++;
+        upgrade.level++;
 
-        saveUpgrades(game.upgrades);
+        saveUpgrades(game.buildings);
         return game;
     });
 
-    const buyBonus = id => update(game => {
-        const e = game.bonuses.find(b => b.id === id);
-        if (!e) return game;
+    const buyBonus = bonus => update(game => {
+        const cost = getBonusCost(bonus);
 
-        const cost = Math.floor(e.cost * Math.pow(1.6, e.level));
         if (!GOD_MODE && game.itemCount < cost) return game;
 
         game.itemCount -= cost;
-        e.level++;
+        bonus.level++;
 
         saveBonuses(game.bonuses);
         return game;
@@ -242,6 +272,12 @@ function createGame() {
         return critResult;
     };
 
+    const clickGoldenItem = () => update(game => {
+        game.goldenItemCount++;
+        boostProduction();
+        return game;
+    });
+
     const boostProduction = () => update(game => {
         game.activeBoosts.push({
             multiplier: 5 * (1 + game.goldenItemBoostPower),
@@ -261,16 +297,18 @@ function createGame() {
         game.goldenItemBoostPower = bonuses.goldenItemBoostPower;
         game.goldenItemBoostDuration = bonuses.goldenItemBoostDuration;
         game.goldenItemSpawnChance = 0.01 + bonuses.goldenItemSpawnChance;
-
+        game.cursorProductionPercentage = bonuses.cursorProductionPercentage;
         game.production = getTotalProduction(game) * (1 + game.productionBonus) * boostMultiplier;
 
         game.itemCount += game.production / (1000 / TICK_RATE);
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
 
-        const cursor = game.upgrades.find(u => u.type == "cursor");
-        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier;
+        const cursor = game.buildings.find(u => u.type == "cursor");
+        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier * (1 + game.cursorProductionPercentage * game.production);
+        game.crit = getBuildingCrit(cursor);
 
-        game.crit = getCrit(cursor);
+        // Check achievements AT THE END
+        // computeAchievements(game);
 
         return game;
     });
@@ -284,8 +322,10 @@ function createGame() {
             localStorage.setItem("maxItemsCollected", game.maxItemsCollected.toString());
             localStorage.setItem("clickCount", game.clickCount.toString());
             localStorage.setItem("critCount", game.critCount.toString());
+            localStorage.setItem("goldenItemCount", game.goldenItemCount.toString());
             localStorage.setItem("seasonId", game.seasonId.toString());
-            saveUpgrades(game.upgrades);
+            saveUpgrades(game.buildings);
+            saveBonuses(game.bonuses);
             return game;
         });
     }
@@ -304,13 +344,16 @@ function createGame() {
 
     return {
         subscribe,
+        buyBuilding,
         buyUpgrade,
-        buyEnhancement,
         buyBonus,
+        getBonusCost,
+        getUpgradeCost,
+        getBuildingCost,
         clickItem,
         resetGame,
-        boostProduction,
-        getProduction,
+        clickGoldenItem,
+        getBuildingProduction,
         setSeason,
         toggleShop,
         GOD_MODE

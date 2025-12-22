@@ -8,7 +8,7 @@
     let goldenItems = [];
     let nextId = 0;
 
-    const SIZE = 50;
+    const SIZE = 100;
     const DESPAWN_TIME = 7000;
     const SPAWN_INTERVAL = 1000;
 
@@ -35,7 +35,7 @@
     }
 
     function clickItem(id) {
-        game.boostProduction();
+        game.clickGoldenItem();
         despawn(id);
     }
 

@@ -2,23 +2,14 @@
     import Item from "../Item/Item.svelte";
     import { theme } from "../../store/theme";
     import { game } from "../../store/game";
+    import Seasons from "./Seasons.svelte";
 </script>
 
 <div id="header">
     <Item mode="small" style="width:40px;" />
     <span class="title">{$theme.name} clicker</span>
     <div class="header-right">
-        <div class="seasons">
-            {#each $game.seasons as season}
-                <button
-                    on:click={() => game.setSeason(season.id)}
-                    class="no-btn season-btn interactive"
-                    aria-label="season"
-                    style="background: url('/img/seasons/{season.id}.png');"
-                    disabled={season.id == 2}
-                ></button>
-            {/each}
-        </div>
+        <Seasons />
         <button
             on:click={() => game.toggleShop()}
             class="no-btn shop-btn interactive"
@@ -59,11 +50,6 @@
         gap: 10px;
     }
 
-    .seasons {
-        display: flex;
-        gap: 5px;
-    }
-
     .shop-btn {
         width: 50px;
         height: 50px;
@@ -74,18 +60,11 @@
         filter: brightness(1.5);
     }
 
-    .season-btn {
-        width: 50px;
-        height: 50px;
-        border: 2px solid #000;
-        box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
-    }
-
     @media (max-width: 768px) {
         .title {
             display: none;
         }
-        .shop-btn, .season-btn {
+        .shop-btn {
             width: 40px;
             height: 40px;
         }
