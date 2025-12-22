@@ -78,16 +78,16 @@
 
                 {#if data.type === "cursor"}
                     <span>
-                        <span class="bonus">+{data.crit.bonus * 100}%</span> crit chance
+                        <span class="bonus">+{displayNumber(data.crit.bonus * 100)}%</span> crit chance
                     </span>
                 {/if}
 
             {:else if data.libelle === "bonus"}
                     <span>
-                        <span class="bonus">+{data.increase * 100}%</span> {data.detail}
+                        <span class="bonus">+{displayNumber(data.increase * 100)}%</span> {data.detail}
                     </span>
                     <span>
-                        <span class="total">{$game[data.code] * 100}%</span> total
+                        <span class="total">{displayNumber($game[data.code] * 100)}%</span> total
                     </span>
 
             {:else if data.libelle === "building"}

@@ -5,12 +5,21 @@
     let ctx;
     let dpr = window.devicePixelRatio || 1;
 
-    const MAX = 128;
     const pool = [];
     const active = [];
 
+    const fontCache = {
+        normal: 'bold 25px BoldPixels',
+        crit: 'bold 35px BoldPixels'
+    };
+
+    const isMobile = window.innerWidth < 768;
+    const TARGET_FPS = isMobile ? 30 : 60;
+    const FRAME_TIME = 1000 / TARGET_FPS;
+
     function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
+        const f = 1 - t;
+        return 1 - f * f * f;
     }
 
     function resize() {
@@ -38,9 +47,9 @@
         t.value = value;
         t.isCrit = isCrit;
         t.life = 0;
-        t.duration = isCrit ? 2500 : 500;
+        t.duration = isCrit ? 5000 : 2500;
         t.rise = isCrit ? 150 : 100;
-        t.size = isCrit ? 40 : 32;
+        t.size = isCrit ? 35 : 25;
         t.drift = (Math.random() * 2 - 1) * (isCrit ? 30 : 15);
 
         active.push(t);
@@ -55,6 +64,9 @@
                 active[i] = active[active.length - 1];
                 active.pop();
                 releaseText(t);
+            } else {
+                t._progress = t.life / t.duration;
+                t._eased = easeOutCubic(t._progress);
             }
         }
     }
@@ -63,15 +75,12 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         for (const t of active) {
-            const p = t.life / t.duration;
-            const eased = easeOutCubic(p);
-
-            const y = t.y - eased * t.rise;
-            const x = t.baseX + t.drift * eased;
-            const alpha = 1 - p;
+            const y = t.y - t._eased * t.rise;
+            const x = t.baseX + t.drift * t._eased;
+            const alpha = 1 - t._progress;
 
             ctx.globalAlpha = alpha;
-            ctx.font = `bold ${t.size}px BoldPixels`;
+            ctx.font = t.isCrit ? fontCache.crit : fontCache.normal;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
@@ -97,10 +106,13 @@
 
     function loop(now) {
         const dt = now - last;
-        last = now;
 
-        update(dt);
-        draw();
+        if (dt >= FRAME_TIME) {
+            last = now;
+            update(dt);
+            draw();
+        }
+
         raf = requestAnimationFrame(loop);
     }
 

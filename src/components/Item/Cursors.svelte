@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
     import { displayMode } from "../../store/display";
 
@@ -14,12 +14,18 @@
     const PULSE_AMPLITUDE = 8;
     const ROTATION_SPEED = 0.00015;
 
+    const isMobile = window.innerWidth < 768;
+    const TARGET_FPS = isMobile ? 30 : 60;
+    const FRAME_TIME = 1000 / TARGET_FPS;
+
     $: totalCursors = Math.max(0, $game.buildings.find(b => b.id === 0)?.stock || 0);
 
     let lastTotal = 0;
     let ringSpeeds = [];
     let ringCount = 0;
     let startTime = 0;
+    let lastFrame = performance.now();
+    let raf;
 
     $: if (totalCursors !== lastTotal) {
         lastTotal = totalCursors;
@@ -27,20 +33,17 @@
     }
 
     function easeOutCubic(t) {
-        return 1 - Math.pow(1 - t, 3);
+        const f = 1 - t;
+        return 1 - f * f * f;
     }
 
     function updateInnerRadius() {
         const itemButton = document.getElementById("item-button");
-        innerRadius =
-            $displayMode === "desktop" && itemButton
-                ? itemButton.clientWidth * 0.7
-                : 100;
+        innerRadius = $displayMode === "desktop" && itemButton ? itemButton.clientWidth * 0.7 : 200;
     }
 
     function resize() {
-        if(!canvas) return;
-
+        if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
         canvas.height = window.innerHeight * dpr;
@@ -58,8 +61,7 @@
             const count = Math.min(remaining, maxOnRing);
 
             if (ring >= ringCount) {
-                ringSpeeds[ring] =
-                    (Math.random() * 0.5 + 0.5) * ROTATION_SPEED;
+                ringSpeeds[ring] = (Math.random() * 0.5 + 0.5) * ROTATION_SPEED;
             }
 
             remaining -= count;
@@ -70,18 +72,21 @@
     }
 
     function draw(now) {
-        if(!canvas) return;
+        const dt = now - lastFrame;
+        if (dt < FRAME_TIME) {
+            raf = requestAnimationFrame(draw);
+            return;
+        }
+        lastFrame = now;
 
+        if (!canvas) return;
         const dpr = window.devicePixelRatio || 1;
-
         const w = canvas.width / dpr;
         const h = canvas.height / dpr;
 
         ctx.clearRect(0, 0, w, h);
-
         const cx = w / 2;
         const cy = h / 2;
-
         let remaining = totalCursors;
         let ring = 0;
 
@@ -104,26 +109,14 @@
             }
 
             const rotation = now * (ringSpeeds[ring] ?? 0);
-
             const half = Math.floor(count / 2);
-            const pairIndex =
-                half > 0
-                    ? Math.floor(elapsed / CURSOR_DURATION) % half
-                    : -1;
+            const pairIndex = half > 0 ? Math.floor(elapsed / CURSOR_DURATION) % half : -1;
 
             for (let i = 0; i < count; i++) {
                 let pulse = 0;
-
-                if (
-                    half > 0 &&
-                    (i === pairIndex ||
-                        i === (pairIndex + half) % count)
-                ) {
+                if (half > 0 && (i === pairIndex || i === (pairIndex + half) % count)) {
                     const t = (elapsed % CURSOR_DURATION) / CURSOR_DURATION;
-                    pulse =
-                        easeOutCubic(
-                            t <= 0.5 ? t * 2 : (1 - t) * 2
-                        ) * PULSE_AMPLITUDE;
+                    pulse = easeOutCubic(t <= 0.5 ? t * 2 : (1 - t) * 2) * PULSE_AMPLITUDE;
                 }
 
                 const angle = startAngle + i * step + rotation;
@@ -134,13 +127,7 @@
                 ctx.rotate(angle);
                 ctx.translate(0, -animatedRadius);
                 ctx.rotate(Math.PI);
-                ctx.drawImage(
-                    cursorImg,
-                    -SIZE / 2,
-                    -SIZE / 2,
-                    SIZE,
-                    SIZE
-                );
+                ctx.drawImage(cursorImg, -SIZE / 2, -SIZE / 2, SIZE, SIZE);
                 ctx.restore();
             }
 
@@ -148,7 +135,7 @@
             ring++;
         }
 
-        requestAnimationFrame(draw);
+        raf = requestAnimationFrame(draw);
     }
 
     onMount(() => {
@@ -157,10 +144,11 @@
         cursorImg = new Image();
         cursorImg.src = "/img/cursor/cursor-small.png";
         cursorImg.decode().then(() => {
+            startTime = performance.now();
             resize();
             updateInnerRadius();
             updateRings();
-            requestAnimationFrame(draw);
+            raf = requestAnimationFrame(draw);
         });
 
         window.addEventListener("resize", () => {
@@ -168,6 +156,11 @@
             updateInnerRadius();
             updateRings();
         });
+    });
+
+    onDestroy(() => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener("resize", resize);
     });
 </script>
 
@@ -180,6 +173,6 @@
         left: 50%;
         transform: translate(-50%, -50%);
         pointer-events: none;
-        z-index: 1;
+        z-index: 0;
     }
 </style>

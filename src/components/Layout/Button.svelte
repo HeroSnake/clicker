@@ -6,7 +6,7 @@
     {...props}
     class:selected={props.selected}
 >
-    <slot />
+    {@render props.children()}
 </button>
 
 <style>

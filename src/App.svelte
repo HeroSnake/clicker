@@ -12,8 +12,7 @@
 
 <style>
     #game {
-        width: 100%;
-        height: 100dvh;
+        height: calc(100% - 70px);
         display: flex;
     }
 </style>

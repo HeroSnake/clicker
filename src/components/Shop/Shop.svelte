@@ -92,9 +92,8 @@
 
 <style>
     #shop {
-        z-index: 1;
+        z-index: 2;
         width: 480px;
-        height: 100%;
         padding: 10px;
         position: relative;
         overflow-x: hidden;

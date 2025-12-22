@@ -21,11 +21,12 @@
 <style>
     #header {
         display: flex;
-        padding: 15px;
+        padding: 0 15px;
         align-items: center;
         position: relative;
         z-index: 2;
         gap: 20px;
+        height: 70px;
     }
 
     #header::before {
