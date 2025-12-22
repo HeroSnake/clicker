@@ -125,7 +125,7 @@
         z-index: 1000;
         width: 500px;
         line-height: 1.2rem;
-        background: url('/img/textures/wood-horizontal-dark.png');
+        background: url('./img/textures/wood-horizontal-dark.png');
         background-size: cover;
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
     }

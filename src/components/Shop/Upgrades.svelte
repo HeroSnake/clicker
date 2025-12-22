@@ -18,7 +18,7 @@
                     __original: bonus,
                     libelle: "bonus",
                     cost,
-                    img: `/img/${$theme.code}/bonuses/${bonus.code}.png`,
+                    img: `./img/${$theme.code}/bonuses/${bonus.code}.png`,
                     disabled: bonus.level < requiresLevel || cost > $game.itemCount,
                 };
             });
@@ -39,7 +39,7 @@
                     __original: building,
                     libelle: "upgrade",
                     cost,
-                    img: `/img/${$theme.code}/buildings/${building.id}.png`,
+                    img: `./img/${$theme.code}/buildings/${building.id}.png`,
                     disabled: building.level < requiresLevel || cost > $game.itemCount,
                     buy: () => game.buyUpgrade(building),
                 };

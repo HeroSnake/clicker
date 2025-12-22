@@ -57,7 +57,7 @@
 :root .cracked-border {
     border: 10px solid transparent;
     border-radius: 5px;
-    border-image-source: url("/img/textures/stone-bricks.png");
+    border-image-source: url("./img/textures/stone-bricks.png");
     border-image-slice: 10;
     border-image-width: 10px;
     border-image-repeat: repeat;

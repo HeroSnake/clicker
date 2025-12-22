@@ -19,7 +19,7 @@
                 __original: building,
                 libelle: "building",
                 cost,
-                img: `/img/${$theme.code}/buildings/${building.id}.png`,
+                img: `./img/${$theme.code}/buildings/${building.id}.png`,
                 disabled: cost > $game.itemCount
             };
         });

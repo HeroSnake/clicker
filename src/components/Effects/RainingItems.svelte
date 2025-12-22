@@ -71,7 +71,7 @@
     }
 
     function resetImg() {
-        img.src = `/img/${$theme.code}/items/item.png`;
+        img.src = `./img/${$theme.code}/items/item.png`;
     }
 
     function initDrops() {

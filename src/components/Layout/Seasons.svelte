@@ -8,7 +8,7 @@
             on:click={() => game.setSeason(season.id)}
             class="no-btn season-btn interactive"
             aria-label="season"
-            style="background: url('/img/seasons/{season.id}.png');"
+            style="background: url('./img/seasons/{season.id}.png');"
             disabled={season.id == 2}
         ></button>
     {/each}

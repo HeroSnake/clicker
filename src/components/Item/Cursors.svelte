@@ -142,7 +142,7 @@
         ctx = canvas.getContext("2d");
 
         cursorImg = new Image();
-        cursorImg.src = "/img/cursor/cursor-small.png";
+        cursorImg.src = "./img/cursor/cursor-small.png";
         cursorImg.decode().then(() => {
             startTime = performance.now();
             resize();
