@@ -170,9 +170,7 @@ function createGame() {
     }
 
     function getUpgradeCost(upgrade) {
-        const costMultiplier = 1.15;
-        const buildingCost = getBuildingCost(upgrade, 1, upgrade.level * 25);
-        return Math.floor(buildingCost * costMultiplier);
+        return Math.floor(getBuildingCost(upgrade, 1, upgrade.level * 25) / 10);
     }
 
     function getBuildingCost(building, multiple, stock = null) {
