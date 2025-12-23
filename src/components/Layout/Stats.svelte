@@ -1,16 +1,29 @@
 <script>
-    import { theme } from "../../store/theme";
     import { game } from "../../store/game";
     import { displayNumber } from "../../utils";
+    import AnimatedText from "./AnimatedText.svelte";
+
+    let itemCount = $state(0);
+    let production = $state(0);
+
+    $effect(() => {
+        itemCount = $game.itemCount;
+        production = $game.production;
+    })
 </script>
 
 <div id="stats">
     <span class="item-count">
-        <b>{displayNumber($game.itemCount, true)}</b> {$theme.name}s
+        <b>
+            <AnimatedText value={itemCount} format={(n) => displayNumber(n, true)} />
+        </b>
+        <span>glands</span>
     </span>
     <span class="item-per-click">
-        <b>{displayNumber($game.production, true, true)}</b>
-        <small>per second</small>
+        <b>
+            <AnimatedText value={production} format={(n) => displayNumber(n, true, true)} />
+        </b>
+        <small> per second</small>
     </span>
 </div>
 

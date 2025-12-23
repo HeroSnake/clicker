@@ -1,12 +1,14 @@
 <script>
     import { displayNumber } from "../../utils";
+    import AnimatedText from "../Layout/AnimatedText.svelte";
     import Item from "./../Item/Item.svelte";
 
     export let value = 0;
 </script>
 
 <span class="cost">
-    <Item mode="small" style="width:15px;" /> {displayNumber(value, true, true)}
+    <Item mode="small" style="width:15px;" />
+    <AnimatedText value={value} format={(n) => displayNumber(n, true, true)} />
 </span>
 
 <style>

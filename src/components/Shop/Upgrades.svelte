@@ -1,12 +1,11 @@
 <script>
-    import { theme } from "../../store/theme";
     import { game } from "../../store/game";
     import Tooltip from "./Tooltip.svelte";
 
     const ENHANCE_TRESHOLD = 25;
     const LEVELS_AHEAD = 1;
 
-    $: bonuses = [
+    let bonuses = $derived([
         ...$game.bonuses.flatMap(bonus => {
             return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
                 const displayLevel = bonus.level;
@@ -18,14 +17,14 @@
                     __original: bonus,
                     libelle: "bonus",
                     cost,
-                    img: `./img/${$theme.code}/bonuses/${bonus.code}.png`,
+                    img: `./img/bonuses/${bonus.code}.png`,
                     disabled: bonus.level < requiresLevel || cost > $game.itemCount,
                 };
             });
         })
-    ];
+    ]);
 
-    $: upgrades = [
+    let upgrades = $derived([
         ...$game.buildings.flatMap(building => {
             if (building.stock < ENHANCE_TRESHOLD * building.level) return [];
 
@@ -39,13 +38,13 @@
                     __original: building,
                     libelle: "upgrade",
                     cost,
-                    img: `./img/${$theme.code}/buildings/${building.id}.png`,
+                    img: `./img/buildings/${building.id}.png`,
                     disabled: building.level < requiresLevel || cost > $game.itemCount,
                     buy: () => game.buyUpgrade(building),
                 };
             });
         })
-    ].sort((a, b) => a.cost - b.cost);
+    ].sort((a, b) => a.cost - b.cost));
 </script>
 
 <div class="upgrades">
@@ -53,7 +52,7 @@
         <Tooltip data={bonus}>
             <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
                 disabled={bonus.disabled}
-                on:click={() => game.buyBonus(bonus.__original)}
+                onclick={() => game.buyBonus(bonus.__original)}
                 style="background-image: url('{bonus.img}');"
             >
             </button>
@@ -63,7 +62,7 @@
         <Tooltip data={upgrade}>
             <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
                 disabled={upgrade.disabled}
-                on:click={() => game.buyUpgrade(upgrade.__original)}
+                onclick={() => game.buyUpgrade(upgrade.__original)}
                 style="background-image: url('{upgrade.img}');"
             >
             </button>

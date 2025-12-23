@@ -1,33 +1,35 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    let canvas;
-    let ctx;
-    let dpr = window.devicePixelRatio || 1;
-
-    const pool = [];
-    const active = [];
-
-    const fontCache = {
-        normal: 'bold 25px BoldPixels',
-        crit: 'bold 35px BoldPixels'
-    };
+    const props = $props();
 
     const isMobile = window.innerWidth < 768;
     const TARGET_FPS = isMobile ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
+    const fontCache = {
+        normal: 'bold 25px BoldPixels',
+        crit: 'bold 35px BoldPixels'
+    };
+    const pool = [];
+    const active = [];
+
+    let canvas;
+    let ctx;
+    let raf;
+    let last = performance.now();
+    let dpr = window.devicePixelRatio || 1;
+
+    let resizeObserver = new ResizeObserver(resizeCanvas);
+
+    function resizeCanvas() {
+        canvas.width = props.target.clientWidth * dpr;
+        canvas.height = props.target.clientHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     function easeOutCubic(t) {
         const f = 1 - t;
         return 1 - f * f * f;
-    }
-
-    function resize() {
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        canvas.style.width = window.innerWidth + "px";
-        canvas.style.height = window.innerHeight + "px";
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function getText() {
@@ -101,9 +103,6 @@
         ctx.shadowBlur = 0;
     }
 
-    let last = performance.now();
-    let raf;
-
     function loop(now) {
         const dt = now - last;
 
@@ -118,14 +117,14 @@
 
     onMount(() => {
         ctx = canvas.getContext("2d");
-        resize();
-        window.addEventListener("resize", resize);
+        resizeCanvas();
         raf = requestAnimationFrame(loop);
+        resizeObserver.observe(props.target);
     });
 
     onDestroy(() => {
         cancelAnimationFrame(raf);
-        window.removeEventListener("resize", resize);
+        resizeObserver.disconnect();
     });
 </script>
 

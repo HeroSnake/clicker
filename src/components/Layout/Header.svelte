@@ -1,17 +1,19 @@
 <script>
-    import Item from "../Item/Item.svelte";
-    import { theme } from "../../store/theme";
     import { game } from "../../store/game";
+    import Item from "../Item/Item.svelte";
     import Seasons from "./Seasons.svelte";
 </script>
 
 <div id="header">
     <Item mode="small" style="width:40px;" />
-    <span class="title">{$theme.name} clicker</span>
+    <span class="title">Gland clicker</span>
+    {#if game.GOD_MODE}
+        <button class="resetbtn" onclick={game.resetGame}>Reset Game</button>
+    {/if}
     <div class="header-right">
         <Seasons />
         <button
-            on:click={() => game.toggleShop()}
+            onclick={() => game.toggleShop()}
             class="no-btn shop-btn interactive"
             aria-label="shop"
         ></button>
@@ -24,7 +26,7 @@
         padding: 0 15px;
         align-items: center;
         position: relative;
-        z-index: 2;
+        z-index: 3;
         gap: 20px;
         height: 70px;
     }

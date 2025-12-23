@@ -1,29 +1,32 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
+    const props = $props();
+
     let canvas;
     let ctx;
-    let drops = [];
     let raf;
+    let drops = [];
+    let resizeObserver = new ResizeObserver(resizeCanvas);
 
-    export let density = 300;
-    export let speed = 12;
-    export let wind = -1;
-    export let length = 20;
-    export let opacity = 0.6;
+    const density = 300;
+    const speed = 12;
+    const wind = -1;
+    const length = 20;
+    const opacity = 0.6;
 
-    let w = 0;
-    let h = 0;
+    let width = 0;
+    let height = 0;
 
-    function resize() {
+    function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
-        w = window.innerWidth;
-        h = window.innerHeight;
+        width = window.innerWidth;
+        height = window.innerHeight;
 
-        canvas.width = w * dpr;
-        canvas.height = h * dpr;
-        canvas.style.width = w + "px";
-        canvas.style.height = h + "px";
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         createDrops();
@@ -31,12 +34,12 @@
 
     function createDrops() {
         drops = [];
-        const effectiveDensity = w < 768 ? density / 3 : density; // lighter on mobile
+        const effectiveDensity = width < 768 ? density / 3 : density; // lighter on mobile
         for (let i = 0; i < effectiveDensity; i++) {
             const z = Math.random();
             drops.push({
-                x: Math.random() * w,
-                y: Math.random() * h,
+                x: Math.random() * width,
+                y: Math.random() * height,
                 z,
                 speed: speed * (0.5 + z),
                 length: length * (0.5 + z)
@@ -45,7 +48,7 @@
     }
 
     function update() {
-        ctx.clearRect(0, 0, w, h);
+        ctx.clearRect(0, 0, width, height);
         ctx.strokeStyle = `rgba(180, 200, 255, ${opacity})`;
         ctx.lineWidth = 1;
         ctx.lineCap = "round";
@@ -58,8 +61,8 @@
             d.y += d.speed;
             d.x += wind * d.z;
 
-            if (d.y > h) d.y = -d.length;
-            if (d.x < -50 || d.x > w + 50) d.x = Math.random() * w;
+            if (d.y > height) d.y = -d.length;
+            if (d.x < -50 || d.x > width + 50) d.x = Math.random() * width;
         }
         ctx.stroke();
 
@@ -68,14 +71,14 @@
 
     onMount(() => {
         ctx = canvas.getContext("2d");
-        resize();
+        resizeCanvas();
         update();
-        window.addEventListener("resize", resize);
+        resizeObserver.observe(props.target);
     });
 
     onDestroy(() => {
         cancelAnimationFrame(raf);
-        window.removeEventListener("resize", resize);
+        resizeObserver.disconnect();
     });
 </script>
 

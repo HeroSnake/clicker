@@ -39,11 +39,6 @@
     font-weight: bold;
 }
 
-:root canvas {
-    width: 100vw;
-    height: 100vh;
-}
-
 :root .bonus {
     color: rgb(0, 187, 47);
     font-size: 120%;
@@ -57,8 +52,8 @@
 :root .cracked-border {
     border: 10px solid transparent;
     border-radius: 5px;
-    border-image-source: url("./img/textures/stone-bricks.png");
-    border-image-slice: 10;
+    border-image-source: url("/img/textures/wood-vertical.png");
+    border-image-slice: 20;
     border-image-width: 10px;
     border-image-repeat: repeat;
     box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;

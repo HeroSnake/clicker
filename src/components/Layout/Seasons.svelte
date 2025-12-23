@@ -5,7 +5,7 @@
 <div class="seasons">
     {#each $game.seasons as season}
         <button
-            on:click={() => game.setSeason(season.id)}
+            onclick={() => game.setSeason(season.id)}
             class="no-btn season-btn interactive"
             aria-label="season"
             style="background: url('./img/seasons/{season.id}.png');"

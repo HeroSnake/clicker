@@ -1,18 +1,21 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    export let color = "255,255,230";
+    const props = $props();
 
     let canvas;
     let ctx;
     let raf;
+    let resizeObserver = new ResizeObserver(resizeCanvas);
 
     let width = 0;
     let height = 0;
+    let lastTime = 0;
 
     const isMobile = window.innerWidth < 768;
-    const dpr = isMobile ? 1 : (window.devicePixelRatio || 1);
 
+    const dpr = isMobile ? 1 : (window.devicePixelRatio || 1);
+    const FRAME_TIME = isMobile ? 1000 / 30 : 1000 / 60;
     const layers = isMobile
         ? [
             { rays: 8, inner: 0.08, outer: 0.35, speed: 0.0008, opacity: 0.25, rotation: 0 }
@@ -30,21 +33,17 @@
     }
 
     function resizeCanvas() {
-        const plate = document.getElementById("plate");
-        if (!plate || !canvas) return;
+        if (!canvas) return;
 
-        const rect = plate.getBoundingClientRect();
-        width = rect.width;
-        height = rect.height;
+        width = props.target.clientWidth;
+        height = props.target.clientHeight;
 
         canvas.width = width * dpr;
         canvas.height = height * dpr;
         canvas.style.width = width + "px";
         canvas.style.height = height + "px";
-        canvas.style.left = rect.left + "px";
-        canvas.style.top = rect.top + "px";
-
-        ctx = canvas.getContext("2d");
+        canvas.style.left = props.target.left + "px";
+        canvas.style.top = props.target.top + "px";
 
         layerCanvases.length = 0;
         layers.forEach(l => layerCanvases.push(prerenderLayer(l)));
@@ -69,8 +68,8 @@
 
         // Gradient centered at (0,0)
         const gradient = cctx.createRadialGradient(0, 0, inner, 0, 0, outer);
-        gradient.addColorStop(0, `rgba(${color},${layer.opacity})`);
-        gradient.addColorStop(1, `rgba(${color},0)`);
+        gradient.addColorStop(0, `rgba(255,255,230,${layer.opacity})`);
+        gradient.addColorStop(1, `rgba(255,255,230,0)`);
         cctx.fillStyle = gradient;
 
         for (let i = 0; i < layer.rays; i++) {
@@ -95,9 +94,6 @@
         return c;
     }
 
-    let lastTime = 0;
-    const FRAME_TIME = isMobile ? 1000 / 30 : 1000 / 60;
-
     function draw(time) {
         if (time - lastTime < FRAME_TIME) {
             raf = requestAnimationFrame(draw);
@@ -116,7 +112,7 @@
             ctx.save();
             ctx.translate(centerX, centerY); // center of the plate
             ctx.rotate(layer.rotation);
-            ctx.drawImage(layerCanvases[i], -size, -size); // draw centered
+            ctx.drawImage(layerCanvases[i], -size / 2, -size / 2); // draw centered
             ctx.restore();
 
             layer.rotation += layer.speed;
@@ -126,14 +122,15 @@
     }
 
     onMount(() => {
+        ctx = canvas.getContext("2d");
         resizeCanvas();
-        window.addEventListener("resize", resizeCanvas);
         raf = requestAnimationFrame(draw);
+        resizeObserver.observe(props.target);
     });
 
     onDestroy(() => {
         cancelAnimationFrame(raf);
-        window.removeEventListener("resize", resizeCanvas);
+        resizeObserver.disconnect();
     });
 </script>
 

@@ -1,29 +1,23 @@
 <script>
-    import { theme } from "./../../store/theme";
+    const props = $props();
 
-    export let mode = '';
-    export let style = '';
+    let link = $state('');
+    let suffix = '';
+    let ext = 'png';
 
-    $: link = getLink();
-
-    const getLink = () => {
-        let suffix = '';
-        let ext = 'png';
-
-        switch (mode) {
-            case 'small':
-                suffix = '-sm';
-                break;
-            case 'gold':
-                suffix = '-gold';
-                break;
-        }
-
-        return `./img/${$theme.code}/items/item${suffix}.${ext}`;
+    switch (props.mode) {
+        case 'small':
+            suffix = '-sm';
+            break;
+        case 'gold':
+            suffix = '-gold';
+            break;
     }
+
+    link = `./img/item/item${suffix}.${ext}`;
 </script>
 
-<img src="{link}" style="{style}" alt="item" />
+<img src="{link}" style="{props.style}" alt="item" />
 
 <style>
     img {

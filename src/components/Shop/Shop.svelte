@@ -78,14 +78,16 @@
 {#if $game.displayShop}
     <div id="shop" class="cracked-border" transition:fly={{ x: 150, duration: 150 }}>
         <div class="header">
-            {#each amounts as m}
-                <Button selected={m == amount} onclick={() => amount = m}>
-                    <span>{m}</span>
-                </Button>
-            {/each}
+            <div class="amounts">
+                {#each amounts as m}
+                    <Button selected={m == amount} onclick={() => amount = m}>
+                        <span>{m}</span>
+                    </Button>
+                {/each}
+            </div>
+            <Upgrades />
         </div>
 
-        <Upgrades />
         <Buildings {amount} />
     </div>
 {/if}
@@ -104,20 +106,21 @@
     }
 
     .header {
+        width: 100%;
+        z-index: 1;
+    }
+
+    .amounts {
         display: flex;
         flex-direction: row;
         padding: 10px;
         gap: 10px;
         align-items: center;
-        position: sticky;
-        top: 0;
-        width: 100%;
-        z-index: 1;
     }
 
     @media (max-width: 768px) {
         #shop {
-            width: 100%;
+            width: calc(100% - 40px);
             position: fixed;
         }
         .header {

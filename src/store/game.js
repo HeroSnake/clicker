@@ -2,7 +2,7 @@ import { get, writable } from "svelte/store";
 import buildings from "../assets/buildings.json";
 import bonuses from "../assets/bonuses.json";
 import seasons from "../assets/seasons.json";
-import { theme } from "./theme";
+import lang from "../assets/lang.json";
 import { achievements } from "./achievements";
 import { displayMode } from "./display";
 
@@ -58,14 +58,13 @@ function createGame() {
 
     function mergeBuildings() {
         const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
-        const currentTheme = get(theme);
 
         return buildings.map(b => {
             const s = saved.find(s => s.id === b.id);
             return {
                 ...b,
-                name: currentTheme.buildings[b.id].name,
-                description: currentTheme.buildings[b.id].description,
+                name: lang.buildings[b.id].name,
+                description: lang.buildings[b.id].description,
                 stock: s?.stock ?? b.stock,
                 level: s?.level ?? b.level
             };
@@ -74,11 +73,10 @@ function createGame() {
 
     function mergeBonuses() {
         const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
-        const currentTheme = get(theme);
 
         return bonuses.map(b => {
             const s = saved.find(s => s.id === b.id);
-            const bonus = currentTheme.bonuses[b.id];
+            const bonus = lang.bonuses[b.id];
             return {
                 ...b,
                 name: bonus.name,

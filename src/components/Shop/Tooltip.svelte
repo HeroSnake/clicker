@@ -5,22 +5,25 @@
     import { game } from "../../store/game";
     import Cost from "./Cost.svelte";
     import BuildingImg from "./BuildingImg.svelte";
+    import { displayMode } from "../../store/display";
 
-    export let data = {};
-    export let offset = 8; // spacing from the shop
+    const props = $props();
 
-    let visible = false;
-    let tooltipEl;
+    let visible = $state(false);
+    let tooltipEl = $state(null);
     let targetEl;
 
-    let x = 0;
-    let y = 0;
+    let x = $state(0);
+    let y = $state(0);
 
     async function handleMouseEnter(event) {
         visible = true;
         targetEl = event.currentTarget;
         await tick();
-        setPosition();
+
+        if ($displayMode === "desktop") {
+            setPosition();
+        }
     }
 
     function handleMouseLeave() {
@@ -36,7 +39,7 @@
         // horizontal: always left of shop
         const shopEl = document.getElementById("shop");
         const shopRect = shopEl ? shopEl.getBoundingClientRect() : { left: window.innerWidth };
-        x = shopRect.left - tooltipRect.width - offset;
+        x = shopRect.left - tooltipRect.width - 8;
 
         // vertical: aligned with hovered element
         y = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
@@ -53,52 +56,52 @@
     });
 </script>
 
-<button class="no-btn" on:mouseenter={handleMouseEnter} on:mouseleave={handleMouseLeave}>
-    <slot></slot>
+<button class="no-btn" onmouseenter={handleMouseEnter} onmouseleave={handleMouseLeave}>
+    {@render props.children()}
 </button>
 
 {#if visible}
     <div bind:this={tooltipEl} class="tooltip cracked-border" style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
         <div class="head">
-            <BuildingImg img={data.img} />
+            <BuildingImg img={props.data.img} />
             <div>
                 <div class="info">
-                    <span class="name">{data.name}</span>
-                    <Cost value={data.cost} />
+                    <span class="name">{props.data.name}</span>
+                    <Cost value={props.data.cost} />
                 </div>
-                <span class="description">{data.description}</span>
+                <span class="description">{props.data.description}</span>
             </div>
         </div>
         <div class="body">
-            {#if data.libelle === "upgrade"}
+            {#if props.data.libelle === "upgrade"}
 
                 <span>
-                    <b class="bonus">Double</b> {data.name} efficiency
+                    <b class="bonus">Double</b> {props.data.name} efficiency
                 </span>
 
-                {#if data.type === "cursor"}
+                {#if props.data.type === "cursor"}
                     <span>
-                        <span class="bonus">+{displayNumber(data.crit.bonus * 100)}%</span> crit chance
+                        <span class="bonus">+{displayNumber(props.data.crit.bonus * 100)}%</span> crit chance
                     </span>
                 {/if}
 
-            {:else if data.libelle === "bonus"}
+            {:else if props.data.libelle === "bonus"}
                     <span>
-                        <span class="bonus">+{displayNumber(data.increase * 100)}%</span> {data.detail}
+                        <span class="bonus">+{displayNumber(props.data.increase * 100)}%</span> {props.data.detail}
                     </span>
                     <span>
-                        <span class="total">{displayNumber($game[data.code] * 100)}%</span> total
+                        <span class="total">{displayNumber($game[props.data.code] * 100)}%</span> total
                     </span>
 
-            {:else if data.libelle === "building"}
-                {#if data.stock > 0}
+            {:else if props.data.libelle === "building"}
+                {#if props.data.stock > 0}
                     <span>
-                        Each {data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(data, true), false, true)}</b> per second
+                        Each {props.data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(props.data, true), false, true)}</b> per second
                     </span>
                     <span>
-                        {data.stock} {data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(data), false, true)}</b> per second
+                        {props.data.stock} {props.data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(props.data), false, true)}</b> per second
                     </span>
-                    {#if data.type === "cursor"}
+                    {#if props.data.type === "cursor"}
                         <span>
                             <b class="total">+{displayNumber($game.crit.chance * 100)}%</b> <small>Crit chance</small>
                             (<b class="total">x{displayNumber($game.crit.multiplier, true)}</b> <small> Crit multiplier</small>)
@@ -122,7 +125,7 @@
         border-radius: 2px;
         font-size: 1.2rem;
         white-space: normal;
-        z-index: 1000;
+        z-index: 2;
         width: 500px;
         line-height: 1.2rem;
         background: url('/img/textures/wood-horizontal-dark.png');
@@ -159,7 +162,7 @@
 
     @media (max-width: 768px) {
         .tooltip {
-            width: 100%;
+            width: calc(100% - 40px);
             bottom: 0;
             top: auto !important;
         }

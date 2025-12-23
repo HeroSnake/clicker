@@ -1,0 +1,39 @@
+{
+  "code": "acorn",
+  "name": "gland",
+  "unit": "G",
+  "buildings": [
+        {"name": "Cursor", "description": "Click glands every second to earn more."},
+        {"name": "Squirrel", "description": "Squirrels gather glands !"},
+        {"name": "Nut Farm", "description": "Farm glands for continuous income."},
+        {"name": "Forest Grove", "description": "Expand forests to increase gland production."},
+        {"name": "Chipmunk Patrol", "description": "Chipmunks help collect glands efficiently."},
+        {"name": "Treehouse Village", "description": "Treehouses boost your squirrel army."},
+        {"name": "Nut Catapult", "description": "Launch glands for faster collection."},
+        {"name": "Nut Factory", "description": "Automated factory producing glands at scale."},
+        {"name": "Squirrel Army", "description": "An army of squirrels gathering nuts quickly."},
+        {"name": "Nut Fortress", "description": "Protect your glands while boosting production."},
+        {"name": "Nut Rocket Launchpad", "description": "Launch glands into orbit for huge gains."},
+        {"name": "Nut Cloning Lab", "description": "Clone glands to multiply your stockpile."},
+        {"name": "Nutopia", "description": "A paradise where glands grow endlessly."},
+        {"name": "Quantum Forest", "description": "Quantum glands produce exponentially."},
+        {"name": "Quantum Nut Reactor", "description": "Harness quantum energy to create glands."},
+        {"name": "Nut Nebula", "description": "A cosmic source of glands in space."},
+        {"name": "Galactic Nut", "description": "glands on a galactic scale."},
+        {"name": "Nut Singularity", "description": "All glands converge into infinite density."},
+        {"name": "Time-Traveling Nut", "description": "glands from the past and future appear instantly."},
+        {"name": "Interdimensional Nut Portal", "description": "Access glands from other dimensions."},
+        {"name": "Cosmic Nut Generator", "description": "Generate glands at cosmic rates."},
+        {"name": "Nut God", "description": "Divine nut power increases gland production massively."},
+        {"name": "Eternal Nut Universe", "description": "A universe made entirely of glands."},
+        {"name": "Infinite Nut Dimensions", "description": "Infinite realms of nut riches."}
+  ],
+  "bonuses": [
+    {"name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total nut production"},
+    {"name": "Golden Surge", "description": "Golden nut boosts are more powerful.", "detail": "golden nut boost power"},
+    {"name": "Lasting Fortune", "description": "Golden nut boosts last longer.", "detail": "golden nut boost duration"},
+    {"name": "Gilded Chance", "description": "Golden nut boosts last longer.", "detail": "golden nut spawn chance"},
+    {"name": "Golden click", "description": "Your clicks scale with your production !", "detail": "bonus production per click"}
+  ]
+}
+

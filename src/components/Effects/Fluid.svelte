@@ -1,33 +1,44 @@
 <script>
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
 
-    let canvas;
-    let ctx;
-    let animationFrame;
-
-    let fluidHeight = 0;
-    let width = 0;
-    let height = 0;
+    const props = $props();
 
     // Resolution of the wave (lower = faster, still smooth)
     const STEP = 3;
-
     const waves = [
         { amp: 10, len: 600, speed: 0.02, freq: 0 },
         { amp: 6,  len: 300, speed: 0.015, freq: 0 },
         { amp: 4,  len: 150, speed: 0.01, freq: 0 }
     ];
-
     const offsetsFront = waves.map(() => 0);
     const offsetsBack  = waves.map(() => 0);
 
-    let topEdgeY = [];
-
+    let canvas;
+    let ctx;
+    let animationFrame;
     let gradientFront;
     let gradientBack;
 
-    $: fluidHeight = $game.achievements.length;
+    let resizeObserver = new ResizeObserver(resizeCanvas);
+    let fluidHeight = $derived($game.achievements.length);
+    let width = 0;
+    let height = 0;
+    let topEdgeY = [];
+
+    function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        width  = props.target.clientWidth;
+        height = props.target.clientHeight;
+
+        canvas.width  = width * dpr;
+        canvas.height = height * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        topEdgeY.length = Math.ceil(width / STEP) + 1;
+
+        rebuildGradients();
+    }
 
     function rebuildGradients() {
         const baseYFront = height - fluidHeight + 30;
@@ -105,20 +116,6 @@
         animationFrame = requestAnimationFrame(drawFluid);
     }
 
-    function resize() {
-        const dpr = window.devicePixelRatio || 1;
-        width  = window.innerWidth;
-        height = window.innerHeight;
-
-        canvas.width  = width * dpr;
-        canvas.height = height * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        topEdgeY.length = Math.ceil(width / STEP) + 1;
-
-        rebuildGradients();
-    }
-
     onMount(() => {
         ctx = canvas.getContext("2d");
 
@@ -126,15 +123,15 @@
             w.freq = (2 * Math.PI) / w.len;
         });
 
-        resize();
-        window.addEventListener("resize", resize);
-
+        resizeCanvas();
         drawFluid();
 
-        return () => {
-            cancelAnimationFrame(animationFrame);
-            window.removeEventListener("resize", resize);
-        };
+        resizeObserver.observe(props.target);
+    });
+
+    onDestroy(() => {
+        cancelAnimationFrame(animationFrame);
+        resizeObserver.disconnect();
     });
 </script>
 

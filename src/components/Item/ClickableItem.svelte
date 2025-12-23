@@ -2,10 +2,12 @@
     import { game } from "../../store/game";
     import { displayNumber } from "../../utils";
     import Cursors from "../Item/Cursors.svelte";
-    import Item from '../Item/Item.svelte';
-    import ClickText from '../Effects/ClickText.svelte';
+    import Item from "../Item/Item.svelte";
+    import ClickText from "../Effects/ClickText.svelte";
 
-    let clickedItem = false;
+    const props = $props();
+
+    let clickedItem = $state(false);
     let clickCanvas;
 
     // Click rate limit
@@ -39,12 +41,12 @@
 </script>
 
 <div id="item-container">
-    <button  id="item-button" class="no-btn" on:click={clickItem}  type="button"  class:wiggle={clickedItem}>
+    <button  id="item-button" class="no-btn" onclick={clickItem}  type="button"  class:wiggle={clickedItem}>
         <Item />
     </button>
     <Cursors />
 </div>
-<ClickText bind:this={clickCanvas} />
+<ClickText bind:this={clickCanvas} target={props.target} />
 
 <style>
     #item-container {

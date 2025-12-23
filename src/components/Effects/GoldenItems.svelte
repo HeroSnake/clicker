@@ -3,26 +3,24 @@
     import { game } from "../../store/game";
     import Item from "../Item/Item.svelte";
 
-    export let plateEl; // reference to parent
-
-    let goldenItems = [];
-    let nextId = 0;
+    const props = $props();
 
     const SIZE = 100;
     const DESPAWN_TIME = 7000;
     const SPAWN_INTERVAL = 1000;
 
+    let goldenItems = $state([]);
+    let nextId = 0;
+
     function spawn() {
-        if (!plateEl) return;
-        const plateRect = plateEl.getBoundingClientRect();
         const id = nextId++;
 
         goldenItems = [
             ...goldenItems,
             {
                 id,
-                x: Math.random() * (plateRect.width - SIZE),
-                y: Math.random() * (plateRect.height - SIZE),
+                x: Math.random() * (props.target.clientWidth - SIZE),
+                y: Math.random() * (props.target.clientHeight - SIZE),
                 spawnTime: performance.now()
             }
         ];
@@ -52,7 +50,7 @@
     <button
         class="no-btn golden-item-wrapper"
         style="left: {item.x}px; top: {item.y}px;"
-        on:click={() => clickItem(item.id)}
+        onclick={() => clickItem(item.id)}
     >
         <div class="golden-item">
             <Item mode="gold" />

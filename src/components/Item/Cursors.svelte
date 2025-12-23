@@ -18,19 +18,22 @@
     const TARGET_FPS = isMobile ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
 
-    $: totalCursors = Math.max(0, $game.buildings.find(b => b.id === 0)?.stock || 0);
-
-    let lastTotal = 0;
     let ringSpeeds = [];
     let ringCount = 0;
     let startTime = 0;
     let lastFrame = performance.now();
     let raf;
 
-    $: if (totalCursors !== lastTotal) {
-        lastTotal = totalCursors;
-        updateRings();
-    }
+    let totalCursors = $derived(Math.max(0, $game.buildings.find(b => b.id === 0)?.stock || 0));
+
+    let lastTotal = 0;
+
+    $effect(() => {
+        if (totalCursors !== lastTotal) {
+            lastTotal = totalCursors;
+            updateRings();
+        }
+    });
 
     function easeOutCubic(t) {
         const f = 1 - t;

@@ -1,6 +1,5 @@
 <script>
     import { fly } from 'svelte/transition';
-    import { theme } from '../../store/theme';
     import { game } from "../../store/game";
     import Fluid from "../Effects/Fluid.svelte";
     import GoldenItems from "../Effects/GoldenItems.svelte";
@@ -11,40 +10,44 @@
     import Snow from '../Effects/Snow.svelte';
     import ClickableItem from '../Item/ClickableItem.svelte';
 
-    let plateRef;
+    let plate = null;
 </script>
 
 <div
     id="plate"
+    bind:this={plate}
     class:boosted={$game.isProductionBoosted}
     transition:fly={{ x: 300, duration: 300 }}
-    style="background: url('./img/{$theme.code}/bg/{$game.seasonId}.png') no-repeat center center/cover;"
+    style="background: url('./img/bg/{$game.seasonId}.png') no-repeat center center/cover;"
 >
-    {#if game.GOD_MODE}
-        <button class="resetbtn" on:click={game.resetGame}>Reset Game</button>
-    {/if}
-    <ClickableItem />
-    <GodRays />
     <Stats />
-    <div bind:this={plateRef} style="position: absolute; width: 100%; height: 100%;">
-        <GoldenItems plateEl={plateRef} />
-    </div>
-    <RainingItems />
-    <Fluid />
-    <div id="lighting-overlay"></div>
-    {#if $game.seasonId == 1}
-        <Rain />
-    {:else if $game.seasonId == 4}
-        <Snow />
+
+    {#if plate}
+
+        <ClickableItem target={plate} />
+
+        <!-- EFFECTS -->
+        <GoldenItems target={plate} />
+
+        <Fluid target={plate} />
+
+        <div id="lighting-overlay"></div>
+
+        <RainingItems target={plate} />
+
+        <GodRays target={plate} />
+
+        {#if $game.seasonId == 1}
+            <Rain target={plate} />
+        {:else if $game.seasonId == 4}
+            <Snow target={plate} />
+        {/if}
+
     {/if}
 </div>
 
 
 <style>
-    .resetbtn {
-        z-index: 2;
-    }
-
     #plate {
         text-align: center;
         position: relative;
