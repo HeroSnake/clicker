@@ -4,7 +4,7 @@ import bonuses from "../assets/bonuses.json";
 import seasons from "../assets/seasons.json";
 import lang from "../assets/lang.json";
 import { achievements } from "./achievements";
-import { displayMode } from "./display";
+import { display } from "./display";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
@@ -39,7 +39,7 @@ function createGame() {
             achievements: [],
             seasons,
             seasonId: initSeason(),
-            displayShop: get(displayMode) === "desktop",
+            displayShop: get(display).device === "desktop",
         };
     }
 
@@ -165,18 +165,20 @@ function createGame() {
     }
 
     function getBonusCost(bonus) {
-        let costMultiplier = 10;
+        const costMultiplier = 10;
         return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
     function getUpgradeCost(upgrade) {
-        let costMultiplier = 2;
-        return Math.floor(upgrade.cost * (Math.pow(costMultiplier, upgrade.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
+        const costMultiplier = 1.15;
+        const buildingCost = getBuildingCost(upgrade, 1, upgrade.level * 25);
+        return Math.floor(buildingCost * costMultiplier);
     }
 
-    function getBuildingCost(building, multiple) {
-        let costMultiplier = 1.15;
-        return Math.floor(building.cost * (Math.pow(costMultiplier, building.stock) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
+    function getBuildingCost(building, multiple, stock = null) {
+        const costMultiplier = 1.15;
+        const buildingCost = stock ?? building.stock;
+        return Math.floor(building.cost * (Math.pow(costMultiplier, buildingCost) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
     }
 
     function computeAchievements(game) {

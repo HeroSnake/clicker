@@ -1,8 +1,9 @@
 <script>
     import { onMount, onDestroy } from "svelte";
+    import { display } from "../../store/display";
 
-    const isMobile = window.innerWidth < 768;
-    const TARGET_FPS = isMobile ? 30 : 60;
+    const dpr = window.devicePixelRatio || 1;
+    const TARGET_FPS = $display.device === "phone" ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
     const fontCache = {
         normal: 'bold 25px BoldPixels',
@@ -15,7 +16,6 @@
     let ctx;
     let raf;
     let last = performance.now();
-    let dpr = window.devicePixelRatio || 1;
     let resizeObserver = new ResizeObserver(resizeCanvas);
 
     function resizeCanvas() {

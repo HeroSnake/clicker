@@ -1,6 +1,7 @@
 <script>
     import { fly } from 'svelte/transition';
     import { game } from "../../store/game";
+    import { display } from '../../store/display';
     import Fluid from "../Effects/Fluid.svelte";
     import GoldenItems from "../Effects/GoldenItems.svelte";
     import Rain from "../Effects/Rain.svelte";
@@ -11,7 +12,18 @@
     import ClickableItem from '../Item/ClickableItem.svelte';
     import Cursors from '../Item/Cursors.svelte';
 
-    let plate = null;
+    let plate = $state(null);
+    let backgroundSize = $state("");
+
+    $effect(() => {
+        if ($display.device == 'mobile') {
+            backgroundSize = "-sm";
+        } else {
+            if ($display.aspect === "21:10") {
+                backgroundSize = "-ws";
+            }
+        }
+    })
 </script>
 
 <div
@@ -19,7 +31,7 @@
     bind:this={plate}
     class:boosted={$game.isProductionBoosted}
     transition:fly={{ x: 300, duration: 300 }}
-    style="background: url('./img/bg/{$game.seasonId}.png') no-repeat center center/cover;"
+    style="background: url('./img/bg/{$game.seasonId}{backgroundSize}.png') no-repeat center center/cover;"
 >
     <Stats />
 

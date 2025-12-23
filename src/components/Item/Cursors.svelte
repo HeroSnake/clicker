@@ -1,7 +1,7 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
-    import { displayMode } from "../../store/display";
+    import { display } from "../../store/display";
 
     const SIZE = 20;
     const RING_SPACING = 20;
@@ -9,8 +9,7 @@
     const PULSE_AMPLITUDE = 8;
     const ROTATION_SPEED = 0.00015;
 
-    const isMobile = window.innerWidth < 768;
-    const TARGET_FPS = isMobile ? 30 : 60;
+    const TARGET_FPS = $display.device === "mobile" ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
     const dpr = window.devicePixelRatio || 1;
 
@@ -50,7 +49,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
         const itemButton = document.getElementById("item-button");
-        innerRadius = $displayMode === "desktop" && itemButton ? itemButton.clientWidth * 0.7 : 100;
+        innerRadius = $display.device === "mobile" ? 100 : itemButton.clientWidth * 0.7;
 
         updateRings();
     }

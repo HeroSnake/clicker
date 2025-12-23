@@ -5,7 +5,7 @@
     import { game } from "../../store/game";
     import Cost from "./Cost.svelte";
     import BuildingImg from "./BuildingImg.svelte";
-    import { displayMode } from "../../store/display";
+    import { display } from "../../store/display";
 
     const props = $props();
 
@@ -21,7 +21,7 @@
         targetEl = event.currentTarget;
         await tick();
 
-        if ($displayMode === "desktop") {
+        if ($display.device === "desktop") {
             setPosition();
         }
     }

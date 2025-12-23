@@ -1,7 +1,7 @@
 <script>
     import { fly } from 'svelte/transition';
     import { onMount, onDestroy } from 'svelte';
-    import { displayMode } from "./../../store/display";
+    import { display } from "./../../store/display";
     import Upgrades from './Upgrades.svelte';
     import Buildings from './Buildings.svelte';
     import { game } from '../../store/game';
@@ -15,7 +15,7 @@
         if (event.key === "Shift") amount = amounts[2];
         if (event.key === "Control") amount = amounts[1];
 
-        if ($displayMode === "desktop") {
+        if ($display.device === "desktop") {
             if (event.key === "Tab") {
                 event.preventDefault();
                 game.toggleShop();
