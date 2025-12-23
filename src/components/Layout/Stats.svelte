@@ -39,6 +39,7 @@
         align-items: center;
         padding: 10px;
         line-height: 2.5rem;
+        z-index: 1;
     }
 
     .item-count {

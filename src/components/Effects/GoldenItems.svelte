@@ -3,14 +3,13 @@
     import { game } from "../../store/game";
     import Item from "../Item/Item.svelte";
 
-    const props = $props();
-
     const SIZE = 100;
     const DESPAWN_TIME = 7000;
-    const SPAWN_INTERVAL = 1000;
+    const SPAWN_INTERVAL = 2500;
 
     let goldenItems = $state([]);
     let nextId = 0;
+    let canvas;
 
     function spawn() {
         const id = nextId++;
@@ -19,8 +18,8 @@
             ...goldenItems,
             {
                 id,
-                x: Math.random() * (props.target.clientWidth - SIZE),
-                y: Math.random() * (props.target.clientHeight - SIZE),
+                x: Math.random() * (canvas.clientWidth - SIZE),
+                y: Math.random() * (canvas.clientHeight - SIZE),
                 spawnTime: performance.now()
             }
         ];
@@ -46,19 +45,28 @@
     });
 </script>
 
-{#each goldenItems as item (item.id)}
-    <button
-        class="no-btn golden-item-wrapper"
-        style="left: {item.x}px; top: {item.y}px;"
-        onclick={() => clickItem(item.id)}
-    >
-        <div class="golden-item">
-            <Item mode="gold" />
-        </div>
-    </button>
-{/each}
+<div id="golden-items" bind:this={canvas}>
+    {#each goldenItems as item (item.id)}
+        <button
+            class="no-btn golden-item-wrapper"
+            style="left: {item.x}px; top: {item.y}px;"
+            onclick={() => clickItem(item.id)}
+        >
+            <div class="golden-item">
+                <Item mode="gold" />
+            </div>
+        </button>
+    {/each}
+</div>
 
 <style>
+    #golden-items {
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        pointer-events: none;
+    }
     .golden-item-wrapper {
         position: absolute;
         width: 50px;

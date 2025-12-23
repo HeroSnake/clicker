@@ -1,11 +1,8 @@
 <script>
     import { game } from "../../store/game";
     import { displayNumber } from "../../utils";
-    import Cursors from "../Item/Cursors.svelte";
     import Item from "../Item/Item.svelte";
     import ClickText from "../Effects/ClickText.svelte";
-
-    const props = $props();
 
     let clickedItem = $state(false);
     let clickCanvas;
@@ -15,7 +12,6 @@
     let lastClickTime = 0;
 
     function clickItem(event) {
-        // Only allow real mouse clicks
         if (!event.isTrusted) return;   // ignore synthetic events
         if (event.detail === 0) return; // ignore keyboard-triggered clicks
 
@@ -26,7 +22,7 @@
         const { clickValue, isCrit } = game.clickItem();
 
         const x = event.clientX + Math.floor(Math.random() * 31) - 10;
-        const y = event.clientY - 10;
+        const y = event.clientY - 70;
 
         clickCanvas.spawn(
             x,
@@ -44,9 +40,8 @@
     <button  id="item-button" class="no-btn" onclick={clickItem}  type="button"  class:wiggle={clickedItem}>
         <Item />
     </button>
-    <Cursors />
 </div>
-<ClickText bind:this={clickCanvas} target={props.target} />
+<ClickText bind:this={clickCanvas} />
 
 <style>
     #item-container {

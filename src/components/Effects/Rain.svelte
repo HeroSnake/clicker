@@ -1,7 +1,12 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    const props = $props();
+    const density = 300;
+    const speed = 12;
+    const wind = -1;
+    const length = 20;
+    const opacity = 0.6;
+    const dpr = window.devicePixelRatio || 1;
 
     let canvas;
     let ctx;
@@ -9,30 +14,16 @@
     let drops = [];
     let resizeObserver = new ResizeObserver(resizeCanvas);
 
-    const density = 300;
-    const speed = 12;
-    const wind = -1;
-    const length = 20;
-    const opacity = 0.6;
-
-    let width = 0;
-    let height = 0;
-
     function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        width = window.innerWidth;
-        height = window.innerHeight;
+        if (!canvas) return;
 
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        createDrops();
+        createDrops(canvas.width / dpr, canvas.height / dpr);
     }
 
-    function createDrops() {
+    function createDrops(width, height) {
         drops = [];
         const effectiveDensity = width < 768 ? density / 3 : density; // lighter on mobile
         for (let i = 0; i < effectiveDensity; i++) {
@@ -48,7 +39,12 @@
     }
 
     function update() {
-        ctx.clearRect(0, 0, width, height);
+        if (!canvas) return;
+
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
+
+        ctx.clearRect(0, 0, w, h);
         ctx.strokeStyle = `rgba(180, 200, 255, ${opacity})`;
         ctx.lineWidth = 1;
         ctx.lineCap = "round";
@@ -61,8 +57,8 @@
             d.y += d.speed;
             d.x += wind * d.z;
 
-            if (d.y > height) d.y = -d.length;
-            if (d.x < -50 || d.x > width + 50) d.x = Math.random() * width;
+            if (d.y > h) d.y = -d.length;
+            if (d.x < -50 || d.x > w + 50) d.x = Math.random() * w;
         }
         ctx.stroke();
 
@@ -73,7 +69,7 @@
         ctx = canvas.getContext("2d");
         resizeCanvas();
         update();
-        resizeObserver.observe(props.target);
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
@@ -86,9 +82,11 @@
 
 <style>
     .rain {
-        position: fixed;
+        position: absolute;
         inset: 0;
-        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        pointer-events:none;
         z-index: 0;
     }
 </style>

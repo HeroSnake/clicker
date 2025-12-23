@@ -3,11 +3,6 @@
     import { game } from "../../store/game";
     import { displayMode } from "../../store/display";
 
-    let canvas;
-    let ctx;
-    let cursorImg;
-    let innerRadius;
-
     const SIZE = 20;
     const RING_SPACING = 20;
     const CURSOR_DURATION = 500;
@@ -17,6 +12,13 @@
     const isMobile = window.innerWidth < 768;
     const TARGET_FPS = isMobile ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
+    const dpr = window.devicePixelRatio || 1;
+
+    let canvas;
+    let ctx;
+    let cursorImg;
+    let innerRadius;
+    let resizeObserver = new ResizeObserver(resizeCanvas);
 
     let ringSpeeds = [];
     let ringCount = 0;
@@ -40,17 +42,17 @@
         return 1 - f * f * f;
     }
 
-    function updateInnerRadius() {
-        const itemButton = document.getElementById("item-button");
-        innerRadius = $displayMode === "desktop" && itemButton ? itemButton.clientWidth * 0.7 : 200;
-    }
-
-    function resize() {
+    function resizeCanvas() {
         if (!canvas) return;
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
+
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        const itemButton = document.getElementById("item-button");
+        innerRadius = $displayMode === "desktop" && itemButton ? itemButton.clientWidth * 0.7 : 100;
+
+        updateRings();
     }
 
     function updateRings() {
@@ -83,7 +85,7 @@
         lastFrame = now;
 
         if (!canvas) return;
-        const dpr = window.devicePixelRatio || 1;
+
         const w = canvas.width / dpr;
         const h = canvas.height / dpr;
 
@@ -148,22 +150,16 @@
         cursorImg.src = "./img/cursor/cursor-small.png";
         cursorImg.decode().then(() => {
             startTime = performance.now();
-            resize();
-            updateInnerRadius();
-            updateRings();
+            resizeCanvas();
             raf = requestAnimationFrame(draw);
         });
 
-        window.addEventListener("resize", () => {
-            resize();
-            updateInnerRadius();
-            updateRings();
-        });
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
         cancelAnimationFrame(raf);
-        window.removeEventListener("resize", resize);
+        resizeObserver.disconnect();
     });
 </script>
 
@@ -172,9 +168,9 @@
 <style>
     #cursors {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        inset: 0;
+        width: 100%;
+        height: 100%;
         pointer-events: none;
         z-index: 0;
     }

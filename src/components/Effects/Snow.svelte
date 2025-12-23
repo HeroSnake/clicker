@@ -1,9 +1,8 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
 
-    const props = $props();
-
     const BASE_NUM_SNOWFLAKES = 100;
+    const dpr = window.devicePixelRatio || 1;
 
     let canvas;
     let ctx;
@@ -14,9 +13,8 @@
     function resizeCanvas() {
         if (!canvas) return;
 
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = props.target.clientWidth * dpr;
-        canvas.height = props.target.clientHeight * dpr;
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         createSnowflakes(canvas.width / dpr, canvas.height / dpr);
     }
@@ -45,8 +43,8 @@
     function draw() {
         if (!canvas) return;
 
-        const w = canvas.width / (window.devicePixelRatio || 1);
-        const h = canvas.height / (window.devicePixelRatio || 1);
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
 
         ctx.clearRect(0, 0, w, h);
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
@@ -75,7 +73,7 @@
         resizeCanvas();
         draw();
 
-        resizeObserver.observe(props.target);
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
@@ -87,13 +85,12 @@
 <canvas bind:this={canvas} class="snow-canvas"></canvas>
 
 <style>
-  .snow-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+.snow-canvas {
+    position: absolute;
+    inset: 0;
     height: 100%;
-    pointer-events: none;
-    z-index: 1000;
-  }
+    width: 100%;
+    pointer-events:none;
+    z-index: 0;
+}
 </style>

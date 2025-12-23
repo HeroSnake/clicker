@@ -2,107 +2,119 @@
     import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
 
-    const props = $props();
-
-    const img = Object.assign(new Image(), { src: "./img/item/item-sm.png" });
+    const img = Object.assign(new Image(), { src: "/img/item/item-sm.png" });
 
     let canvas;
     let ctx;
-    let animationFrame;
+    let raf;
+
     let drops = [];
-    let resizeObserver = new ResizeObserver(resizeCanvas);
 
+    // reactive amount
     let numDrops = $derived.by(() => {
-        if ($game.itemCount == 1) {
-            return 1;
-        }
+        if ($game.itemCount === 1) return 1;
 
-        const totalStock = $game.buildings.reduce((sum, building) => sum + (building.stock || 0), 0);
-        return Math.max(1, Math.min(totalStock / 10000 * 100));
-	});
+        const totalStock = $game.buildings.reduce(
+            (sum, b) => sum + (b.stock || 0),
+            0
+        );
 
-    function resizeCanvas() {
-        canvas.width = props.target.clientWidth;
-        canvas.height = props.target.clientHeight;
-        initDrops();
-    }
+        return Math.max(1, Math.min((totalStock / 10000) * 100, 100));
+    });
 
-    function initDrops() {
-        drops = [];
-        for (let i = 0; i < numDrops; i++) {
-            drops.push(new Drop(img));
-        }
-    }
-
-    class Drop {
-        constructor(img) {
-            this.img = img;
-            this.reset();
-        }
-
-        reset() {
-            this.x = Math.random() * props.target.clientWidth;
-            this.y = Math.random() * -props.target.clientHeight;
-            this.speed = Math.random() * 0.5 + 1;
-            this.scale = Math.random() * 0.2 + 0.1; // scaling factor
-            this.rotation = Math.random() * 360;
-            this.rotationSpeed = Math.random() * 2 - 1;
-        }
-
-        update() {
-            this.y += this.speed;
-            this.rotation += this.rotationSpeed;
-            if (this.y > props.target.clientHeight + this.img.height * this.scale) {
-                this.reset();
-            }
-        }
-
-        draw(ctx) {
-            ctx.save();
-            ctx.translate(this.x, this.y);
-            ctx.rotate((this.rotation * Math.PI) / 180);
-
-            const width = this.img.width * this.scale;
-            const height = this.img.height * this.scale;
-
-            // Calculate brightness: smallest = 0.02 scale → 1.5 (150%)
-            // largest = 0.12 scale → 0.5 (50%)
-            const minScale = 0.02;
-            const maxScale = 0.12;
-            let brightness = 0.5 + (maxScale - this.scale) / (maxScale - minScale) * 1.0;
-            brightness = Math.min(Math.max(brightness, 0.5), 1.5); // clamp 50%-150%
-            ctx.filter = `brightness(${brightness})`;
-
-            ctx.drawImage(this.img, -width/2, -height/2, width, height);
-            ctx.restore();
-        }
-    }
-
-    function animate() {
+    function resize() {
         if (!canvas) return;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        for (let drop of drops) {
-            drop.update();
-            drop.draw(ctx);
-        }
-        animationFrame = requestAnimationFrame(animate);
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
+
+    function createDrop() {
+        return {
+            x: Math.random() * canvas.clientWidth,
+            y: Math.random() * -canvas.clientHeight,
+            speed: Math.random() * 0.5 + 1,
+            scale: Math.random() * 0.6 + 0.1,
+            rotation: Math.random() * Math.PI * 2,
+            rotationSpeed: (Math.random() * 2 - 1) * 0.02
+        };
+    }
+
+    function resetDrop(d) {
+        d.x = Math.random() * canvas.clientWidth;
+        d.y = Math.random() * -canvas.clientHeight;
+        d.speed = Math.random() * 0.5 + 1;
+        d.scale = Math.random() * 0.2 + 0.1;
+        d.rotation = Math.random() * Math.PI * 2;
+        d.rotationSpeed = (Math.random() * 2 - 1) * 0.02;
+    }
+
+    function rebuildDrops() {
+        drops.length = 0;
+        for (let i = 0; i < numDrops; i++) {
+            drops.push(createDrop());
+        }
+    }
+
+    function updateAndDraw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (const d of drops) {
+            d.y += d.speed;
+            d.rotation += d.rotationSpeed;
+
+            if (d.y > canvas.clientHeight + img.height * d.scale) {
+                resetDrop(d);
+            }
+
+            const w = img.width * d.scale;
+            const h = img.height * d.scale;
+
+            // brightness based on scale
+            const minScale = 0.02;
+            const maxScale = 0.12;
+            let brightness =
+                0.5 + ((maxScale - d.scale) / (maxScale - minScale)) * 1.0;
+            brightness = Math.min(Math.max(brightness, 0.5), 1.5);
+
+            ctx.save();
+            ctx.translate(d.x, d.y);
+            ctx.rotate(d.rotation);
+            ctx.filter = `brightness(${brightness})`;
+            ctx.drawImage(img, -w / 2, -h / 2, w, h);
+            ctx.restore();
+        }
+
+        raf = requestAnimationFrame(updateAndDraw);
+    }
+
+    $effect(() => {
+        // rebuild when amount changes
+        if (canvas && img.complete) {
+            rebuildDrops();
+        }
+    })
 
     onMount(() => {
         ctx = canvas.getContext("2d");
 
-        img.onload = () => {
-            resizeCanvas();
-            animate();
-        }
+        resize();
+        window.addEventListener("resize", resize);
 
-        resizeObserver.observe(props.target);
+        img.onload = () => {
+            rebuildDrops();
+            updateAndDraw();
+        };
     });
 
     onDestroy(() => {
-        cancelAnimationFrame(animationFrame);
-        resizeObserver.disconnect();
+        cancelAnimationFrame(raf);
+        window.removeEventListener("resize", resize);
     });
 </script>
 
@@ -110,10 +122,12 @@
 
 <style>
     #raining-items {
-        position:absolute;
-        top:0;
-        left:0;
-        pointer-events:none;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
         z-index: -1;
+        display: block;
     }
 </style>

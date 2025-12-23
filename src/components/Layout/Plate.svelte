@@ -9,6 +9,7 @@
     import Stats from '../Layout/Stats.svelte';
     import Snow from '../Effects/Snow.svelte';
     import ClickableItem from '../Item/ClickableItem.svelte';
+    import Cursors from '../Item/Cursors.svelte';
 
     let plate = null;
 </script>
@@ -23,26 +24,25 @@
     <Stats />
 
     {#if plate}
+        <ClickableItem  />
 
-        <ClickableItem target={plate} />
+        <Cursors />
 
-        <!-- EFFECTS -->
-        <GoldenItems target={plate} />
+        <GoldenItems />
 
-        <Fluid target={plate} />
+        <Fluid />
 
         <div id="lighting-overlay"></div>
 
-        <RainingItems target={plate} />
+        <RainingItems />
 
-        <GodRays target={plate} />
+        <GodRays />
 
         {#if $game.seasonId == 1}
-            <Rain target={plate} />
+            <Rain />
         {:else if $game.seasonId == 4}
-            <Snow target={plate} />
+            <Snow />
         {/if}
-
     {/if}
 </div>
 

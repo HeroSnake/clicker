@@ -1,8 +1,6 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    const props = $props();
-
     const isMobile = window.innerWidth < 768;
     const TARGET_FPS = isMobile ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
@@ -18,12 +16,11 @@
     let raf;
     let last = performance.now();
     let dpr = window.devicePixelRatio || 1;
-
     let resizeObserver = new ResizeObserver(resizeCanvas);
 
     function resizeCanvas() {
-        canvas.width = props.target.clientWidth * dpr;
-        canvas.height = props.target.clientHeight * dpr;
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
@@ -119,7 +116,8 @@
         ctx = canvas.getContext("2d");
         resizeCanvas();
         raf = requestAnimationFrame(loop);
-        resizeObserver.observe(props.target);
+
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
@@ -132,8 +130,10 @@
 
 <style>
     .click-canvas {
-        position: fixed;
+        position: absolute;
         inset: 0;
+        height: 100%;
+        width: 100%;
         pointer-events: none;
         z-index: 3;
     }

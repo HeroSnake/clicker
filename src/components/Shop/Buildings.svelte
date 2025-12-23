@@ -75,7 +75,7 @@
 
     .building:hover:not(:disabled) {
         filter: brightness(1.3);
-        box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.2), 0 0 7px 2px rgba(255, 255, 255, 0.2);
+        box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.2);
     }
 
     .building:disabled {

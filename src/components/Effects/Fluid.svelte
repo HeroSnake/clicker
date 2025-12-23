@@ -2,8 +2,6 @@
     import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
 
-    const props = $props();
-
     // Resolution of the wave (lower = faster, still smooth)
     const STEP = 3;
     const waves = [
@@ -13,34 +11,29 @@
     ];
     const offsetsFront = waves.map(() => 0);
     const offsetsBack  = waves.map(() => 0);
+    const dpr = window.devicePixelRatio || 1;
 
     let canvas;
     let ctx;
     let animationFrame;
     let gradientFront;
     let gradientBack;
-
-    let resizeObserver = new ResizeObserver(resizeCanvas);
     let fluidHeight = $derived($game.achievements.length);
-    let width = 0;
-    let height = 0;
     let topEdgeY = [];
+    let resizeObserver = new ResizeObserver(resizeCanvas);
 
     function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        width  = props.target.clientWidth;
-        height = props.target.clientHeight;
+        if (!canvas) return;
 
-        canvas.width  = width * dpr;
-        canvas.height = height * dpr;
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        topEdgeY.length = Math.ceil(width / STEP) + 1;
-
-        rebuildGradients();
+        topEdgeY.length = Math.ceil(canvas.width / STEP) + 1;
+        rebuildGradients(canvas.height / dpr);
     }
 
-    function rebuildGradients() {
+    function rebuildGradients(height) {
         const baseYFront = height - fluidHeight + 30;
         const baseYBack  = height - fluidHeight;
 
@@ -57,7 +50,7 @@
         gradientFront.addColorStop(1, "rgba(255,240,210,0.5)");
     }
 
-    function drawWave(baseY, offsets, storeTopEdge = false) {
+    function drawWave(baseY, offsets, width, height, storeTopEdge = false) {
         ctx.beginPath();
         ctx.moveTo(0, height);
         let index = 0;
@@ -77,6 +70,10 @@
     }
 
     function drawFluid() {
+        if (!canvas) return;
+
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
         ctx.clearRect(0, 0, width, height);
 
         const baseYFront = height - fluidHeight + 30;
@@ -84,11 +81,11 @@
 
         // Back layer
         ctx.fillStyle = gradientBack;
-        drawWave(baseYBack, offsetsBack);
+        drawWave(baseYBack, offsetsBack, width, height);
 
         // Front layer
         ctx.fillStyle = gradientFront;
-        drawWave(baseYFront, offsetsFront, true);
+        drawWave(baseYFront, offsetsFront, width, height, true);
 
         // Glow
         ctx.save();
@@ -126,7 +123,7 @@
         resizeCanvas();
         drawFluid();
 
-        resizeObserver.observe(props.target);
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
@@ -140,8 +137,9 @@
 <style>
     #fluid {
         position: absolute;
-        bottom: 0;
-        left: 0;
+        inset: 0;
+        height: 100%;
+        width: 100%;
         pointer-events: none;
         z-index: 1;
     }

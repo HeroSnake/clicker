@@ -1,15 +1,11 @@
 <script>
     import { onMount, onDestroy } from "svelte";
 
-    const props = $props();
-
     let canvas;
     let ctx;
     let raf;
     let resizeObserver = new ResizeObserver(resizeCanvas);
 
-    let width = 0;
-    let height = 0;
     let lastTime = 0;
 
     const isMobile = window.innerWidth < 768;
@@ -29,21 +25,14 @@
     const layerCanvases = [];
 
     function renderSize() {
-        return Math.min(width, height); // rays are circular, fit smallest dimension
+        return Math.min(canvas.clientWidth, canvas.clientHeight);
     }
 
     function resizeCanvas() {
         if (!canvas) return;
 
-        width = props.target.clientWidth;
-        height = props.target.clientHeight;
-
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
-        canvas.style.left = props.target.left + "px";
-        canvas.style.top = props.target.top + "px";
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
 
         layerCanvases.length = 0;
         layers.forEach(l => layerCanvases.push(prerenderLayer(l)));
@@ -101,6 +90,9 @@
         }
         lastTime = time;
 
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, width, height);
 
@@ -112,7 +104,7 @@
             ctx.save();
             ctx.translate(centerX, centerY); // center of the plate
             ctx.rotate(layer.rotation);
-            ctx.drawImage(layerCanvases[i], -size / 2, -size / 2); // draw centered
+            ctx.drawImage(layerCanvases[i], -size, -size); // draw centered
             ctx.restore();
 
             layer.rotation += layer.speed;
@@ -125,7 +117,7 @@
         ctx = canvas.getContext("2d");
         resizeCanvas();
         raf = requestAnimationFrame(draw);
-        resizeObserver.observe(props.target);
+        resizeObserver.observe(canvas);
     });
 
     onDestroy(() => {
@@ -138,8 +130,11 @@
 
 <style>
     .godrays {
-        position: fixed;
-        pointer-events: none;
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        pointer-events:none;
         z-index: -1;
     }
 </style>
