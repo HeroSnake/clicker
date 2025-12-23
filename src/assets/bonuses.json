@@ -2,35 +2,35 @@
     {
         "id": 0,
         "code": "productionBonus",
-        "cost": 1000,
+        "cost": 100000,
         "increase": 0.01,
         "level": 1
     },
     {
         "id": 1,
         "code": "goldenItemBoostPower",
-        "cost": 2000,
+        "cost": 200000,
         "increase": 0.01,
         "level": 1
     },
     {
         "id": 2,
         "code": "goldenItemBoostDuration",
-        "cost": 1500,
+        "cost": 150000,
         "increase": 0.01,
         "level": 1
     },
     {
         "id": 3,
         "code": "goldenItemSpawnChance",
-        "cost": 2500,
+        "cost": 250000,
         "increase": 0.01,
         "level": 1
     },
     {
         "id": 4,
         "code": "cursorProductionPercentage",
-        "cost": 5000,
+        "cost": 500000,
         "increase": 0.01,
         "level": 1
     }
