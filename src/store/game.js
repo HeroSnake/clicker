@@ -8,11 +8,17 @@ import { display } from "./display";
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
+const MAX_OFFLINE_TIME = 60 * 60 * 12; // 12 hours cap (seconds)
 const TICK_RATE = 200;
 const SAVE_RATE = 2000;
 
+let hiddenAt = null;
+
 function createGame() {
-    const { subscribe, update } = writable(initGame(), startLoops);
+    const initialGame = initGame();
+    applyOfflineProgress(initialGame);
+
+    const { subscribe, update } = writable(initialGame, startLoops);
 
     /* ---------------- INIT ---------------- */
 
@@ -50,9 +56,13 @@ function createGame() {
     function startLoops() {
         const saveInterval = setInterval(saveData, SAVE_RATE);
         const tickInterval = setInterval(tickGame, TICK_RATE);
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
         return () => {
             clearInterval(saveInterval);
             clearInterval(tickInterval);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }
 
@@ -86,6 +96,40 @@ function createGame() {
             };
         });
     }
+
+    function handleVisibilityChange() {
+        if (document.hidden) {
+            hiddenAt = Date.now();
+        } else if (hiddenAt) {
+            const now = Date.now();
+            const elapsedSeconds = Math.floor((now - hiddenAt) / 1000);
+            hiddenAt = null;
+
+            if (elapsedSeconds > 1) {
+                update(game => {
+                    const production = getTotalProduction(game) * (1 + game.productionBonus);
+
+                    if (production > 0) {
+                        const gained = production * Math.min(elapsedSeconds, MAX_OFFLINE_TIME);
+
+                        game.itemCount += gained;
+                        game.totalItemsCollected += gained;
+
+                        if (game.itemCount > game.maxItemsCollected) {
+                            game.maxItemsCollected = game.itemCount;
+                        }
+
+                        console.info(
+                            `[Hidden] +${Math.floor(gained)} items (${elapsedSeconds}s)`
+                        );
+                    }
+
+                    return game;
+                });
+            }
+        }
+    }
+
 
     /* ---------------- CORE MATH ---------------- */
 
@@ -178,6 +222,37 @@ function createGame() {
         const buildingCost = stock ?? building.stock;
         return Math.floor(building.cost * (Math.pow(costMultiplier, buildingCost) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
     }
+
+    function applyOfflineProgress(game) {
+        const lastSave = +localStorage.getItem("lastSaveAt");
+        if (!lastSave) return;
+
+        const now = Date.now();
+        let elapsedSeconds = Math.floor((now - lastSave) / 1000);
+        if (elapsedSeconds <= 1) return;
+
+        // Cap offline time
+        elapsedSeconds = Math.min(elapsedSeconds, MAX_OFFLINE_TIME);
+
+        // Compute base production (no boosts)
+        const baseProduction = getTotalProduction(game) * (1 + game.productionBonus);
+
+        if (baseProduction <= 0) return;
+
+        const gained = baseProduction * elapsedSeconds;
+
+        game.itemCount += gained;
+        game.totalItemsCollected += gained;
+
+        if (game.itemCount > game.maxItemsCollected) {
+            game.maxItemsCollected = game.itemCount;
+        }
+
+        console.info(
+            `[Offline] +${Math.floor(gained)} items (${elapsedSeconds}s)`
+        );
+    }
+
 
     function computeAchievements(game) {
         achievements.evaluate({
@@ -322,6 +397,8 @@ function createGame() {
             localStorage.setItem("critCount", game.critCount.toString());
             localStorage.setItem("goldenItemCount", game.goldenItemCount.toString());
             localStorage.setItem("seasonId", game.seasonId.toString());
+            localStorage.setItem("lastSaveAt", Date.now().toString());
+
             saveUpgrades(game.buildings);
             saveBonuses(game.bonuses);
             return game;
