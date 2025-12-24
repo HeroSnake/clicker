@@ -119,6 +119,8 @@ function createGame() {
                             game.maxItemsCollected = game.itemCount;
                         }
 
+                        saveData();
+
                         console.info(
                             `[Hidden] +${Math.floor(gained)} items (${elapsedSeconds}s)`
                         );
