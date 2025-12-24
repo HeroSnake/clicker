@@ -215,8 +215,8 @@ function createGame() {
         return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
-    function getUpgradeCost(upgrade) {
-        return Math.floor(getBuildingCost(upgrade, 1, upgrade.level * 25) / 10);
+    function getUpgradeCost(upgrade, level) {
+        return Math.floor(getBuildingCost(upgrade, 1, level * 25) / 10);
     }
 
     function getBuildingCost(building, multiple, stock = null) {
@@ -295,7 +295,7 @@ function createGame() {
     });
 
     const buyUpgrade = upgrade => update(game => {
-        const cost = getUpgradeCost(upgrade);
+        const cost = getUpgradeCost(upgrade, upgrade.level + 1);
         if (!GOD_MODE && game.itemCount < cost) return game;
 
         game.itemCount -= cost;

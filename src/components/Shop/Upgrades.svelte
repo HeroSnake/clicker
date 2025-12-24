@@ -31,7 +31,7 @@
             return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
                 const displayLevel = building.level + 1 + i;
                 const requiresLevel = displayLevel - 1;
-                const cost = game.getUpgradeCost({ ...building, level: displayLevel });
+                const cost = game.getUpgradeCost(building, displayLevel);
 
                 return {
                     ...building,
