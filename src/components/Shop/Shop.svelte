@@ -27,51 +27,14 @@
         if (event.key === "Shift" || event.key === "Control") amount = amounts[0];
     }
 
-    // --- Mobile swipe controls ---
-    let touchStartX = 0;
-    let touchEndX = 0;
-    const SWIPE_THRESHOLD = 150;
-
-    function handleTouchStart(e) {
-        touchStartX = e.touches[0].clientX;
-        touchEndX = e.touches[0].clientX;
-    }
-
-    function handleTouchMove(e) {
-        touchEndX = e.touches[0].clientX;
-    }
-
-    function handleTouchEnd() {
-        const deltaX = touchEndX - touchStartX;
-
-        if (deltaX < -SWIPE_THRESHOLD && !$game.displayShop) {
-            game.toggleShop();
-        }
-        if (deltaX > SWIPE_THRESHOLD && $game.displayShop) {
-            game.toggleShop();
-        }
-
-        touchStartX = 0;
-        touchEndX = 0;
-    }
-
     onMount(() => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
-
-        // Mobile swipe events
-        window.addEventListener('touchstart', handleTouchStart, { passive: true });
-        window.addEventListener('touchmove', handleTouchMove, { passive: true });
-        window.addEventListener('touchend', handleTouchEnd);
     });
 
     onDestroy(() => {
         window.removeEventListener('keydown', handleKeyDown);
         window.removeEventListener('keyup', handleKeyUp);
-
-        window.removeEventListener('touchstart', handleTouchStart);
-        window.removeEventListener('touchmove', handleTouchMove);
-        window.removeEventListener('touchend', handleTouchEnd);
     });
 </script>
 
@@ -121,6 +84,7 @@
 
     @media (max-width: 768px) {
         #shop {
+            height: calc(100% - 110px);
             width: calc(100% - 40px);
             position: fixed;
         }
