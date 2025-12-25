@@ -30,10 +30,10 @@
     {#each buildings as building}
         {#if $display.device === "desktop"}
             <Tooltip data={building}>
-                <Building {building}/>
+                <Building {building} amount={props.amount} />
             </Tooltip>
         {:else}
-            <Building {building}/>
+            <Building {building} amount={props.amount} />
         {/if}
     {/each}
 </div>
