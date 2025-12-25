@@ -181,7 +181,11 @@ function createGame() {
             if (b.level == 1) {
                 bonuses[b.code] = 0;
             } else {
-                bonuses[b.code] = b.increase * (b.level - 1);
+                let increase = b.increase;
+                if (b.unit == "%") {
+                    increase = b.increase / 100;
+                }
+                bonuses[b.code] = increase * (b.level - 1);
             }
         });
 
@@ -356,7 +360,7 @@ function createGame() {
     const boostProduction = () => update(game => {
         game.activeBoosts.push({
             multiplier: 5 * (1 + game.goldenItemBoostPower),
-            expiresAt: Date.now() + 5000 * (1 + game.goldenItemBoostDuration)
+            expiresAt: Date.now() + 5000 + (game.goldenItemBoostDuration * 1000)
         });
 
         return game;

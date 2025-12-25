@@ -19,10 +19,15 @@
 
 {:else if props.data.libelle === "bonus"}
         <span>
-            <span class="bonus">+{displayNumber(props.data.increase * 100)}%</span> {props.data.detail}
+            <span class="bonus">+{displayNumber(props.data.increase)}{props.data.unit}</span> {props.data.detail}
         </span>
         <span>
-            <span class="total">{displayNumber($game[props.data.code] * 100)}%</span> total
+            <span class="total">
+                {props.data.unit === "%"
+                    ? displayNumber($game[props.data.code] * 100) + "%"
+                    : displayNumber($game[props.data.code]) + (props.data.unit || "")}
+            </span>
+            total
         </span>
 
 {:else if props.data.libelle === "building"}
