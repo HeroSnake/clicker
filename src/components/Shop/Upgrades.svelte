@@ -1,6 +1,6 @@
 <script>
     import { game } from "../../store/game";
-    import Tooltip from "./Tooltip.svelte";
+    import Tooltip from "./Good/Tooltip.svelte";
 
     const ENHANCE_TRESHOLD = 25;
     const LEVELS_AHEAD = 1;

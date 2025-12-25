@@ -84,7 +84,7 @@
 
     @media (max-width: 768px) {
         #shop {
-            height: calc(100% - 110px);
+            height: calc(100dvh - 110px);
             width: calc(100% - 40px);
             position: fixed;
         }
