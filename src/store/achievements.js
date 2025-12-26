@@ -1,22 +1,15 @@
 import { writable, get } from "svelte/store";
 import achievementsData from "./../assets/achievements.json";
+import buildings from "./../assets/buildings.json";
 
 const STORAGE_KEY = "achievements";
 
-/**
- * Internal state:
- * {
- *   unlocked: Set<number>,
- *   newlyUnlocked: Achievement[]
- * }
- */
 function createAchievementsStore() {
     const { subscribe, update, set } = writable({
         unlocked: new Set(),
         newlyUnlocked: []
     });
 
-    // Load unlocked achievements from storage
     function load() {
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
         set({
@@ -26,7 +19,7 @@ function createAchievementsStore() {
     }
 
     function save(unlocked) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
+        // localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
     }
 
     function evaluate(stats) {
@@ -41,11 +34,16 @@ function createAchievementsStore() {
                     if (unlocked.has(achievement.id)) continue;
 
                     if (checkCondition(condition, achievement.value, stats)) {
-                        unlocked.add(achievement.id);
-                        newlyUnlocked.push({
-                            ...achievement,
-                            condition
-                        });
+                        if (conditionGroup.condition === "building") {
+
+                        } else if (conditionGroup.condition === "upgrade") {
+
+                        }
+
+                        const id = `${conditionGroup.id}_${achievement.id}`;
+
+                        unlocked.add(id);
+                        newlyUnlocked.push(id);
                     }
                 }
             }
@@ -71,9 +69,6 @@ function createAchievementsStore() {
         }));
     }
 
-    /**
-     * Reset achievements (for prestige/debug)
-     */
     function reset() {
         localStorage.removeItem(STORAGE_KEY);
         set({
@@ -82,8 +77,45 @@ function createAchievementsStore() {
         });
     }
 
+    function initAchievementList(gameState) {
+        let result = [];
+
+        for (const condition of achievementsData) {
+            for (const achievement of condition.list) {
+                const id =  `${condition.id}_${achievement.id}`;
+                const name = achievement.name;
+                const value = achievement.value;
+                const description = prepareString(achievement.id === 1 ? condition.description_first : condition.description, value);
+
+                if (condition.condition === "building" || condition.condition === "upgrade") {
+                    gameState.buildings.forEach(building => {
+                        result.push({
+                            id,
+                            name:  name.replace('[building]', building.name),
+                            description: description.replace('[building]', building.name),
+                            value
+                        })
+                    });
+                } else {
+                    result.push({
+                        id,
+                        name,
+                        description,
+                        value
+                    })
+                }
+            }
+        }
+
+        result.sort((a, b) => Number(a.value) - Number(b.value));
+        console.log(result);
+
+        return result;
+    }
+
     return {
         subscribe,
+        initAchievementList,
         load,
         evaluate,
         clearNew,
@@ -91,9 +123,10 @@ function createAchievementsStore() {
     };
 }
 
-/**
- * Condition resolver
- */
+function prepareString(string, value) {
+    return string.replace("[value]", value);
+}
+
 function checkCondition(condition, value, stats) {
     switch (condition) {
         case "clicks":
@@ -119,12 +152,12 @@ function checkCondition(condition, value, stats) {
 
         case "building":
             // value = { id, amount }
-            return (stats.buildings?.[value.id] || 0) >= value.amount;
+            // return (stats.buildings.find(b => b.id ===) || 0) >= value.amount;
 
         case "upgrades_total":
             return stats.upgrades_total >= value;
 
-        case "upgrades":
+        case "upgrade":
             // value = { id, amount }
             return (stats.upgrades?.[value.id] || 0) >= value.amount;
 

@@ -1,6 +1,7 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
+    import { achievements } from "../../store/achievements";
 
     // Resolution of the wave (lower = faster, still smooth)
     const STEP = 3;
@@ -18,7 +19,8 @@
     let animationFrame;
     let gradientFront;
     let gradientBack;
-    let fluidHeight = $derived($game.achievements.length);
+
+    let fluidHeight = $achievements.unlocked.size;
     let topEdgeY = [];
     let resizeObserver = new ResizeObserver(resizeCanvas);
 

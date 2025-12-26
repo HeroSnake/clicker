@@ -23,7 +23,7 @@ function createGame() {
     /* ---------------- INIT ---------------- */
 
     function initGame() {
-        return {
+        const state = {
             itemCount: +localStorage.getItem("itemCount") || 0,
             production: 0,
             itemsPerClick: 0,
@@ -32,8 +32,8 @@ function createGame() {
             goldenItemCount: +localStorage.getItem("goldenItemCount") || 0,
             maxItemsCollected: +localStorage.getItem("maxItemsCollected") || 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-            buildings: mergeBuildings(),
-            bonuses: mergeBonuses(),
+            buildings: loadBuildings(),
+            bonuses: loadBonuses(),
             activeBoosts: [],
             isProductionBoosted: false,
             productionBonus: 0,
@@ -42,11 +42,15 @@ function createGame() {
             goldenItemSpawnChance: 0,
             cursorProductionPercentage: 0,
             crit: {},
-            achievements: [],
             seasons,
             seasonId: initSeason(),
             displayShop: get(display).device === "desktop",
         };
+
+        achievements.initAchievementList(state);
+        achievements.load();
+
+        return state;
     }
 
     function initSeason() {
@@ -66,7 +70,7 @@ function createGame() {
         };
     }
 
-    function mergeBuildings() {
+    function loadBuildings() {
         const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
 
         return buildings.map(b => {
@@ -81,7 +85,7 @@ function createGame() {
         });
     }
 
-    function mergeBonuses() {
+    function loadBonuses() {
         const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
 
         return bonuses.map(b => {
@@ -215,7 +219,7 @@ function createGame() {
     }
 
     function getBonusCost(bonus) {
-        const costMultiplier = 10;
+        const costMultiplier = 5;
         return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
@@ -270,8 +274,8 @@ function createGame() {
             golden_clicks: game.goldenItemCount,
             buildings_total: game.buildings.reduce((a, b) => a + b.stock, 0),
             bonuses_total: game.bonuses.length,
-            buildings: game.buildingsById, // optional
-            upgrades: game.upgradesById    // optional
+            buildings: game.buildings,
+            upgrades: game.upgrades
         });
     }
 
@@ -387,7 +391,7 @@ function createGame() {
         game.crit = getBuildingCrit(cursor);
 
         // Check achievements AT THE END
-        // computeAchievements(game);
+        computeAchievements(game);
 
         return game;
     });
