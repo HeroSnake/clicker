@@ -1,7 +1,7 @@
 <script>
     import { onMount, tick } from "svelte";
     import { fly } from 'svelte/transition';
-    import { display } from "../../../store/display";
+    import { display } from "../../../../store/display";
     import Body from "./Body.svelte";
     import Head from "./Head.svelte";
 
@@ -35,7 +35,7 @@
         const targetRect = targetEl.getBoundingClientRect();
 
         // horizontal: always left of shop
-        const shopEl = document.getElementById("shop");
+        const shopEl = document.getElementById(props.parent);
         const shopRect = shopEl ? shopEl.getBoundingClientRect() : { left: window.innerWidth };
         x = shopRect.left - tooltipRect.width - 8;
 
@@ -59,7 +59,7 @@
 </button>
 
 {#if visible}
-    <div bind:this={tooltipEl} class="tooltip cracked-border" style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
+    <div bind:this={tooltipEl} class="tooltip border wooden" style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
         <Head data={props.data} />
         <div class="body">
             <Body data={props.data} />
@@ -76,7 +76,7 @@
         border-radius: 2px;
         font-size: 1.2rem;
         white-space: normal;
-        z-index: 2;
+        z-index: 5;
         width: 500px;
         line-height: 1.2rem;
         background: url('/img/textures/wood-horizontal-dark.png');

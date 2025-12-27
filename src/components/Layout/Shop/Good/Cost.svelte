@@ -1,7 +1,7 @@
 <script>
-    import { displayNumber } from "../../../utils";
-    import AnimatedText from "../../Layout/AnimatedText.svelte";
-    import Item from "../../Item/Item.svelte";
+    import { displayNumber } from "../../../../utils";
+    import AnimatedText from "../../Plate/AnimatedText.svelte";
+    import Item from "../../../Item/Item.svelte";
 
     export let value = 0;
 </script>

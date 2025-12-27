@@ -49,14 +49,22 @@
     font-size: 120%;
 }
 
-:root .cracked-border {
+:root .border {
     border: 10px solid transparent;
     border-radius: 5px;
-    border-image-source: url("/img/textures/wood-vertical.png");
-    border-image-slice: 20;
     border-image-width: 10px;
     border-image-repeat: repeat;
     box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
+}
+
+:root .border.wooden {
+    border-image-slice: 20;
+    border-image-source: url("/img/textures/wood-vertical.png");
+}
+
+:root .border.stone {
+    border-image-slice: 20;
+    border-image-source: url("/img/textures/stone-tiles.png");
 }
 
 :root button.interactive {

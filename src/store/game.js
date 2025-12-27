@@ -23,6 +23,8 @@ function createGame() {
     /* ---------------- INIT ---------------- */
 
     function initGame() {
+        const buildings = loadBuildings();
+
         const state = {
             itemCount: +localStorage.getItem("itemCount") || 0,
             production: 0,
@@ -32,7 +34,9 @@ function createGame() {
             goldenItemCount: +localStorage.getItem("goldenItemCount") || 0,
             maxItemsCollected: +localStorage.getItem("maxItemsCollected") || 0,
             totalItemsCollected: +localStorage.getItem("totalItemsCollected") || 0,
-            buildings: loadBuildings(),
+            amount: 1,
+            amounts: [1, 10, 100],
+            buildings,
             bonuses: loadBonuses(),
             activeBoosts: [],
             isProductionBoosted: false,
@@ -45,10 +49,10 @@ function createGame() {
             seasons,
             seasonId: initSeason(),
             displayShop: get(display).device === "desktop",
+            displayDashboard: get(display).device === "desktop",
         };
 
-        achievements.initAchievementList(state);
-        achievements.load();
+        achievements.load(buildings);
 
         return state;
     }
@@ -263,22 +267,6 @@ function createGame() {
         );
     }
 
-
-    function computeAchievements(game) {
-        achievements.evaluate({
-            clicks: game.clickCount,
-            critical_clicks: game.critCount,
-            critical_chance: game.crit?.chance ?? 0,
-            items_total: game.totalItemsCollected,
-            production: game.production,
-            golden_clicks: game.goldenItemCount,
-            buildings_total: game.buildings.reduce((a, b) => a + b.stock, 0),
-            bonuses_total: game.bonuses.length,
-            buildings: game.buildings,
-            upgrades: game.upgrades
-        });
-    }
-
     /* ---------------- ACTIONS ---------------- */
 
     const setSeason = id => update(game => {
@@ -286,8 +274,18 @@ function createGame() {
         return game;
     });
 
+    const setAmount = amount => update(game => {
+        game.amount = amount;
+        return game;
+    });
+
     const toggleShop = () => update(game => {
         game.displayShop = !game.displayShop;
+        return game;
+    });
+
+    const toggleDashboard = () => update(game => {
+        game.displayDashboard = !game.displayDashboard;
         return game;
     });
 
@@ -391,7 +389,7 @@ function createGame() {
         game.crit = getBuildingCrit(cursor);
 
         // Check achievements AT THE END
-        computeAchievements(game);
+        // achievements.evaluate();
 
         return game;
     });
@@ -440,7 +438,9 @@ function createGame() {
         clickGoldenItem,
         getBuildingProduction,
         setSeason,
+        setAmount,
         toggleShop,
+        toggleDashboard,
         GOD_MODE
     };
 }

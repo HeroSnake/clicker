@@ -1,10 +1,8 @@
 <script>
-    import { game } from "../../store/game";
-    import { display } from "../../store/display";
+    import { game } from "../../../store/game";
+    import { display } from "../../../store/display";
     import Building from "./Good/Building.svelte";
     import Tooltip from "./Good/Tooltip.svelte";
-
-    const props = $props();
 
     let buildings = $derived($game.buildings
         .filter((building, i, arr) => {
@@ -12,7 +10,7 @@
             return building.stock >= 1 || (i > lastOwnedIdx && i <= lastOwnedIdx + 2);
         })
         .flatMap(building => {
-            const cost = game.getBuildingCost(building, props.amount);
+            const cost = game.getBuildingCost(building, $game.amount);
             return {
                 ...building,
                 __original: building,
@@ -29,11 +27,11 @@
 <div class="buildings">
     {#each buildings as building}
         {#if $display.device === "desktop"}
-            <Tooltip data={building}>
-                <Building {building} amount={props.amount} />
+            <Tooltip data={building} parent="shop">
+                <Building {building} amount={$game.amount} />
             </Tooltip>
         {:else}
-            <Building {building} amount={props.amount} />
+            <Building {building} amount={$game.amount} />
         {/if}
     {/each}
 </div>

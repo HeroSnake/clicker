@@ -1,7 +1,8 @@
 <script>
+    import { display } from "../../store/display";
     import { game } from "../../store/game";
     import Item from "../Item/Item.svelte";
-    import Seasons from "./Seasons.svelte";
+    import Seasons from "./Plate/Seasons.svelte";
 </script>
 
 <div id="header">
@@ -12,11 +13,13 @@
     {/if}
     <div class="header-right">
         <Seasons />
-        <button
-            onclick={() => game.toggleShop()}
-            class="no-btn shop-btn interactive"
-            aria-label="shop"
-        ></button>
+        {#if $display.device === "mobile"}
+            <button
+                onclick={() => game.toggleShop()}
+                class="no-btn shop-btn interactive"
+                aria-label="shop"
+            ></button>
+        {/if}
     </div>
 </div>
 

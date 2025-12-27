@@ -1,6 +1,6 @@
 <script>
-    import { game } from "../../../store/game";
-    import { display } from "../../../store/display";
+    import { game } from "../../../../store/game";
+    import { display } from "../../../../store/display";
     import Image from "./Image.svelte";
     import Cost from "./Cost.svelte";
     import Body from "./Body.svelte";
@@ -22,7 +22,7 @@
     {/if}
 </button>
 {#if $display.device === "mobile"}
-    <div class="stats cracked-border">
+    <div class="stats border wooden">
         <Body data={props.building} />
     </div>
 {/if}

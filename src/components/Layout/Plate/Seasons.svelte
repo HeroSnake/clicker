@@ -1,5 +1,5 @@
 <script>
-    import { game } from "../../store/game";
+    import { game } from "../../../store/game";
 </script>
 
 <div class="seasons">

@@ -1,6 +1,6 @@
 <script>
-    import { displayNumber } from "../../../utils";
-    import { game } from "../../../store/game";
+    import { displayNumber } from "../../../../utils";
+    import { game } from "../../../../store/game";
 
     const props = $props();
 </script>
