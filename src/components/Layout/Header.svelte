@@ -2,6 +2,7 @@
     import { display } from "../../store/display";
     import { game } from "../../store/game";
     import Item from "../Item/Item.svelte";
+    import Button from "./Button.svelte";
     import Seasons from "./Plate/Seasons.svelte";
 </script>
 
@@ -9,14 +10,16 @@
     <Item mode="small" style="width:40px;" />
     <span class="title">Gland clicker</span>
     {#if game.GOD_MODE}
-        <button class="resetbtn" onclick={game.resetGame}>Reset Game</button>
+        <Button onClick={game.resetGame} size="lg">
+            <span>Reset Game</span>
+        </Button>
     {/if}
     <div class="header-right">
         <Seasons />
         {#if $display.device === "mobile"}
             <button
                 onclick={() => game.toggleShop()}
-                class="no-btn shop-btn interactive"
+                class="shop-btn interactive"
                 aria-label="shop"
             ></button>
         {/if}

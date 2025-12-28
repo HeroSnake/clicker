@@ -37,7 +37,7 @@
 </script>
 
 <div id="item-container">
-    <button  id="item-button" class="no-btn" onclick={clickItem}  type="button"  class:wiggle={clickedItem}>
+    <button id="item-button" onclick={clickItem} type="button" class:wiggle={clickedItem}>
         <Item />
     </button>
 </div>

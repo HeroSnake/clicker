@@ -45,6 +45,7 @@ function createGame() {
             goldenItemBoostDuration: 0,
             goldenItemSpawnChance: 0,
             cursorProductionPercentage: 0,
+            highestBuildingUnlocked: 0,
             crit: {},
             seasons,
             seasonId: initSeason(),
@@ -296,6 +297,11 @@ function createGame() {
         game.itemCount -= Math.floor(cost);
         building.stock += amount;
 
+        game.highestBuildingUnlocked = Math.max(
+            game.highestBuildingUnlocked,
+            building.id
+        );
+
         saveUpgrades(game.buildings);
         return game;
     });
@@ -389,7 +395,7 @@ function createGame() {
         game.crit = getBuildingCrit(cursor);
 
         // Check achievements AT THE END
-        // achievements.evaluate();
+        achievements.evaluate();
 
         return game;
     });

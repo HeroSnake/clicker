@@ -1,23 +1,21 @@
 <script>
-    const props = $props();
+    const { mode = '', style = '' } = $props();
 
-    let link = $state('');
-    let suffix = '';
     let ext = 'png';
-
-    switch (props.mode) {
-        case 'small':
-            suffix = '-sm';
-            break;
-        case 'gold':
-            suffix = '-gold';
-            break;
-    }
-
-    link = `./img/item/item${suffix}.${ext}`;
+    let suffix = $derived.by(() => {
+        switch (mode) {
+            case 'small':
+                return '-sm';
+            case 'gold':
+                return '-gold';
+            default:
+                return '';
+        }
+    });
+    let link = $derived(`./img/item/item${suffix}.${ext}`);
 </script>
 
-<img src="{link}" style="{props.style}" alt="item" />
+<img src="{link}" style="{style}" alt="item" />
 
 <style>
     img {

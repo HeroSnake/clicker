@@ -2,17 +2,19 @@
     import Cost from "./Cost.svelte";
     import Image from "./Image.svelte";
 
-    const props = $props();
+    const { data = {} } = $props();
 </script>
 
 <div class="head">
-    <Image img={props.data.img} />
+    <Image img={data.img} hue={data.hue} />
     <div>
         <div class="info">
-            <span class="name">{props.data.name}</span>
-            <Cost value={props.data.cost} />
+            <span class="name">{data.name}</span>
+            {#if data.cost}
+                <Cost value={data.cost} />
+            {/if}
         </div>
-        <span class="description">{props.data.description}</span>
+        <span class="description">{data.description}</span>
     </div>
 </div>
 
@@ -22,15 +24,20 @@
         align-items: flex-start;
         gap: 10px;
     }
-    .info {
-        display: flex;
-        align-items: flex-start;
-    }
     .name {
         font-size: 2rem;
     }
 
     .description {
         font-size: 1.1rem;
+    }
+
+    @media (max-width: 768px) {
+        .name {
+            font-size: 1.2rem;
+        }
+        .description {
+            font-size: 0.8rem;
+        }
     }
 </style>

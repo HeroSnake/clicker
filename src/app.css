@@ -62,11 +62,6 @@
     border-image-source: url("/img/textures/wood-vertical.png");
 }
 
-:root .border.stone {
-    border-image-slice: 20;
-    border-image-source: url("/img/textures/stone-tiles.png");
-}
-
 :root button.interactive {
     position: relative;
     cursor: pointer;
@@ -107,10 +102,14 @@ body {
     flex-direction: column;
 }
 
-.no-btn {
+button {
     all: unset;
     cursor: pointer;
     user-select: none;
+}
+
+button:disabled {
+    cursor: auto;
 }
 
 @media (min-width: 769px) {
@@ -122,5 +121,12 @@ body {
     :root button.interactive:hover:not(:disabled) {
         animation: heartbeat 0.9s ease-in-out infinite;
         animation-play-state: running;
+    }
+}
+
+@media (max-width: 768px) {
+    :root .border {
+        border: 5px solid transparent;
+        border-image-width: 5px;
     }
 }

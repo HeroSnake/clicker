@@ -5,25 +5,29 @@
     import Cost from "./Cost.svelte";
     import Body from "./Body.svelte";
 
-    const props = $props();
+    const { building = {}, amount = 0 } = $props();
 
 </script>
 
-<button class="no-btn building" onclick={() => game.buyBuilding(props.building.__original, props.amount)} disabled={props.building.disabled}>
-    <Image img={props.building.img} />
+<button
+    class="building"
+    onclick={() => game.buyBuilding(building.__original, amount)}
+    disabled={building.disabled}
+>
+    <Image img={building.img} />
     <div class="info">
-        <span class="name">{props.building.name}</span>
-        <Cost value={props.building.cost} />
+        <span class="name">{building.name} <span class="level">(lvl {building.level})</span></span>
+        <Cost value={building.cost} />
     </div>
-    {#if props.building.stock > 0}
+    {#if building.stock > 0}
         <span class="stock">
-            {props.building.stock}
+            {building.stock}
         </span>
     {/if}
 </button>
 {#if $display.device === "mobile"}
     <div class="stats border wooden">
-        <Body data={props.building} />
+        <Body data={building} />
     </div>
 {/if}
 
@@ -65,8 +69,8 @@
         font-size: 3rem;
         text-align: center;
         right: 5px;
-        z-index: 1;
-        color: #fff;
+        z-index: -1;
+        color: #000;
         opacity: 0.7;
     }
 
@@ -81,6 +85,9 @@
         font-weight: bold;
     }
 
+    .level {
+        font-size: 1rem;
+    }
     .stats {
         pointer-events: none;
         padding: 10px;

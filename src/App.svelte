@@ -1,5 +1,7 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
+	import { fly } from "svelte/transition";
+    import { flip } from "svelte/animate";
     import { game } from "./store/game";
     import { display } from './store/display';
     import Header from "./components/Layout/Header.svelte";
@@ -7,6 +9,7 @@
     import Shop from './components/Layout/Shop/Shop.svelte';
     import { achievements } from './store/achievements';
     import Dashboard from './components/Layout/Dashboard/Dashboard.svelte';
+    import Popup from './components/Layout/Popup.svelte';
 
     // --- Mobile swipe controls ---
     let touchStartX = 0;
@@ -72,8 +75,6 @@
         window.addEventListener('touchstart', handleTouchStart, { passive: true });
         window.addEventListener('touchmove', handleTouchMove, { passive: true });
         window.addEventListener('touchend', handleTouchEnd);
-
-        achievements.evaluate();
     });
 
     onDestroy(() => {
@@ -91,6 +92,18 @@
     <Plate />
     <Dashboard />
     <Shop />
+    <div id="popup-container">
+        {#each $achievements.newlyUnlocked as id (id)}
+            <div
+                in:fly={{ y: 40, duration: 200 }}
+                out:fly={{ y: 40, duration: 200 }}
+                animate:flip={{ duration: 200 }}
+            >
+                <Popup data={$achievements.list.find(a => a.id === id)} onClick={() => achievements.clear(id)}>
+                </Popup>
+            </div>
+        {/each}
+    </div>
 </div>
 
 <style>
@@ -98,5 +111,24 @@
         height: calc(100% - 70px);
         display: flex;
         z-index: 3;
+        position: relative;
+    }
+
+    #popup-container {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        z-index: 2;
+        transform: translate(-50%, 0);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    @media (max-width: 768px) {
+        #popup-container {
+            width: 80%;
+            bottom: 5px;
+        }
     }
 </style>

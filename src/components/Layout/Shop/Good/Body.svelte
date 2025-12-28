@@ -2,43 +2,43 @@
     import { displayNumber } from "../../../../utils";
     import { game } from "../../../../store/game";
 
-    const props = $props();
+    const { data = {} } = $props();
 </script>
 
-{#if props.data.libelle === "upgrade"}
+{#if data.libelle === "upgrade"}
 
     <span>
-        <b class="bonus">Double</b> {props.data.name} efficiency
+        <b class="bonus">Double</b> {data.name} efficiency
     </span>
 
-    {#if props.data.type === "cursor"}
+    {#if data.type === "cursor"}
         <span>
-            <span class="bonus">+{displayNumber(props.data.crit.bonus * 100)}%</span> crit chance
+            <span class="bonus">+{displayNumber(data.crit.bonus * 100)}%</span> crit chance
         </span>
     {/if}
 
-{:else if props.data.libelle === "bonus"}
+{:else if data.libelle === "bonus"}
         <span>
-            <span class="bonus">+{displayNumber(props.data.increase)}{props.data.unit}</span> {props.data.detail}
+            <span class="bonus">+{displayNumber(data.increase)}{data.unit}</span> {data.detail}
         </span>
         <span>
             <span class="total">
-                {props.data.unit === "%"
-                    ? displayNumber($game[props.data.code] * 100) + "%"
-                    : displayNumber($game[props.data.code]) + (props.data.unit || "")}
+                {data.unit === "%"
+                    ? displayNumber($game[data.code] * 100) + "%"
+                    : displayNumber($game[data.code]) + (data.unit || "")}
             </span>
             total
         </span>
 
-{:else if props.data.libelle === "building"}
-    {#if props.data.stock > 0}
+{:else if data.libelle === "building"}
+    {#if !data.disabled}
         <span>
-            Each {props.data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(props.data, true), false, true)}</b> per second
+            Each {data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(data, true), false, true)}</b> per second
         </span>
         <span>
-            {props.data.stock} {props.data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(props.data), false, true)}</b> per second
+            {data.stock} {data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(data), false, true)}</b> per second
         </span>
-        {#if props.data.type === "cursor"}
+        {#if data.type === "cursor"}
             <span>
                 <b class="total">+{displayNumber($game.crit.chance * 100)}%</b> <small>Crit chance</small>
                 (<b class="total">x{displayNumber($game.crit.multiplier, true)}</b> <small> Crit multiplier</small>)

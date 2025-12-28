@@ -1,6 +1,7 @@
 import { writable, get } from "svelte/store";
 import { game } from "./game";
 import achievementsData from "./../assets/achievements.json";
+import { displayNumber } from "../utils";
 
 const STORAGE_KEY = "achievements";
 
@@ -23,44 +24,70 @@ function createAchievements() {
     function initList(buildings) {
         let result = [];
 
-        for (const data of achievementsData) {
-            for (const achievement of data.list) {
-                const id =  `${data.id}_${achievement.id}`;
-                const name = achievement.name;
+        achievementsData.forEach(data => {
+            data.list.forEach(achievement => {
+                const groupId = data.id;
+                const achievementId = achievement.id;
+                const id = `${data.id}_${achievementId}`;
                 const value = achievement.value;
-                const description = prepareString(achievement.id === 1 ? data.description_first : data.description, value);
+                const name = achievement.name;
+                const descTemplate = achievementId === 1 ? data.description_first : data.description;
+                const description = prepareString(descTemplate, displayNumber(value, true));
                 const condition = data.condition;
+                const libelle = "achievement";
 
-                if (["building", "upgrade"].includes(condition)) {
+                if (condition === "building" || condition === "upgrade") {
                     buildings.forEach(building => {
+                        let hue = 0;
+                        if (achievementId > 1) {
+                            hue = 360 * ((achievementId - 1) / data.list.length);
+                        }
+
                         result.push({
                             id: `${id}_${building.id}`,
+                            achievementId,
+                            groupId,
                             buildingId: building.id,
-                            name:  name.replace('[building]', building.name),
+                            name: name.replace('[building]', building.name),
                             description: description.replace('[building]', building.name),
                             value,
                             condition,
-                        })
+                            libelle,
+                            img: `/img/buildings/${building.id}.png`,
+                            hue
+                        });
                     });
                 } else {
                     result.push({
                         id,
+                        achievementId,
+                        groupId,
+                        buildingId: null,
                         name,
                         description,
                         value,
                         condition,
-                    })
+                        libelle,
+                        img: "/img/achievements/locked.png",
+                    });
                 }
-            }
-        }
+            });
+        });
 
-        result.sort((a, b) => Number(a.value) - Number(b.value));
+        return result.sort((a, b) => {
+            if (a.groupId !== b.groupId) return a.groupId - b.groupId;
+            if (a.achievementId !== b.achievementId) return a.achievementId - b.achievementId;
 
-        return result;
+            if (a.buildingId == null && b.buildingId == null) return 0;
+            if (a.buildingId == null) return -1;
+            if (b.buildingId == null) return 1;
+
+            return a.buildingId - b.buildingId;
+        });
     }
 
     function save(unlocked) {
-        // localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlocked]));
     }
 
     function evaluate() {
@@ -80,7 +107,7 @@ function createAchievements() {
             production: get(game).production,
             golden_clicks: get(game).goldenItemCount,
             buildings_total: buildings.reduce((a, b) => a + b.stock, 0),
-            bonuses_total: get(game).bonuses.length,
+            bonuses_total: get(game).bonuses.reduce((a, b) => a + b.level - 1, 0),
             buildings: buildings,
             upgrades,
         };
@@ -102,24 +129,15 @@ function createAchievements() {
                 save(achievements.unlocked);
             }
 
-            console.log(achievements.unlocked);
-
-
-            // Optionally, remove or keep this debug log
-            // console.log(achievements);
-
             return achievements;
         });
     }
 
-    /**
-     * Clears the "newlyUnlocked" list after UI shows it
-     */
-    function clearNew() {
-        update(state => ({
-            ...state,
-            newlyUnlocked: new Set(),
-        }));
+    function clear(id) {
+        update(achievements => {
+            achievements.newlyUnlocked.delete(id);
+            return achievements;
+        });
     }
 
     function reset() {
@@ -135,7 +153,7 @@ function createAchievements() {
         subscribe,
         load,
         evaluate,
-        clearNew,
+        clear,
         reset
     };
 }
@@ -153,7 +171,7 @@ function check(achievement, stats) {
             return stats.critical_clicks >= achievement.value;
 
         case "critical_chance":
-            return stats.critical_chance >= achievement.value;
+            return stats.critical_chance * 100 >= achievement.value;
 
         case "items_total":
             return stats.items_total >= achievement.value;
@@ -171,7 +189,7 @@ function check(achievement, stats) {
             return (stats.buildings.find(b => b.id === achievement.buildingId).stock || 0) >= achievement.value;
 
         case "upgrade":
-            return (stats.buildings.find(b => b.id === achievement.buildingId).level || 0) >= achievement.value + 1;
+            return (stats.buildings.find(b => b.id === achievement.buildingId).level || 0) >= achievement.value;
 
         case "bonuses_total":
             return stats.bonuses_total >= achievement.value;

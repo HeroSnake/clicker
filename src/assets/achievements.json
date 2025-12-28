@@ -22,18 +22,13 @@
             },
             {
                 "id": 4,
-                "name": "Click Addict",
+                "name": "Click Master",
                 "value": 10000
             },
             {
                 "id": 5,
-                "name": "Click Machine",
-                "value": 100000
-            },
-            {
-                "id": 6,
                 "name": "Click God",
-                "value": 1000000
+                "value": 100000
             }
         ]
     },
@@ -51,30 +46,35 @@
             {
                 "id": 2,
                 "name": "Critical Streak",
-                "value": 100
+                "value": 50
             },
             {
                 "id": 3,
-                "name": "Critical Master",
-                "value": 1000
+                "name": "Critical Enjoyer",
+                "value": 100
             },
             {
                 "id": 4,
                 "name": "Critical Machine",
-                "value": 10000
+                "value": 500
             },
             {
                 "id": 5,
+                "name": "Critical Master",
+                "value": 1000
+            },
+            {
+                "id": 6,
                 "name": "Critical God",
-                "value": 100000
+                "value": 5000
             }
         ]
     },
     {
         "id": 3,
-        "condition": "critial_chance",
+        "condition": "critical_chance",
         "description_first": "Increase your critical chance.",
-        "description": "Reach 25% critical chance.",
+        "description": "Reach [value]% critical chance.",
         "list": [
             {
                 "id": 1,
@@ -146,7 +146,7 @@
             },
             {
                 "id": 8,
-                "name": "Tycoon",
+                "name": "Multi-Billionaire",
                 "value": 1000000000000
             },
             {
@@ -156,18 +156,56 @@
             },
             {
                 "id": 10,
-                "name": "Currency Deity",
+                "name": "Ploutos",
                 "value": 1000000000000000000
             },
             {
                 "id": 11,
                 "name": "To Infinity and Beyond",
-                "value": "infinity"
+                "value": 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000
             }
         ]
     },
     {
         "id": 5,
+        "condition": "bonuses_total",
+        "description_first": "Unlock your first bonus.",
+        "description": "Unlock [value] bonuses.",
+        "list": [
+            {
+                "id": 1,
+                "name": "First bonus",
+                "value": 1
+            },
+            {
+                "id": 2,
+                "name": "Bonus Enjoyer",
+                "value": 5
+            },
+            {
+                "id": 3,
+                "name": "Bonus Master",
+                "value": 15
+            },
+            {
+                "id": 4,
+                "name": "Bonus Pro",
+                "value": 25
+            },
+            {
+                "id": 5,
+                "name": "Bonus Elite",
+                "value": 50
+            },
+            {
+                "id": 6,
+                "name": "Bonus Overload",
+                "value": 100
+            }
+        ]
+    },
+    {
+        "id": 6,
         "condition": "production",
         "description_first": "Start you own auto production.",
         "description": "Reach [value] glands per second.",
@@ -235,7 +273,7 @@
         ]
     },
     {
-        "id": 6,
+        "id": 7,
         "condition": "golden_clicks",
         "description_first": "Click a golden gland.",
         "description": "Click [value] golden glands.",
@@ -268,37 +306,17 @@
             {
                 "id": 6,
                 "name": "Blessed by RNG",
-                "value": 1000
+                "value": 500
             },
             {
                 "id": 7,
-                "name": "Midas Rookie",
-                "value": 2000
-            },
-            {
-                "id": 8,
-                "name": "Midas Adept",
-                "value": 5000
-            },
-            {
-                "id": 9,
-                "name": "Midas Pro",
-                "value": 10000
-            },
-            {
-                "id": 10,
-                "name": "Golden God",
-                "value": 25000
-            },
-            {
-                "id": 11,
-                "name": "Golden Immortal",
-                "value": 100000
+                "name": "Midas",
+                "value": 1000
             }
         ]
     },
     {
-        "id": 7,
+        "id": 8,
         "condition": "buildings_total",
         "description_first": "Buy your first building.",
         "description": "Buy [value] buildings.",
@@ -356,10 +374,10 @@
         ]
     },
     {
-        "id": 8,
+        "id": 9,
         "condition": "building",
         "description_first": "Buy your first [building]",
-        "description": "Own [value] [building]s.",
+        "description": "Buy [value] [building]s.",
         "list": [
             {
                 "id": 1,
@@ -398,18 +416,13 @@
             },
             {
                 "id": 8,
-                "name": "Empire Builder - [building]",
+                "name": "Assembly Divinity - [building]",
                 "value": 750
-            },
-            {
-                "id": 9,
-                "name": "Assembly Monarch - [building]",
-                "value": 1000
             }
         ]
     },
     {
-        "id": 9,
+        "id": 10,
         "condition": "upgrade",
         "description_first": "Upgrade your first [building].",
         "description": "Upgrade [building] to level [value].",
@@ -417,7 +430,7 @@
             {
                 "id": 1,
                 "name": "First step - [building]",
-                "value": 1
+                "value": 2
             },
             {
                 "id": 2,
@@ -431,66 +444,13 @@
             },
             {
                 "id": 4,
-                "name": "Upgrade Pro - [building]",
-                "value": 25
-            },
-            {
-                "id": 5,
                 "name": "Upgrade Elite - [building]",
-                "value": 50
-            },
-            {
-                "id": 6,
-                "name": "Upgrade Tycoon - [building]",
-                "value": 100
-            },
-            {
-                "id": 7,
-                "name": "Upgrade Overload - [building]",
-                "value": 1000
-            }
-        ]
-    },
-    {
-        "id": 10,
-        "condition": "bonuses_total",
-        "description_first": "Unlock your first bonus.",
-        "description": "Unlock [value] bonuses.",
-        "list": [
-            {
-                "id": 1,
-                "name": "First bonus",
-                "value": 1
-            },
-            {
-                "id": 2,
-                "name": "Bonus Enjoyer",
-                "value": 5
-            },
-            {
-                "id": 3,
-                "name": "Bonus Master",
-                "value": 15
-            },
-            {
-                "id": 4,
-                "name": "Bonus Pro",
                 "value": 25
             },
             {
                 "id": 5,
-                "name": "Bonus Elite",
-                "value": 50
-            },
-            {
-                "id": 6,
-                "name": "Bonus Tycoon",
-                "value": 100
-            },
-            {
-                "id": 7,
-                "name": "Bonus Overload",
-                "value": 1000
+                "name": "Upgrade God - [building]",
+                "value": 31
             }
         ]
     }

@@ -1,10 +1,9 @@
 <script>
     import { onMount, onDestroy } from "svelte";
-    import { game } from "../../store/game";
     import { achievements } from "../../store/achievements";
 
-    // Resolution of the wave (lower = faster, still smooth)
     const STEP = 3;
+    const HEIGHT_LERP = 0.08;
     const waves = [
         { amp: 10, len: 600, speed: 0.02, freq: 0 },
         { amp: 6,  len: 300, speed: 0.015, freq: 0 },
@@ -19,10 +18,15 @@
     let animationFrame;
     let gradientFront;
     let gradientBack;
+    let targetFluidHeight = 0;
+    let animatedFluidHeight = 0;
 
-    let fluidHeight = $achievements.unlocked.size;
     let topEdgeY = [];
     let resizeObserver = new ResizeObserver(resizeCanvas);
+
+    $effect(() => {
+        targetFluidHeight = 600 * ($achievements.unlocked.size / $achievements.list.length);
+    });
 
     function resizeCanvas() {
         if (!canvas) return;
@@ -31,13 +35,12 @@
         canvas.height = canvas.clientHeight * dpr;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        topEdgeY.length = Math.ceil(canvas.width / STEP) + 1;
-        rebuildGradients(canvas.height / dpr);
+        topEdgeY.length = Math.ceil(canvas.clientWidth / STEP) + 1;
     }
 
     function rebuildGradients(height) {
-        const baseYFront = height - fluidHeight + 30;
-        const baseYBack  = height - fluidHeight;
+        const baseYFront = height - animatedFluidHeight + 30;
+        const baseYBack  = height - animatedFluidHeight;
 
         gradientBack = ctx.createLinearGradient(0, baseYBack - 20, 0, height);
         gradientBack.addColorStop(0, "rgba(230,230,200,0.8)");
@@ -56,7 +59,6 @@
         ctx.beginPath();
         ctx.moveTo(0, height);
         let index = 0;
-
         for (let x = 0; x <= width; x += STEP) {
             let y = baseY;
             for (let i = 0; i < waves.length; i++) {
@@ -78,8 +80,13 @@
         const height = canvas.clientHeight;
         ctx.clearRect(0, 0, width, height);
 
-        const baseYFront = height - fluidHeight + 30;
-        const baseYBack  = height - fluidHeight;
+        animatedFluidHeight +=
+            (targetFluidHeight - animatedFluidHeight) * HEIGHT_LERP;
+
+        rebuildGradients(height);
+
+        const baseYFront = height - animatedFluidHeight + 30;
+        const baseYBack  = height - animatedFluidHeight;
 
         // Back layer
         ctx.fillStyle = gradientBack;
@@ -89,7 +96,7 @@
         ctx.fillStyle = gradientFront;
         drawWave(baseYFront, offsetsFront, width, height, true);
 
-        // Glow
+        // Glow on surface
         ctx.save();
         ctx.strokeStyle = "white";
         ctx.lineWidth = 12;
@@ -97,16 +104,14 @@
         ctx.shadowColor = "white";
         ctx.globalAlpha = 0.4;
         ctx.beginPath();
-
         for (let i = 0, x = 0; x <= width; x += STEP, i++) {
             if (i === 0) ctx.moveTo(x, topEdgeY[i]);
             else ctx.lineTo(x, topEdgeY[i]);
         }
-
         ctx.stroke();
         ctx.restore();
 
-        // Animate
+        // Animate waves
         for (let i = 0; i < waves.length; i++) {
             offsetsFront[i] += waves[i].speed;
             offsetsBack[i]  += waves[i].speed;
@@ -123,6 +128,7 @@
         });
 
         resizeCanvas();
+        animatedFluidHeight = targetFluidHeight;
         drawFluid();
 
         resizeObserver.observe(canvas);

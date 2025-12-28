@@ -4,30 +4,35 @@
     import Building from "./Good/Building.svelte";
     import Tooltip from "./Good/Tooltip.svelte";
 
-    let buildings = $derived($game.buildings
-        .filter((building, i, arr) => {
-            const lastOwnedIdx = arr.map(b => b.stock >= 1).lastIndexOf(true);
-            return building.stock >= 1 || (i > lastOwnedIdx && i <= lastOwnedIdx + 2);
-        })
-        .flatMap(building => {
-            const cost = game.getBuildingCost(building, $game.amount);
-            return {
-                ...building,
-                __original: building,
-                libelle: "building",
-                cost,
-                img: `./img/buildings/${building.id}.png`,
-                disabled: cost > $game.itemCount
-            };
-        }));
+    let buildings = $derived(
+        $game.buildings
+            .filter((building, i) => {
+                return (
+                    building.stock > 0 || i <= $game.highestBuildingUnlocked + 2
+                );
+            })
+            .map(building => {
+                const cost = game.getBuildingCost(building, $game.amount);
+
+                return {
+                    ...building,
+                    __original: building,
+                    libelle: "building",
+                    cost,
+                    img: `./img/buildings/${building.id}.png`,
+                    unlocked: $game.totalItemsCollected >= cost,
+                    disabled: $game.itemCount < cost,
+                };
+            })
+    );
 
 </script>
 
 
 <div class="buildings">
-    {#each buildings as building}
+    {#each buildings as building (building.id)}
         {#if $display.device === "desktop"}
-            <Tooltip data={building} parent="shop">
+            <Tooltip data={building} parent="shop" disabled={!building.unlocked} >
                 <Building {building} amount={$game.amount} />
             </Tooltip>
         {:else}

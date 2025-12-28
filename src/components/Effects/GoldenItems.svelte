@@ -48,7 +48,7 @@
 <div id="golden-items" bind:this={canvas}>
     {#each goldenItems as item (item.id)}
         <button
-            class="no-btn golden-item-wrapper"
+            class="golden-item-wrapper"
             style="left: {item.x}px; top: {item.y}px;"
             onclick={() => clickItem(item.id)}
         >

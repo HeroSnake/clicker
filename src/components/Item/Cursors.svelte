@@ -5,10 +5,7 @@
 
     const SIZE = 20;
     const RING_SPACING = 20;
-    const CURSOR_DURATION = 500;
-    const PULSE_AMPLITUDE = 8;
     const ROTATION_SPEED = 0.00015;
-
     const TARGET_FPS = $display.device === "mobile" ? 30 : 60;
     const FRAME_TIME = 1000 / TARGET_FPS;
     const dpr = window.devicePixelRatio || 1;
@@ -35,11 +32,6 @@
             updateRings();
         }
     });
-
-    function easeOutCubic(t) {
-        const f = 1 - t;
-        return 1 - f * f * f;
-    }
 
     function resizeCanvas() {
         if (!canvas) return;
@@ -94,8 +86,6 @@
         let remaining = totalCursors;
         let ring = 0;
 
-        const elapsed = now - startTime;
-
         while (remaining > 0) {
             const radius = innerRadius + ring * RING_SPACING;
             const circumference = 2 * Math.PI * radius;
@@ -113,23 +103,14 @@
             }
 
             const rotation = now * (ringSpeeds[ring] ?? 0);
-            const half = Math.floor(count / 2);
-            const pairIndex = half > 0 ? Math.floor(elapsed / CURSOR_DURATION) % half : -1;
 
             for (let i = 0; i < count; i++) {
-                let pulse = 0;
-                if (half > 0 && (i === pairIndex || i === (pairIndex + half) % count)) {
-                    const t = (elapsed % CURSOR_DURATION) / CURSOR_DURATION;
-                    pulse = easeOutCubic(t <= 0.5 ? t * 2 : (1 - t) * 2) * PULSE_AMPLITUDE;
-                }
-
                 const angle = startAngle + i * step + rotation;
-                const animatedRadius = radius - pulse;
 
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(angle);
-                ctx.translate(0, -animatedRadius);
+                ctx.translate(0, -radius);
                 ctx.rotate(Math.PI);
                 ctx.drawImage(cursorImg, -SIZE / 2, -SIZE / 2, SIZE, SIZE);
                 ctx.restore();

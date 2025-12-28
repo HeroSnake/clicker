@@ -5,7 +5,7 @@
     import Body from "./Body.svelte";
     import Head from "./Head.svelte";
 
-    const props = $props();
+    const { parent = null, children = null, disabled = false, data = {} } = $props();
 
     let visible = $state(false);
     let tooltipEl = $state(null);
@@ -35,7 +35,7 @@
         const targetRect = targetEl.getBoundingClientRect();
 
         // horizontal: always left of shop
-        const shopEl = document.getElementById(props.parent);
+        const shopEl = document.getElementById(parent);
         const shopRect = shopEl ? shopEl.getBoundingClientRect() : { left: window.innerWidth };
         x = shopRect.left - tooltipRect.width - 8;
 
@@ -54,16 +54,18 @@
     });
 </script>
 
-<button class="no-btn" onmouseenter={handleMouseEnter} onmouseleave={handleMouseLeave}>
-    {@render props.children()}
+<button onmouseenter={handleMouseEnter} onmouseleave={handleMouseLeave} disabled={disabled}>
+    {@render children()}
 </button>
 
 {#if visible}
-    <div bind:this={tooltipEl} class="tooltip border wooden" style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
-        <Head data={props.data} />
-        <div class="body">
-            <Body data={props.data} />
-        </div>
+    <div bind:this={tooltipEl} class="tooltip border wooden" class:disabled={disabled} style="top:{y}px; left:{x}px;" transition:fly={{ x: 150, duration: 150 }}>
+        <Head data={data} />
+        {#if data.libelle !== "achievement"}
+            <div class="body">
+                <Body data={data} />
+            </div>
+        {/if}
     </div>
 {/if}
 
@@ -82,6 +84,9 @@
         background: url('/img/textures/wood-horizontal-dark.png');
         background-size: cover;
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
+    }
+    .disabled {
+        filter: grayscale(100) brightness(0.8);
     }
 
     .body {

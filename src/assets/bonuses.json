@@ -3,7 +3,7 @@
         "id": 0,
         "code": "productionBonus",
         "cost": 100000,
-        "increase": 1,
+        "increase": 10,
         "unit": "%",
         "level": 1
     },
@@ -11,7 +11,7 @@
         "id": 1,
         "code": "goldenItemBoostPower",
         "cost": 200000,
-        "increase": 1,
+        "increase": 10,
         "unit": "%",
         "level": 1
     },
