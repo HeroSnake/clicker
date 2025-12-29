@@ -20,7 +20,7 @@
                     libelle: "building",
                     cost,
                     img: `./img/buildings/${building.id}.png`,
-                    unlocked: $game.totalItemsCollected >= cost,
+                    unlocked: $game.totalItemsCollected >= building.cost,
                     disabled: $game.itemCount < cost,
                 };
             })

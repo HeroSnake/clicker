@@ -31,7 +31,7 @@
         </span>
 
 {:else if data.libelle === "building"}
-    {#if !data.disabled}
+    {#if data.unlocked}
         <span>
             Each {data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(data, true), false, true)}</b> per second
         </span>
