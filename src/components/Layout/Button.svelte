@@ -24,7 +24,7 @@
     })
 </script>
 
-<button class:selected={selected} onclick={() => onClick?.()} style="background-image: url('/img/textures/brick-{size}.png');height:{height}px;width:{width}px">
+<button class:selected={selected} onclick={() => onClick?.()} style="background-image: url('./img/textures/brick-{size}.png');height:{height}px;width:{width}px">
     {@render children()}
 </button>
 

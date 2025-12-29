@@ -9,7 +9,7 @@
             return {
                 ...a,
                 unlocked,
-                img: unlocked ? a.img : '/img/achievements/locked.png',
+                img: unlocked ? a.img : './img/achievements/locked.png',
             };
         }));
 

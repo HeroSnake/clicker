@@ -23,7 +23,7 @@
         white-space: normal;
         width: 300px;
         line-height: 1.2rem;
-        background: url('/img/textures/wood-horizontal-dark.png');
+        background: url('./img/textures/wood-horizontal-dark.png');
         background-size: cover;
         box-shadow: 0 0 12px 12px rgba(0,0,0,0.4), inset 0 0 12px 12px rgba(0,0,0,0.7);
 
@@ -32,7 +32,7 @@
         border-image-width: 5px;
         border-image-repeat: repeat;
         border-image-slice: 10;
-        border-image-source: url("/img/textures/stone-bricks.png");
+        border-image-source: url("./img/textures/stone-bricks.png");
     }
 
     .title {

@@ -53,7 +53,7 @@ function createAchievements() {
                             value,
                             condition,
                             libelle,
-                            img: `/img/buildings/${building.id}.png`,
+                            img: `./img/buildings/${building.id}.png`,
                             hue
                         });
                     });
@@ -68,7 +68,7 @@ function createAchievements() {
                         value,
                         condition,
                         libelle,
-                        img: "/img/achievements/locked.png",
+                        img: "./img/achievements/locked.png",
                     });
                 }
             });

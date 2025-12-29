@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from "svelte";
     import { game } from "../../store/game";
 
-    const img = Object.assign(new Image(), { src: "/img/item/item-sm.png" });
+    const img = Object.assign(new Image(), { src: "./img/item/item-sm.png" });
 
     let canvas;
     let ctx;

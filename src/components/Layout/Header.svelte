@@ -41,7 +41,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: url('/img/textures/wooden-logs.png');
+        background: url('./img/textures/wooden-logs.png');
         filter: brightness(0.65);
         z-index: -1;
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
@@ -62,7 +62,7 @@
     .shop-btn {
         width: 50px;
         height: 50px;
-        background: url('/img/shop/icon.png');
+        background: url('./img/shop/icon.png');
     }
 
     .shop-btn:hover {
