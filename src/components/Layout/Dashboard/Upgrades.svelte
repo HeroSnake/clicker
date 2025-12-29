@@ -49,7 +49,7 @@
 
 <div class="upgrades">
     {#each bonuses as bonus}
-        <Tooltip data={bonus} parent="dashboard" disabled={bonus.disabled} >
+        <Tooltip data={bonus} parent="shop" disabled={bonus.disabled} >
             <button type="button" class="upgrade interactive" aria-label="upgrade"
                 disabled={bonus.disabled}
                 onclick={() => game.buyBonus(bonus.__original)}
@@ -59,7 +59,7 @@
         </Tooltip>
     {/each}
     {#each upgrades as upgrade}
-        <Tooltip data={upgrade} parent="dashboard" disabled={upgrade.disabled} >
+        <Tooltip data={upgrade} parent="shop" disabled={upgrade.disabled} >
             <button type="button" class="upgrade interactive" aria-label="upgrade"
                 disabled={upgrade.disabled}
                 onclick={() => game.buyUpgrade(upgrade.__original)}
