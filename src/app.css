@@ -1,22 +1,22 @@
 @font-face {
-    font-family: 'Dogica Pixel';
-    src: url('./fonts/dogicapixel.ttf') format('truetype');
+    font-family: "Dogica Pixel";
+    src: url("./fonts/dogicapixel.ttf") format("truetype");
     font-weight: normal;
 }
 
 @font-face {
-    font-family: 'Dogica Pixel';
-    src: url('./fonts/dogicapixelbold.ttf') format('truetype');
+    font-family: "Dogica Pixel";
+    src: url("./fonts/dogicapixelbold.ttf") format("truetype");
     font-weight: bold;
 }
 
 @font-face {
-    font-family: 'BoldPixels';
-    src: url('./fonts/BoldPixels.ttf') format('truetype');
+    font-family: "BoldPixels";
+    src: url("./fonts/BoldPixels.ttf") format("truetype");
 }
 
 :root {
-    font-family: 'BoldPixels';
+    font-family: "BoldPixels";
     font-weight: normal;
     user-select: none;
     -webkit-user-select: none;
@@ -32,7 +32,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     touch-action: manipulation;
-    text-shadow: 4px 4px 12px rgba(0,0,0,0.5), 0 0 8px rgba(0,0,0,0.5);
+    text-shadow:
+        4px 4px 12px rgba(0, 0, 0, 0.5),
+        0 0 8px rgba(0, 0, 0, 0.5);
 }
 
 :root b {
@@ -54,7 +56,9 @@
     border-radius: 5px;
     border-image-width: 10px;
     border-image-repeat: repeat;
-    box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
+    box-shadow:
+        0 0 12px 3px #000,
+        0 0 7px 2px #fff3;
 }
 
 :root .border.wooden {
@@ -77,16 +81,30 @@
 }
 
 @keyframes heartbeat {
-    0% { transform: scale(1); }
-    15% { transform: scale(1.12); }
-    30% { transform: scale(1); }
-    45% { transform: scale(1.08); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+    15% {
+        transform: scale(1.12);
+    }
+    30% {
+        transform: scale(1);
+    }
+    45% {
+        transform: scale(1.08);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 :root button.interactive:disabled {
     filter: grayscale(100%) brightness(0.6);
     cursor: default;
+}
+
+:root .achievements button {
+    width: max-content;
 }
 
 body {

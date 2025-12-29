@@ -32,8 +32,8 @@
     {"name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total nut production"},
     {"name": "Golden Surge", "description": "Golden nut boosts are more powerful.", "detail": "golden nut boost power"},
     {"name": "Lasting Fortune", "description": "Golden nut boosts last longer.", "detail": "golden nut boost duration"},
-    {"name": "Gilded Chance", "description": "Golden nut boosts last longer.", "detail": "golden nut spawn chance"},
-    {"name": "Golden click", "description": "Your clicks scale with your production !", "detail": "bonus production per click"}
+    {"name": "Gilded Chance", "description": "Golden nuts appear more often.", "detail": "golden nut spawn chance"},
+    {"name": "Golden click", "description": "Your clicks scale with your production !", "detail": "bonus click scaling"}
   ]
 }
 
