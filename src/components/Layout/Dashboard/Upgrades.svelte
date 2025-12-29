@@ -1,6 +1,6 @@
 <script>
-    import { game } from "../../store/game";
-    import Tooltip from "./Good/Tooltip.svelte";
+    import { game } from "../../../store/game";
+    import Tooltip from "../Shop/Good/Tooltip.svelte";
 
     const ENHANCE_TRESHOLD = 25;
     const LEVELS_AHEAD = 1;
@@ -49,8 +49,8 @@
 
 <div class="upgrades">
     {#each bonuses as bonus}
-        <Tooltip data={bonus}>
-            <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
+        <Tooltip data={bonus} parent="dashboard" disabled={bonus.disabled} >
+            <button type="button" class="upgrade interactive" aria-label="upgrade"
                 disabled={bonus.disabled}
                 onclick={() => game.buyBonus(bonus.__original)}
                 style="background-image: url('{bonus.img}');"
@@ -59,8 +59,8 @@
         </Tooltip>
     {/each}
     {#each upgrades as upgrade}
-        <Tooltip data={upgrade}>
-            <button type="button" class="no-btn upgrade interactive" aria-label="upgrade"
+        <Tooltip data={upgrade} parent="dashboard" disabled={upgrade.disabled} >
+            <button type="button" class="upgrade interactive" aria-label="upgrade"
                 disabled={upgrade.disabled}
                 onclick={() => game.buyUpgrade(upgrade.__original)}
                 style="background-image: url('{upgrade.img}');"

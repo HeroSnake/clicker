@@ -1,12 +1,12 @@
 <script>
-    import { game } from "../../store/game";
+    import { game } from "../../../store/game";
 </script>
 
 <div class="seasons">
     {#each $game.seasons as season}
         <button
             onclick={() => game.setSeason(season.id)}
-            class="no-btn season-btn interactive"
+            class="season-btn interactive"
             aria-label="season"
             style="background: url('./img/seasons/{season.id}.png');"
             disabled={season.id == 2}

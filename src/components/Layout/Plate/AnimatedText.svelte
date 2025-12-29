@@ -2,17 +2,17 @@
     import { Tween } from 'svelte/motion';
     import { cubicOut } from 'svelte/easing';
 
-    const props = $props();
+    const { value = 0, format = null } = $props();
     let change = $state(false);
 
-    const animatedValue = new Tween(props.value ?? 0, {
+    const animatedValue = new Tween(value ?? 0, {
         duration: 400,
         easing: cubicOut
     });
 
     $effect(() => {
-        if (typeof props.value === 'number') {
-            animatedValue.target = props.value;
+        if (typeof value === 'number') {
+            animatedValue.target = value;
             change = false;
             requestAnimationFrame(() => change = true);
         }
@@ -20,7 +20,7 @@
 </script>
 
 <span class:pop={change}>
-    {props.format ? props.format(animatedValue.current) : animatedValue.current}
+    {format ? format(animatedValue.current) : animatedValue.current}
 </span>
 
 <style>

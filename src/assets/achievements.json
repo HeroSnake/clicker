@@ -22,78 +22,78 @@
             },
             {
                 "id": 4,
-                "name": "Click Addict",
+                "name": "Click Master",
                 "value": 10000
             },
             {
                 "id": 5,
-                "name": "Click Machine",
-                "value": 100000
-            },
-            {
-                "id": 6,
                 "name": "Click God",
-                "value": 1000000
+                "value": 100000
             }
         ]
     },
     {
         "id": 2,
-        "condition": "critial_clicks",
-        "description_first": "Perform a critial click.",
-        "description": "Perform [value] critial clicks.",
+        "condition": "critical_clicks",
+        "description_first": "Perform a critical click.",
+        "description": "Perform [value] critical clicks.",
         "list": [
             {
                 "id": 1,
-                "name": "It's critical",
+                "name": "It's Critical",
                 "value": 1
             },
             {
                 "id": 2,
-                "name": "It's critical",
-                "value": 100
+                "name": "Critical Streak",
+                "value": 50
             },
             {
                 "id": 3,
-                "name": "It's critical",
+                "name": "Critical Enjoyer",
                 "value": 100
             },
             {
                 "id": 4,
-                "name": "It's critical",
-                "value": 10000
+                "name": "Critical Machine",
+                "value": 500
             },
             {
                 "id": 5,
-                "name": "It's critical",
-                "value": 100000
+                "name": "Critical Master",
+                "value": 1000
+            },
+            {
+                "id": 6,
+                "name": "Critical God",
+                "value": 5000
             }
         ]
     },
     {
         "id": 3,
-        "condition": "critial_chance",
+        "condition": "critical_chance",
         "description_first": "Increase your critical chance.",
-        "description": "Have 25% critical chance.",
+        "description": "Reach [value]% critical chance.",
         "list": [
             {
                 "id": 1,
-                "name": "I love crits !",
+                "name": "Aspiring Critter",
                 "value": 2
             },
             {
                 "id": 2,
-                "name": "Quart d'heure",
+                "name": "Quarter Shot",
                 "value": 25
             },
             {
                 "id": 3,
-                "name": "Half empty glass",
+                "name": "Halfway Critical",
                 "value": 50
             },
             {
                 "id": 4,
-                "name": "I guess im critical now",
+                "name": "Critical Perfectionist",
                 "value": 100
             },
             {
@@ -106,12 +106,12 @@
     {
         "id": 4,
         "condition": "items_total",
-        "description_first": "Earn tour first [item]",
-        "description": "Earn [value] [item]s",
+        "description_first": "Earn tour first gland",
+        "description": "Earn [value] glands",
         "list": [
             {
                 "id": 1,
-                "name": "First Coin",
+                "name": "First Gland",
                 "value": 1
             },
             {
@@ -146,7 +146,7 @@
             },
             {
                 "id": 8,
-                "name": "Tycoon",
+                "name": "Multi-Billionaire",
                 "value": 1000000000000
             },
             {
@@ -156,16 +156,59 @@
             },
             {
                 "id": 10,
-                "name": "Currency Deity",
+                "name": "Ploutos",
                 "value": 1000000000000000000
+            },
+            {
+                "id": 11,
+                "name": "To Infinity and Beyond",
+                "value": 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000
             }
         ]
     },
     {
         "id": 5,
+        "condition": "bonuses_total",
+        "description_first": "Unlock your first bonus.",
+        "description": "Unlock [value] bonuses.",
+        "list": [
+            {
+                "id": 1,
+                "name": "First bonus",
+                "value": 1
+            },
+            {
+                "id": 2,
+                "name": "Bonus Enjoyer",
+                "value": 5
+            },
+            {
+                "id": 3,
+                "name": "Bonus Master",
+                "value": 15
+            },
+            {
+                "id": 4,
+                "name": "Bonus Pro",
+                "value": 25
+            },
+            {
+                "id": 5,
+                "name": "Bonus Elite",
+                "value": 50
+            },
+            {
+                "id": 6,
+                "name": "Bonus Overload",
+                "value": 100
+            }
+        ]
+    },
+    {
+        "id": 6,
         "condition": "production",
         "description_first": "Start you own auto production.",
-        "description": "Reach [value] auto production.",
+        "description": "Reach [value] glands per second.",
         "list": [
             {
                 "id": 1,
@@ -174,7 +217,7 @@
             },
             {
                 "id": 2,
-                "name": "First employee",
+                "name": "First promotion",
                 "value": 10
             },
             {
@@ -230,10 +273,10 @@
         ]
     },
     {
-        "id": 6,
+        "id": 7,
         "condition": "golden_clicks",
-        "description_first": "Click a golden [item].",
-        "description": "Click [value] golden [item].",
+        "description_first": "Click a golden gland.",
+        "description": "Click [value] golden glands.",
         "list": [
             {
                 "id": 1,
@@ -263,37 +306,17 @@
             {
                 "id": 6,
                 "name": "Blessed by RNG",
-                "value": 1000
+                "value": 500
             },
             {
                 "id": 7,
-                "name": "Midas Rookie",
-                "value": 2000
-            },
-            {
-                "id": 8,
-                "name": "Midas Adept",
-                "value": 5000
-            },
-            {
-                "id": 9,
-                "name": "Midas Pro",
-                "value": 10000
-            },
-            {
-                "id": 10,
-                "name": "Golden God",
-                "value": 25000
-            },
-            {
-                "id": 11,
-                "name": "Golden Immortal",
-                "value": 100000
+                "name": "Midas",
+                "value": 1000
             }
         ]
     },
     {
-        "id": 7,
+        "id": 8,
         "condition": "buildings_total",
         "description_first": "Buy your first building.",
         "description": "Buy [value] buildings.",
@@ -301,182 +324,133 @@
             {
                 "id": 1,
                 "name": "First Investment",
-                "value": 10
-            },
-            {
-                "id": 2,
-                "name": "Shop Regular",
-                "value": 50
-            },
-            {
-                "id": 3,
-                "name": "Bulk Buyer",
-                "value": 100
-            },
-            {
-                "id": 4,
-                "name": "Mass Production",
-                "value": 500
-            },
-            {
-                "id": 5,
-                "name": "Industrial Tycoon",
-                "value": 1000
-            },
-            {
-                "id": 6,
-                "name": "Industrial Overlord",
-                "value": 2500
-            },
-            {
-                "id": 7,
-                "name": "Industrial Mogul",
-                "value": 5000
-            },
-            {
-                "id": 8,
-                "name": "Industrial Emperor",
-                "value": 10000
-            },
-            {
-                "id": 9,
-                "name": "Industrial Deity",
-                "value": 25000
-            },
-            {
-                "id": 10,
-                "name": "Industrial Transcendent",
-                "value": 50000
-            }
-        ]
-    },
-    {
-        "id": 8,
-        "condition": "building",
-        "description_first": "Buy your first [building]",
-        "description": "Own [value] [building]s.",
-        "list": [
-            {
-                "id": 1,
-                "name": "Cursor Empire",
-                "description": "Own 50 Cursor upgrades.",
                 "value": 1
             },
             {
                 "id": 2,
-                "name": "Cursor Overlord",
-                "description": "Own 100 Cursor upgrades.",
-                "value": 10
-            },
-            {
-                "id": 3,
-                "name": "Tier One Complete",
-                "description": "Own 25 of upgrade #1.",
+                "name": "Shop Regular",
                 "value": 25
             },
             {
-                "id": 4,
-                "name": "Tier Two Complete",
-                "description": "Own 25 of upgrade #2.",
+                "id": 3,
+                "name": "Bulk Buyer",
                 "value": 50
             },
             {
-                "id": 5,
-                "name": "Tier Three Complete",
-                "description": "Own 25 of upgrade #3.",
+                "id": 4,
+                "name": "Mass Production",
                 "value": 100
             },
             {
+                "id": 5,
+                "name": "Industrial Tycoon",
+                "value": 150
+            },
+            {
                 "id": 6,
-                "name": "Tier Three Complete",
-                "description": "Own 25 of upgrade #3.",
-                "value": 100
+                "name": "Industrial Overlord",
+                "value": 200
+            },
+            {
+                "id": 7,
+                "name": "Industrial Mogul",
+                "value": 500
+            },
+            {
+                "id": 8,
+                "name": "Industrial Emperor",
+                "value": 1000
+            },
+            {
+                "id": 9,
+                "name": "Industrial Deity",
+                "value": 5000
+            },
+            {
+                "id": 10,
+                "name": "Industrial Transcendent",
+                "value": 10000
             }
         ]
     },
     {
         "id": 9,
-        "condition": "upgrades",
-        "description_first": "Upgrade your first [building].",
-        "description": "Upgrade your [building] to level [value].",
+        "condition": "building",
+        "description_first": "Buy your first [building]",
+        "description": "Buy [value] [building]s.",
         "list": [
             {
-                "id": 0,
-                "name": "First step",
+                "id": 1,
+                "name": "Getting Started - [building]",
                 "value": 1
             },
             {
-                "id": 1,
-                "name": "Upgrade Enjoyer",
-                "value": 5
-            },
-            {
                 "id": 2,
-                "name": "Upgrade Master",
-                "value": 15
+                "name": "Growing Workforce - [building]",
+                "value": 10
             },
             {
                 "id": 3,
-                "name": "Upgrade Pro",
+                "name": "Small Business - [building]",
                 "value": 25
             },
             {
                 "id": 4,
-                "name": "Upgrade Elite",
+                "name": "Mid-tier Enterprise - [building]",
                 "value": 50
             },
             {
                 "id": 5,
-                "name": "Upgrade Tycoon",
+                "name": "Large Corporation - [building]",
                 "value": 100
             },
             {
                 "id": 6,
-                "name": "Upgrade Overload",
-                "value": 1000
+                "name": "Industrial Behemoth - [building]",
+                "value": 250
+            },
+            {
+                "id": 7,
+                "name": "Manufacturing Giant - [building]",
+                "value": 500
+            },
+            {
+                "id": 8,
+                "name": "Assembly Divinity - [building]",
+                "value": 750
             }
         ]
     },
     {
         "id": 10,
-        "condition": "bonuses_total",
-        "description_first": "Unlock your first bonus.",
-        "description": "Unlock [value] bonuses.",
+        "condition": "upgrade",
+        "description_first": "Upgrade your first [building].",
+        "description": "Upgrade [building] to level [value].",
         "list": [
             {
-                "id": 0,
-                "name": "First bonus",
-                "value": 1
-            },
-            {
                 "id": 1,
-                "name": "Bonus Enjoyer",
-                "value": 5
+                "name": "First step - [building]",
+                "value": 2
             },
             {
                 "id": 2,
-                "name": "Bonus Master",
-                "value": 15
+                "name": "Upgrade Enjoyer - [building]",
+                "value": 5
             },
             {
                 "id": 3,
-                "name": "Bonus Pro",
-                "value": 25
+                "name": "Upgrade Master - [building]",
+                "value": 15
             },
             {
                 "id": 4,
-                "name": "Bonus Elite",
-                "value": 50
+                "name": "Upgrade Elite - [building]",
+                "value": 25
             },
             {
                 "id": 5,
-                "name": "Bonus Tycoon",
-                "value": 100
-            },
-            {
-                "id": 6,
-                "name": "Bonus Overload",
-                "value": 1000
+                "name": "Upgrade God - [building]",
+                "value": 31
             }
         ]
     }

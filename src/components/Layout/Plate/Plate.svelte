@@ -1,16 +1,16 @@
 <script>
     import { fly } from 'svelte/transition';
-    import { game } from "../../store/game";
-    import { display } from '../../store/display';
-    import Fluid from "../Effects/Fluid.svelte";
-    import GoldenItems from "../Effects/GoldenItems.svelte";
-    import Rain from "../Effects/Rain.svelte";
-    import RainingItems from "../Effects/RainingItems.svelte";
-    import GodRays from "../Effects/GodRays.svelte";
-    import Stats from '../Layout/Stats.svelte';
-    import Snow from '../Effects/Snow.svelte';
-    import ClickableItem from '../Item/ClickableItem.svelte';
-    import Cursors from '../Item/Cursors.svelte';
+    import { game } from "../../../store/game";
+    import { display } from '../../../store/display';
+    import Fluid from "../../Effects/Fluid.svelte";
+    import GoldenItems from "../../Effects/GoldenItems.svelte";
+    import Rain from "../../Effects/Rain.svelte";
+    import RainingItems from "../../Effects/RainingItems.svelte";
+    import GodRays from "../../Effects/GodRays.svelte";
+    import Stats from './Stats.svelte';
+    import Snow from '../../Effects/Snow.svelte';
+    import ClickableItem from '../../Item/ClickableItem.svelte';
+    import Cursors from '../../Item/Cursors.svelte';
 
     let plate = $state(null);
     let backgroundSize = $state("");

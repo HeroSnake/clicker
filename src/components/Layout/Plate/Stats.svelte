@@ -1,6 +1,6 @@
 <script>
-    import { game } from "../../store/game";
-    import { displayNumber } from "../../utils";
+    import { game } from "../../../store/game";
+    import { displayNumber } from "../../../utils";
     import AnimatedText from "./AnimatedText.svelte";
 
     let itemCount = $state(0);
