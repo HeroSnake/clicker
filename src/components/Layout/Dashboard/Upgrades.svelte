@@ -72,8 +72,8 @@
 
 <style>
     .upgrades {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
         gap: 5px;
     }
 
