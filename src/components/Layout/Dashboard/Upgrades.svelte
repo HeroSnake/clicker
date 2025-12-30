@@ -83,11 +83,4 @@
         height: 60px;
         box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
     }
-
-    @media (max-width: 768px) {
-        .upgrades {
-            grid-template-columns: repeat(5, 1fr);
-            gap: 0;
-        }
-    }
 </style>
