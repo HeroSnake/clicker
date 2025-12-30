@@ -1,6 +1,5 @@
 <script>
     import { game } from "../../../store/game";
-    import { achievements } from "../../../store/achievements";
     import Tooltip from "../Shop/Good/Tooltip.svelte";
 
     const ENHANCE_TRESHOLD = 25;
@@ -9,16 +8,10 @@
         ...$game.bonuses.flatMap(bonus => {
             const level = bonus.level;
             const cost = game.getBonusCost({ ...bonus, level });
-            let detail = bonus.detail;
-
-            if (bonus.id === 5) {
-                detail = detail.replace("[completion]", $achievements.completion.toString())
-            }
 
             return {
                 ...bonus,
                 __original: bonus,
-                detail,
                 libelle: "bonus",
                 cost,
                 img: `./img/bonuses/${bonus.code}.png`,
@@ -27,24 +20,30 @@
         })
     ]);
 
-    let upgrades = $derived([
-        ...$game.buildings.flatMap((building, i) => {
-            const level = building.level + i;
-            const cost = game.getUpgradeCost(building, level);
+    let upgrades = $derived.by(() => {
+        let result = [];
 
-            if (building.stock < ENHANCE_TRESHOLD * (level + 1)) return [];
+        $game.buildings.forEach(building => {
+            const level = building.level + 1;
 
-            return {
-                ...building,
-                __original: building,
-                libelle: "upgrade",
-                cost,
-                img: `./img/buildings/${building.id}.png`,
-                disabled: cost > $game.itemCount,
-                buy: () => game.buyUpgrade(building),
-            };
+            for (let l = level; l <= level + 1; l++) {
+                const cost = game.getUpgradeCost(building, l);
+
+                if (building.stock < l * ENHANCE_TRESHOLD || $game.totalItemsCollected < cost / 2) break;
+
+                result.push({
+                    ...building,
+                    __original: building,
+                    libelle: "upgrade",
+                    cost,
+                    img: `./img/buildings/${building.id}.png`,
+                    disabled: cost > $game.itemCount,
+                    buy: () => game.buyUpgrade(building),
+                });
+            }
         })
-    ].sort((a, b) => a.cost - b.cost));
+        return result.sort((a, b) => a.cost - b.cost);
+    });
 </script>
 
 <div class="upgrades">

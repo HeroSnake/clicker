@@ -218,7 +218,7 @@ function createGame() {
     }
 
     function getUpgradeCost(upgrade, level) {
-        return Math.floor(getBuildingCost(upgrade, 1, level * 25) / 10);
+        return Math.floor(getBuildingCost(upgrade, 1, level * 25) / 2);
     }
 
     function getBuildingCost(building, multiple, stock = null) {
@@ -369,9 +369,9 @@ function createGame() {
         game.goldenItemBoostDuration = bonuses.goldenItemBoostDuration;
         game.goldenItemSpawnChance = bonuses.goldenItemSpawnChance;
         game.cursorProductionPercentage = bonuses.cursorProductionPercentage;
-        game.milkProductionMultiplier = bonuses.milkProductionMultiplier * get(achievements).completion * totalProduction;
+        game.milkProductionMultiplier = bonuses.milkProductionMultiplier * (get(achievements).completion / 2);
 
-        game.production = totalProduction * (1 + game.productionBonus) * boostMultiplier + (game.milkProductionMultiplier);
+        game.production = (totalProduction * (1 + game.productionBonus) + (game.milkProductionMultiplier * totalProduction)) * boostMultiplier;
 
         game.itemCount += game.production / (1000 / TICK_RATE);
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
