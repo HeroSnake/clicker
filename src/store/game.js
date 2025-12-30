@@ -370,7 +370,6 @@ function createGame() {
         game.goldenItemSpawnChance = bonuses.goldenItemSpawnChance;
         game.cursorProductionPercentage = bonuses.cursorProductionPercentage;
         game.milkProductionMultiplier = bonuses.milkProductionMultiplier * get(achievements).completion * totalProduction;
-        console.log(bonuses.milkProductionMultiplier, get(achievements).completion, game.milkProductionMultiplier);
 
         game.production = totalProduction * (1 + game.productionBonus) * boostMultiplier + (game.milkProductionMultiplier);
 

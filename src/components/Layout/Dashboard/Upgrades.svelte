@@ -32,7 +32,7 @@
             const level = building.level + i;
             const cost = game.getUpgradeCost(building, level);
 
-            if (building.stock <= ENHANCE_TRESHOLD * (level + 1) || cost > $game.totalItemsCollected ) return [];
+            if (building.stock < ENHANCE_TRESHOLD * (level + 1)) return [];
 
             return {
                 ...building,

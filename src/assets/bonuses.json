@@ -43,7 +43,7 @@
         "id": 5,
         "code": "milkProductionMultiplier",
         "cost": 5000000,
-        "increase": 1,
+        "increase": 10,
         "unit": "%",
         "level": 0
     }

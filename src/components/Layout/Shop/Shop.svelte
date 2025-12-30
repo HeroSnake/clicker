@@ -49,7 +49,7 @@
 
     @media (max-width: 768px) {
         #shop {
-            height: calc(100dvh - 100px);
+            height: calc(100dvh - 139px);
             width: calc(100% - 30px);
             position: fixed;
             padding-top: 50px;
