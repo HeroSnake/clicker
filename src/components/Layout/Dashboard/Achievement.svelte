@@ -4,7 +4,7 @@
     let style = $derived.by(() => {
         const res = `background-image: url(${achievement.img});`;
         if (achievement.unlocked) {
-            return res + `filter:hue-rotate(${achievement.hue}deg);`;
+            return res + `filter:${achievement.filter}`;
         }
         return res;
     })

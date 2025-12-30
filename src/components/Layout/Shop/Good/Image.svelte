@@ -1,5 +1,5 @@
 <script>
-    const { img = '', hue = 0, size = 'md' } = $props();
+    const { img = '', filter = '', size = 'md' } = $props();
 
     let dimension = $derived.by(() => {
         switch (size) {
@@ -13,7 +13,7 @@
     })
 </script>
 
-<div class="img" style="background-image: url('{img}');filter:hue-rotate({hue}deg);min-width:{dimension}px;height:{dimension}px;"></div>
+<div class="img" style="background-image: url('{img}');filter:{filter};min-width:{dimension}px;height:{dimension}px;"></div>
 
 <style>
     .img {

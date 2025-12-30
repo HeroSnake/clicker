@@ -4,23 +4,25 @@
     import Building from "./Good/Building.svelte";
     import Tooltip from "./Good/Tooltip.svelte";
 
+    let highestBuildingUnlocked = $derived(Math.max(...($game.buildings.filter(b => b.stock > 0 || b.id === 0)).map(b => b.id)));
+
     let buildings = $derived(
         $game.buildings
             .filter((building, i) => {
                 return (
-                    building.stock > 0 || i <= $game.highestBuildingUnlocked + 2
+                    building.stock > 0 || i <= highestBuildingUnlocked + 2
                 );
             })
             .map(building => {
                 const cost = game.getBuildingCost(building, $game.amount);
-
+                const unlocked = $game.totalItemsCollected >= building.cost;
                 return {
                     ...building,
                     __original: building,
                     libelle: "building",
                     cost,
-                    img: `./img/buildings/${building.id}.png`,
-                    unlocked: $game.totalItemsCollected >= building.cost,
+                    img: unlocked ? `./img/buildings/${building.id}.png` : "./img/item/locked.png",
+                    unlocked,
                     disabled: $game.itemCount < cost,
                 };
             })

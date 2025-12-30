@@ -16,7 +16,14 @@
 >
     <Image img={building.img} />
     <div class="info">
-        <span class="name">{building.name} <span class="level">(lvl {building.level})</span></span>
+        {#if building.unlocked}
+            <span class="name">{building.name}</span>
+            {#if building.level > 0}
+                <span class="level">(lvl {building.level})</span>
+            {/if}
+        {:else}
+            <span class="name">???</span>
+        {/if}
         <Cost value={building.cost} />
     </div>
     {#if building.stock > 0}

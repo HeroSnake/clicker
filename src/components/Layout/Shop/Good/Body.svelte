@@ -23,9 +23,13 @@
         </span>
         <span>
             <span class="total">
-                {data.unit === "%"
-                    ? displayNumber($game[data.code] * 100) + "%"
-                    : displayNumber($game[data.code]) + (data.unit || "")}
+                {#if data.id === 5}
+                    +{displayNumber($game[data.code])}
+                {:else if (data.unit === "%")}
+                    {displayNumber($game[data.code] * 100) + "%"}
+                {:else}
+                    {displayNumber($game[data.code]) + (data.unit || "")}
+                {/if}
             </span>
             total
         </span>
@@ -38,7 +42,7 @@
         <span>
             {data.stock} {data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(data), false, true)}</b> per second
         </span>
-        {#if data.type === "cursor"}
+        {#if data.type === "cursor" && $game.crit.chance > 0}
             <span>
                 <b class="total">+{displayNumber($game.crit.chance * 100)}%</b> <small>Crit chance</small>
                 (<b class="total">x{displayNumber($game.crit.multiplier, true)}</b> <small> Crit multiplier</small>)

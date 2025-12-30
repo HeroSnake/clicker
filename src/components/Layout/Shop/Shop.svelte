@@ -27,8 +27,6 @@
     #shop {
         height: calc(100dvh - 130px);
         z-index: 2;
-        min-width: 20%;
-        max-width: 480px;
         padding: 10px;
         overflow-x: hidden;
         overflow-y: auto;

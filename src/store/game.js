@@ -45,7 +45,7 @@ function createGame() {
             goldenItemBoostDuration: 0,
             goldenItemSpawnChance: 0,
             cursorProductionPercentage: 0,
-            highestBuildingUnlocked: 0,
+            milkProductionMultiplier: 0,
             crit: {},
             seasons,
             seasonId: initSeason(),
@@ -116,24 +116,24 @@ function createGame() {
 
             if (elapsedSeconds > 1) {
                 update(game => {
-                    const production = getTotalProduction(game) * (1 + game.productionBonus);
+                    const production = game.production;
 
-                    if (production > 0) {
-                        const gained = production * Math.min(elapsedSeconds, MAX_OFFLINE_TIME);
+                    if (production == 0) return game;
 
-                        game.itemCount += gained;
-                        game.totalItemsCollected += gained;
+                    const gained = production * Math.min(elapsedSeconds, MAX_OFFLINE_TIME);
 
-                        if (game.itemCount > game.maxItemsCollected) {
-                            game.maxItemsCollected = game.itemCount;
-                        }
+                    game.itemCount += gained;
+                    game.totalItemsCollected += gained;
 
-                        saveData();
-
-                        console.info(
-                            `[Hidden] +${Math.floor(gained)} items (${elapsedSeconds}s)`
-                        );
+                    if (game.itemCount > game.maxItemsCollected) {
+                        game.maxItemsCollected = game.itemCount;
                     }
+
+                    saveData();
+
+                    console.info(
+                        `[Hidden] +${Math.floor(gained)} items (${elapsedSeconds}s)`
+                    );
 
                     return game;
                 });
@@ -149,12 +149,7 @@ function createGame() {
 
         const stock = base ? 1 : building.stock;
 
-        let levelMult = 1;
-        if (building.level > 1) {
-            levelMult = Math.pow(2, building.level - 1);
-        }
-
-        return building.production * levelMult * stock;
+        return building.production * Math.pow(2, building.level) * stock;
     }
 
     function getBuildingCrit(building) {
@@ -163,7 +158,7 @@ function createGame() {
         let multiplier = 0;
 
         if (building.type === "cursor") {
-            chance = building.crit.chance + (building.level - 1) * building.crit.bonus,
+            chance = building.crit.chance + building.level * building.crit.bonus,
             bonus = building.crit.bonus
             multiplier = building.crit.multiplier
         }
@@ -187,14 +182,14 @@ function createGame() {
         let bonuses = {};
 
         game.bonuses.forEach(b => {
-            if (b.level == 1) {
+            if (b.level === 0) {
                 bonuses[b.code] = 0;
             } else {
                 let increase = b.increase;
                 if (b.unit == "%") {
                     increase = b.increase / 100;
                 }
-                bonuses[b.code] = increase * (b.level - 1);
+                bonuses[b.code] = increase * b.level;
             }
         });
 
@@ -203,13 +198,7 @@ function createGame() {
 
     // COMPUTE ITEMS PER CLICK
     function getItemsPerClick(cursor) {
-        let levelMult = 1;
-
-        if (cursor.level > 1) {
-            levelMult = Math.pow(2, cursor.level - 1);
-        }
-
-        return 1 * levelMult;
+        return 1 * Math.pow(2, cursor.level);
     }
 
     // COMPUTE PRODUCTION
@@ -225,7 +214,7 @@ function createGame() {
 
     function getBonusCost(bonus) {
         const costMultiplier = 5;
-        return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level - 1) * (costMultiplier - 1)) / (costMultiplier - 1));
+        return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
     function getUpgradeCost(upgrade, level) {
@@ -249,12 +238,11 @@ function createGame() {
         // Cap offline time
         elapsedSeconds = Math.min(elapsedSeconds, MAX_OFFLINE_TIME);
 
-        // Compute base production (no boosts)
-        const baseProduction = getTotalProduction(game) * (1 + game.productionBonus);
+        const production = game.production;
 
-        if (baseProduction <= 0) return;
+        if (production <= 0) return;
 
-        const gained = baseProduction * elapsedSeconds;
+        const gained = production * elapsedSeconds;
 
         game.itemCount += gained;
         game.totalItemsCollected += gained;
@@ -296,11 +284,6 @@ function createGame() {
 
         game.itemCount -= Math.floor(cost);
         building.stock += amount;
-
-        game.highestBuildingUnlocked = Math.max(
-            game.highestBuildingUnlocked,
-            building.id
-        );
 
         saveUpgrades(game.buildings);
         return game;
@@ -379,13 +362,17 @@ function createGame() {
     const tickGame = () => update(game => {
         const bonuses = getBonuses(game);
         const boostMultiplier = getBoost(game);
+        const totalProduction = getTotalProduction(game);
 
         game.productionBonus = bonuses.productionBonus;
         game.goldenItemBoostPower = bonuses.goldenItemBoostPower;
         game.goldenItemBoostDuration = bonuses.goldenItemBoostDuration;
-        game.goldenItemSpawnChance = 0.01 + bonuses.goldenItemSpawnChance;
+        game.goldenItemSpawnChance = bonuses.goldenItemSpawnChance;
         game.cursorProductionPercentage = bonuses.cursorProductionPercentage;
-        game.production = getTotalProduction(game) * (1 + game.productionBonus) * boostMultiplier;
+        game.milkProductionMultiplier = bonuses.milkProductionMultiplier * get(achievements).completion * totalProduction;
+        console.log(bonuses.milkProductionMultiplier, get(achievements).completion, game.milkProductionMultiplier);
+
+        game.production = totalProduction * (1 + game.productionBonus) * boostMultiplier + (game.milkProductionMultiplier);
 
         game.itemCount += game.production / (1000 / TICK_RATE);
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);

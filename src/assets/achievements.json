@@ -2,6 +2,8 @@
     {
         "id": 1,
         "condition": "clicks",
+        "img": "click",
+        "filter": true,
         "description_first": "Click once.",
         "description": "Click [value] times.",
         "list": [
@@ -13,7 +15,7 @@
             {
                 "id": 2,
                 "name": "Getting Started",
-                "value": 10
+                "value": 100
             },
             {
                 "id": 3,
@@ -35,6 +37,8 @@
     {
         "id": 2,
         "condition": "critical_clicks",
+        "img": "critical",
+        "filter": false,
         "description_first": "Perform a critical click.",
         "description": "Perform [value] critical clicks.",
         "list": [
@@ -73,6 +77,8 @@
     {
         "id": 3,
         "condition": "critical_chance",
+        "img": "critical",
+        "filter": false,
         "description_first": "Increase your critical chance.",
         "description": "Reach [value]% critical chance.",
         "list": [
@@ -99,13 +105,15 @@
             {
                 "id": 5,
                 "name": "How is it possible ?!",
-                "value": 101
+                "value": 105
             }
         ]
     },
     {
         "id": 4,
         "condition": "items_total",
+        "img": "item",
+        "filter": true,
         "description_first": "Earn tour first gland",
         "description": "Earn [value] glands",
         "list": [
@@ -169,6 +177,8 @@
     {
         "id": 5,
         "condition": "bonuses_total",
+        "img": "bonus",
+        "filter": true,
         "description_first": "Unlock your first bonus.",
         "description": "Unlock [value] bonuses.",
         "list": [
@@ -201,12 +211,19 @@
                 "id": 6,
                 "name": "Bonus Overload",
                 "value": 100
+            },
+            {
+                "id": 7,
+                "name": "Bonus Hypercluster",
+                "value": 500
             }
         ]
     },
     {
         "id": 6,
         "condition": "production",
+        "img": "item",
+        "filter": true,
         "description_first": "Start you own auto production.",
         "description": "Reach [value] glands per second.",
         "list": [
@@ -275,6 +292,8 @@
     {
         "id": 7,
         "condition": "golden_clicks",
+        "img": "item-gold",
+        "filter": false,
         "description_first": "Click a golden gland.",
         "description": "Click [value] golden glands.",
         "list": [
@@ -318,6 +337,8 @@
     {
         "id": 8,
         "condition": "buildings_total",
+        "img": "building",
+        "filter": true,
         "description_first": "Buy your first building.",
         "description": "Buy [value] buildings.",
         "list": [
@@ -376,6 +397,8 @@
     {
         "id": 9,
         "condition": "building",
+        "img": null,
+        "filter": true,
         "description_first": "Buy your first [building]",
         "description": "Buy [value] [building]s.",
         "list": [
@@ -424,13 +447,15 @@
     {
         "id": 10,
         "condition": "upgrade",
+        "img": null,
+        "filter": true,
         "description_first": "Upgrade your first [building].",
         "description": "Upgrade [building] to level [value].",
         "list": [
             {
                 "id": 1,
                 "name": "First step - [building]",
-                "value": 2
+                "value": 1
             },
             {
                 "id": 2,
@@ -450,7 +475,7 @@
             {
                 "id": 5,
                 "name": "Upgrade God - [building]",
-                "value": 31
+                "value": 30
             }
         ]
     }

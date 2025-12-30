@@ -99,8 +99,7 @@
                 out:fly={{ y: 40, duration: 200 }}
                 animate:flip={{ duration: 200 }}
             >
-                <Popup data={$achievements.list.find(a => a.id === id)} onClick={() => achievements.clear(id)}>
-                </Popup>
+                <Popup data={$achievements.list.find(a => a.id === id)} onClick={() => achievements.clear(id)} />
             </div>
         {/each}
     </div>

@@ -10,6 +10,7 @@ function createAchievements() {
         list: [],
         unlocked: new Set(),
         newlyUnlocked: new Set(),
+        completion: 0,
     });
 
     function load(buildings) {
@@ -18,6 +19,7 @@ function createAchievements() {
             list: initList(buildings),
             unlocked: new Set(saved),
             newlyUnlocked: new Set(),
+            completion: 0
         });
     }
 
@@ -38,9 +40,10 @@ function createAchievements() {
 
                 if (condition === "building" || condition === "upgrade") {
                     buildings.forEach(building => {
-                        let hue = 0;
+                        let filter = '';
                         if (achievementId > 1) {
-                            hue = 360 * ((achievementId - 1) / data.list.length);
+                            const hue = 360 * ((achievementId - 1) / data.list.length);
+                            filter = `hue-rotate(${hue}deg) saturate(200%)`;
                         }
 
                         result.push({
@@ -54,10 +57,15 @@ function createAchievements() {
                             condition,
                             libelle,
                             img: `./img/buildings/${building.id}.png`,
-                            hue
+                            filter,
                         });
                     });
                 } else {
+                    let filter = '';
+                    if (data.filter) {
+                        const hue = 360 * ((achievementId - 1) / data.list.length);
+                        filter = `hue-rotate(${hue}deg) saturate(200%)`;
+                    }
                     result.push({
                         id,
                         achievementId,
@@ -68,7 +76,8 @@ function createAchievements() {
                         value,
                         condition,
                         libelle,
-                        img: "./img/achievements/locked.png",
+                        img: `./img/achievements/${data.img}.png`,
+                        filter,
                     });
                 }
             });
@@ -129,6 +138,8 @@ function createAchievements() {
                 save(achievements.unlocked);
             }
 
+            achievements.completion = Number(((achievements.unlocked.size / achievements.list.length) * 100).toFixed(2));
+
             return achievements;
         });
     }
@@ -140,21 +151,11 @@ function createAchievements() {
         });
     }
 
-    function reset() {
-        localStorage.removeItem(STORAGE_KEY);
-        set({
-            list: [],
-            unlocked: new Set(),
-            newlyUnlocked: new Set(),
-        });
-    }
-
     return {
         subscribe,
         load,
         evaluate,
         clear,
-        reset
     };
 }
 

@@ -1,48 +1,48 @@
 <script>
     import { game } from "../../../store/game";
+    import { achievements } from "../../../store/achievements";
     import Tooltip from "../Shop/Good/Tooltip.svelte";
 
     const ENHANCE_TRESHOLD = 25;
-    const LEVELS_AHEAD = 1;
 
     let bonuses = $derived([
         ...$game.bonuses.flatMap(bonus => {
-            return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
-                const displayLevel = bonus.level;
-                const requiresLevel = displayLevel - 1;
-                const cost = game.getBonusCost({ ...bonus, level: displayLevel });
+            const level = bonus.level;
+            const cost = game.getBonusCost({ ...bonus, level });
+            let detail = bonus.detail;
 
-                return {
-                    ...bonus,
-                    __original: bonus,
-                    libelle: "bonus",
-                    cost,
-                    img: `./img/bonuses/${bonus.code}.png`,
-                    disabled: bonus.level < requiresLevel || cost > $game.itemCount,
-                };
-            });
+            if (bonus.id === 5) {
+                detail = detail.replace("[completion]", $achievements.completion.toString())
+            }
+
+            return {
+                ...bonus,
+                __original: bonus,
+                detail,
+                libelle: "bonus",
+                cost,
+                img: `./img/bonuses/${bonus.code}.png`,
+                disabled: cost > $game.itemCount,
+            };
         })
     ]);
 
     let upgrades = $derived([
-        ...$game.buildings.flatMap(building => {
-            if (building.stock < ENHANCE_TRESHOLD * building.level) return [];
+        ...$game.buildings.flatMap((building, i) => {
+            const level = building.level + i;
+            const cost = game.getUpgradeCost(building, level);
 
-            return Array.from({ length: LEVELS_AHEAD }, (_, i) => {
-                const displayLevel = building.level + 1 + i;
-                const requiresLevel = displayLevel - 1;
-                const cost = game.getUpgradeCost(building, displayLevel);
+            if (building.stock <= ENHANCE_TRESHOLD * (level + 1) || cost > $game.totalItemsCollected ) return [];
 
-                return {
-                    ...building,
-                    __original: building,
-                    libelle: "upgrade",
-                    cost,
-                    img: `./img/buildings/${building.id}.png`,
-                    disabled: building.level < requiresLevel || cost > $game.itemCount,
-                    buy: () => game.buyUpgrade(building),
-                };
-            });
+            return {
+                ...building,
+                __original: building,
+                libelle: "upgrade",
+                cost,
+                img: `./img/buildings/${building.id}.png`,
+                disabled: cost > $game.itemCount,
+                buy: () => game.buyUpgrade(building),
+            };
         })
     ].sort((a, b) => a.cost - b.cost));
 </script>
@@ -73,7 +73,8 @@
 <style>
     .upgrades {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
+        justify-items: center;
         gap: 5px;
     }
 
@@ -81,5 +82,12 @@
         width: 60px;
         height: 60px;
         box-shadow: 0 0 12px 3px #000, 0 0 7px 2px #fff3;
+    }
+
+    @media (max-width: 768px) {
+        .upgrades {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0;
+        }
     }
 </style>

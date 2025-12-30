@@ -9,24 +9,13 @@
             return {
                 ...a,
                 unlocked,
-                img: unlocked ? a.img : "./img/achievements/locked.png",
+                img: unlocked ? a.img : "./img/item/locked.png",
             };
         }),
     );
-
-    let completion = $derived(
-        (
-            ($achievements.unlocked.size / $achievements.list.length) *
-            100
-        ).toFixed(2),
-    );
 </script>
 
-<span class="title"
-    >Achievements <small
-        >{$achievements.unlocked.size} / {$achievements.list.length} ({completion}%)</small
-    ></span
->
+<span class="title">Achievements <small>{$achievements.unlocked.size} / {$achievements.list.length} {$achievements.completion}(%)</small></span>
 <div class="achievements">
     {#each achievementList as achievement}
         <Tooltip
@@ -48,7 +37,8 @@
     }
     .achievements {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(6, 1fr);
+        gap: 5px;
         justify-items: center;
         position: relative;
     }

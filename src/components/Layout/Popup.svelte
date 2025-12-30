@@ -7,7 +7,7 @@
 <button class="popup" onclick={() => onClick?.()}>
     <span class="title">New achievement unlocked !</span>
     <div class="head">
-        <Image img={data.img} hue={data.hue} size="sm" />
+        <Image img={data.img} filter={data.filter} size="sm" />
         <div>
             <span class="name">{data.name}</span><br>
             <span class="description">{data.description}</span>

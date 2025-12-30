@@ -6,7 +6,7 @@
 </script>
 
 <div class="head">
-    <Image img={data.img} hue={data.hue} />
+    <Image img={data.img} filter={data.filter} />
     <div>
         <div class="info">
             <span class="name">{data.name}</span>
