@@ -349,9 +349,12 @@ function createGame() {
     });
 
     const boostProduction = () => update(game => {
+        const now = Date.now();
+
         game.activeBoosts.push({
             multiplier: 5 * (1 + game.goldenItemBoostPower),
-            expiresAt: Date.now() + 5000 + (game.goldenItemBoostDuration * 1000)
+            startedAt: now,
+            expiresAt: now + 5000 + (game.goldenItemBoostDuration * 1000)
         });
 
         return game;

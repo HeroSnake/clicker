@@ -11,6 +11,7 @@
     import Snow from "../../Effects/Snow.svelte";
     import ClickableItem from "../../Item/ClickableItem.svelte";
     import Cursors from "../../Item/Cursors.svelte";
+    import BoostInfo from "./BoostInfo.svelte";
 
     let plate = $state(null);
     let backgroundSize = $state("");
@@ -41,6 +42,8 @@
         <Cursors />
 
         <GoldenItems />
+
+        <BoostInfo />
 
         <Fluid />
 
