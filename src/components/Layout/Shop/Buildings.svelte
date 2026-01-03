@@ -2,7 +2,6 @@
     import { game } from "../../../store/game";
     import { display } from "../../../store/display";
     import Building from "./Good/Building.svelte";
-    import Tooltip from "./Good/Tooltip.svelte";
 
     let highestBuildingUnlocked = $derived(Math.max(...($game.buildings.filter(b => b.stock > 0 || b.id === 0)).map(b => b.id)));
 
@@ -30,13 +29,12 @@
 
 </script>
 
-
 <div class="buildings">
     {#each buildings as building (building.id)}
         {#if $display.device === "desktop"}
-            <Tooltip data={building} parent="shop" disabled={!building.unlocked} >
+            <button onmouseenter={(e) => game.mouseEnterTooltip("shop", { ...building, disabled: building.disabled }, e)} onmouseleave={game.mouseLeaveTooltip}>
                 <Building {building} amount={$game.amount} />
-            </Tooltip>
+            </button>
         {:else}
             <Building {building} amount={$game.amount} />
         {/if}

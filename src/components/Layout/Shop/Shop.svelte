@@ -1,31 +1,22 @@
 <script>
-    import { fly } from 'svelte/transition';
+    import { fly } from "svelte/transition";
     import { game } from '../../../store/game';
     import Buildings from './Buildings.svelte';
-    import Button from '../Button.svelte';
-    import Upgrades from '../Dashboard/Upgrades.svelte';
+    import Upgrades from '../Journal/Upgrades.svelte';
 </script>
 
 {#if $game.displayShop}
-    <div id="shop" class="border wooden" transition:fly={{ x: 150, duration: 150 }}>
-
-        <div class="amounts">
-            {#each $game.amounts as m}
-                <Button selected={m == $game.amount} onClick={() => game.setAmount(m)} size="sm">
-                    <span>{m}</span>
-                </Button>
-            {/each}
-        </div>
-
+    <div id="shop" class="border wooden"
+        in:fly={{ x: 40, duration: 200 }}
+        out:fly={{ x: 40, duration: 200 }}
+    >
         <Upgrades />
-
         <Buildings />
     </div>
 {/if}
 
 <style>
     #shop {
-        height: calc(100dvh - 130px);
         width: 420px;
         z-index: 2;
         padding: 10px;
@@ -35,28 +26,13 @@
         background-repeat: repeat;
         background-size: contain;
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
-        padding-top: 30px;
-    }
-
-    .amounts {
-        z-index: 3;
-        display: flex;
-        flex-direction: row;
-        gap: 5px;
-        align-items: center;
-        position: absolute;
-        top: -10px;
     }
 
     @media (max-width: 768px) {
         #shop {
-            height: calc(100dvh - 139px);
+            height: calc(100% - 30px);
             width: calc(100% - 30px);
-            position: fixed;
-            padding-top: 50px;
-        }
-        .amounts {
-            top: 10px;
+            position: absolute;
         }
     }
 </style>

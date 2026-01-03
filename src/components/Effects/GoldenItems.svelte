@@ -49,7 +49,8 @@
     {#each goldenItems as item (item.id)}
         <button
             class="golden-item-wrapper"
-            style="left: {item.x}px; top: {item.y}px;"
+            style:left="{item.x}px"
+            style:top="{item.y}px"
             onclick={() => clickItem(item.id)}
         >
             <div class="golden-item">

@@ -24,17 +24,25 @@
     })
 </script>
 
-<button class:selected={selected} onclick={() => onClick?.()} style="background-image: url('./img/textures/brick-{size}.png');height:{height}px;width:{width}px">
+<button
+    class:selected={selected}
+    onclick={() => onClick?.()}
+    style:background-image="url('./img/textures/brick-{size}.png')"
+    style:height="{height}px"
+    style:width="{width}px"
+>
     {@render children()}
 </button>
 
 <style>
     button {
         background-size: cover;
-        text-align: center;
         font-weight: bold;
         font-size: 1.2rem;
         text-transform: uppercase;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     button:hover {

@@ -48,24 +48,22 @@
 
 <div class="upgrades">
     {#each bonuses as bonus}
-        <Tooltip data={bonus} parent="shop" disabled={bonus.disabled} >
-            <button type="button" class="upgrade interactive" aria-label="upgrade"
-                disabled={bonus.disabled}
-                onclick={() => game.buyBonus(bonus.__original)}
-                style="background-image: url('{bonus.img}');"
-            >
-            </button>
-        </Tooltip>
+        <button type="button" class="upgrade interactive" aria-label="upgrade"
+            disabled={bonus.disabled}
+            onclick={() => game.buyBonus(bonus.__original)}
+            style:background-image="url('{bonus.img}')"
+            onmouseenter={(e) => game.mouseEnterTooltip("shop", { ...bonus, disabled: bonus.disabled }, e)} onmouseleave={game.mouseLeaveTooltip}
+        >
+        </button>
     {/each}
     {#each upgrades as upgrade}
-        <Tooltip data={upgrade} parent="shop" disabled={upgrade.disabled} >
-            <button type="button" class="upgrade interactive" aria-label="upgrade"
-                disabled={upgrade.disabled}
-                onclick={() => game.buyUpgrade(upgrade.__original)}
-                style="background-image: url('{upgrade.img}');"
-            >
-            </button>
-        </Tooltip>
+        <button type="button" class="upgrade interactive" aria-label="upgrade"
+            disabled={upgrade.disabled}
+            onclick={() => game.buyUpgrade(upgrade.__original)}
+            style:background-image="url('{upgrade.img}')"
+            onmouseenter={(e) => game.mouseEnterTooltip("shop", { ...upgrade, disabled: upgrade.disabled }, e)} onmouseleave={game.mouseLeaveTooltip}
+        >
+        </button>
     {/each}
 </div>
 

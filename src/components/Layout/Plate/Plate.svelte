@@ -12,6 +12,7 @@
     import ClickableItem from "../../Item/ClickableItem.svelte";
     import Cursors from "../../Item/Cursors.svelte";
     import BoostInfo from "./BoostInfo.svelte";
+    import FluidLite from "../../Effects/FluidLite.svelte";
 
     let plate = $state(null);
     let backgroundSize = $state("");
@@ -32,7 +33,7 @@
     bind:this={plate}
     class:boosted={$game.isProductionBoosted}
     transition:fly={{ x: 300, duration: 300 }}
-    style="background: url('./img/bg/{$game.seasonId}{backgroundSize}.png') no-repeat center center/cover;"
+    style:background-image="url('./img/bg/{$game.seasonId}{backgroundSize}.png')"
 >
     <Stats />
 
@@ -45,13 +46,16 @@
 
         <BoostInfo />
 
-        <Fluid />
-
         <div id="lighting-overlay"></div>
 
-        <RainingItems />
-
         <GodRays />
+
+        {#if $display.device !== "mobile"}
+            <Fluid />
+            <RainingItems />
+        {:else}
+            <FluidLite />
+        {/if}
 
         {#if $game.seasonId == 1}
             <Rain />
@@ -73,6 +77,10 @@
         overflow: hidden;
         background-color: #222;
         flex-grow: 1;
+        touch-action: none;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
     }
 
     #plate::before {

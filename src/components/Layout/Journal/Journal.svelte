@@ -1,40 +1,36 @@
 <script>
     import { fly } from "svelte/transition";
     import { game } from "../../../store/game";
-    import { display } from "../../../store/display";
     import Achievements from "./Achievements.svelte";
 </script>
 
-{#if $game.displayDashboard}
+{#if $game.displayJournal}
     <div
-        id="dashboard"
+        id="journal"
         class="border wooden"
-        transition:fly={{
-            x: $display.device === "mobile" ? -150 : 150,
-            duration: 150,
-        }}
+        in:fly={{ x: -40, duration: 200 }}
+        out:fly={{ x: -40, duration: 200 }}
     >
         <Achievements />
     </div>
 {/if}
 
 <style>
-    #dashboard {
+    #journal {
         z-index: 2;
         padding: 10px;
         position: relative;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: scroll;
         background: url("/img/textures/stone-tiles.png");
         background-repeat: round;
         box-shadow: inset 0 0 12px 12px rgba(0, 0, 0, 0.7);
     }
 
     @media (max-width: 768px) {
-        #dashboard {
-            height: calc(100dvh - 100px);
+        #journal {
+            height: calc(100% - 30px);
             width: calc(100% - 30px);
-            position: fixed;
+            position: absolute;
         }
     }
 </style>

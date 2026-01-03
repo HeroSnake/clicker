@@ -1,5 +1,5 @@
 <script>
-    import Image from "./Shop/Good/Image.svelte";
+    import Image from "../Shop/Good/Image.svelte";
 
 	const { onClick, data = {} } = $props();
 </script>

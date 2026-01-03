@@ -13,7 +13,13 @@
     })
 </script>
 
-<div class="img" style="background-image: url('{img}');filter:{filter};min-width:{dimension}px;height:{dimension}px;"></div>
+<div
+    class="img"
+    style:background-image="url('{img}')"
+    style:filter={filter}
+    style:height="{dimension}px"
+    style:min-width="{dimension}px"
+></div>
 
 <style>
     .img {

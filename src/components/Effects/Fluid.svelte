@@ -80,8 +80,7 @@
         const height = canvas.clientHeight;
         ctx.clearRect(0, 0, width, height);
 
-        animatedFluidHeight +=
-            (targetFluidHeight - animatedFluidHeight) * HEIGHT_LERP;
+        animatedFluidHeight += (targetFluidHeight - animatedFluidHeight) * HEIGHT_LERP;
 
         rebuildGradients(height);
 

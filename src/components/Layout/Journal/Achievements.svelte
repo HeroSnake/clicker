@@ -1,6 +1,6 @@
 <script>
     import { achievements } from "../../../store/achievements";
-    import Tooltip from "../Shop/Good/Tooltip.svelte";
+    import { game } from "../../../store/game";
     import Achievement from "./Achievement.svelte";
 
     let achievementList = $derived(
@@ -18,13 +18,9 @@
 <span class="title">Achievements <small>{$achievements.unlocked.size} / {$achievements.list.length} {$achievements.completion}(%)</small></span>
 <div class="achievements">
     {#each achievementList as achievement}
-        <Tooltip
-            data={achievement}
-            parent="dashboard"
-            disabled={!achievement.unlocked}
-        >
+        <button onmouseenter={(e) => game.mouseEnterTooltip("journal", { ...achievement, disabled: !achievement.unlocked }, e)} onmouseleave={game.mouseLeaveTooltip}>
             <Achievement {achievement} />
-        </Tooltip>
+        </button>
     {/each}
 </div>
 

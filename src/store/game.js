@@ -1,3 +1,4 @@
+import { onMount } from "svelte";
 import { get, writable } from "svelte/store";
 import buildings from "../assets/buildings.json";
 import bonuses from "../assets/bonuses.json";
@@ -24,6 +25,7 @@ function createGame() {
 
     function initGame() {
         const buildings = loadBuildings();
+        const mobile = get(display).device === "mobile";
 
         const state = {
             itemCount: +localStorage.getItem("itemCount") || 0,
@@ -49,8 +51,15 @@ function createGame() {
             crit: {},
             seasons,
             seasonId: initSeason(),
-            displayShop: get(display).device === "desktop",
-            displayDashboard: get(display).device === "desktop",
+            displayShop: !mobile,
+            displayJournal: !mobile,
+            displaySettings: false,
+            tooltip: {
+                display: false,
+                data: {},
+                x: 0,
+                y: 0,
+            },
         };
 
         achievements.load(buildings);
@@ -269,18 +278,35 @@ function createGame() {
     });
 
     const toggleShop = () => update(game => {
+        if (get(display).device === "mobile") {
+            game.displayJournal = false;
+            game.displaySettings = false;
+        }
         game.displayShop = !game.displayShop;
         return game;
     });
 
-    const toggleDashboard = () => update(game => {
-        game.displayDashboard = !game.displayDashboard;
+    const toggleJournal = () => update(game => {
+        if (get(display).device === "mobile") {
+            game.displayShop = false;
+            game.displaySettings = false;
+        }
+        game.displayJournal = !game.displayJournal;
+        return game;
+    });
+
+    const toggleSettings = () => update(game => {
+        if (get(display).device === "mobile") {
+            game.displayShop = false;
+            game.displayJournal = false;
+        }
+        game.displaySettings = !game.displaySettings;
         return game;
     });
 
     const buyBuilding = (building, amount = 1) => update(game => {
         const cost = getBuildingCost(building, amount);
-        if (!GOD_MODE && game.itemCount < cost) return game;
+        if (game.itemCount < cost) return game;
 
         game.itemCount -= Math.floor(cost);
         building.stock += amount;
@@ -291,7 +317,7 @@ function createGame() {
 
     const buyUpgrade = upgrade => update(game => {
         const cost = getUpgradeCost(upgrade, upgrade.level + 1);
-        if (!GOD_MODE && game.itemCount < cost) return game;
+        if (game.itemCount < cost) return game;
 
         game.itemCount -= cost;
         upgrade.level++;
@@ -303,7 +329,7 @@ function createGame() {
     const buyBonus = bonus => update(game => {
         const cost = getBonusCost(bonus);
 
-        if (!GOD_MODE && game.itemCount < cost) return game;
+        if (game.itemCount < cost) return game;
 
         game.itemCount -= cost;
         bonus.level++;
@@ -359,6 +385,43 @@ function createGame() {
 
         return game;
     });
+
+    const mouseEnterTooltip = async (parent, data, event) => update(game => {
+        game.tooltip.data = data;
+
+        if (get(display).device === "desktop") {
+            const tooltipEl = document.getElementById('tooltip');
+            setPosition(parent, event.currentTarget, tooltipEl);
+        }
+
+        game.tooltip.display = true;
+
+        return game;
+    })
+
+    const mouseLeaveTooltip = () => update(game => {
+        game.tooltip.display = false;
+        return game;
+    })
+
+    const setPosition = (parent, target, el) => update(game => {
+
+        if (!parent || !target || !el) return;
+
+        const tooltipRect = el.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+
+        const parentEl = document.getElementById(parent);
+        const parentRect = parentEl.getBoundingClientRect();
+
+        game.tooltip.x = window.innerWidth - parentRect.right + parentRect.width;
+
+        const y = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
+
+        game.tooltip.y = Math.min(window.innerHeight - tooltipRect.height - 8, Math.max(8, y));
+
+        return game;
+    })
 
     /* ---------------- TICK ---------------- */
 
@@ -435,7 +498,10 @@ function createGame() {
         setSeason,
         setAmount,
         toggleShop,
-        toggleDashboard,
+        toggleJournal,
+        toggleSettings,
+        mouseEnterTooltip,
+        mouseLeaveTooltip,
         GOD_MODE
     };
 }
