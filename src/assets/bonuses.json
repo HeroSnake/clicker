@@ -5,7 +5,8 @@
         "cost": 10000000,
         "increase": 10,
         "unit": "%",
-        "level": 0
+        "level": 0,
+        "active": true
     },
     {
         "id": 1,
@@ -13,7 +14,8 @@
         "cost": 20000000,
         "increase": 10,
         "unit": "%",
-        "level": 0
+        "level": 0,
+        "active": true
     },
     {
         "id": 2,
@@ -21,7 +23,8 @@
         "cost": 1500000,
         "increase": 1,
         "unit": "s",
-        "level": 0
+        "level": 0,
+        "active": true
     },
     {
         "id": 3,
@@ -29,7 +32,8 @@
         "cost": 250000,
         "increase": 1,
         "unit": "%",
-        "level": 0
+        "level": 0,
+        "active": true
     },
     {
         "id": 4,
@@ -37,7 +41,8 @@
         "cost": 50000000,
         "increase": 1,
         "unit": "%",
-        "level": 0
+        "level": 0,
+        "active": false
     },
     {
         "id": 5,
@@ -45,6 +50,7 @@
         "cost": 5000000,
         "increase": 2,
         "unit": "x",
-        "level": 0
+        "level": 0,
+        "active": true
     }
 ]

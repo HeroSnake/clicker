@@ -8,7 +8,7 @@
 {#if data.libelle === "upgrade"}
 
     <span>
-        <b class="bonus">Double</b> {data.name} efficiency
+        <b class="bonus">x{data.level + 1}</b> {data.name} efficiency
     </span>
 
     {#if data.type === "cursor"}

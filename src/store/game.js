@@ -1,4 +1,3 @@
-import { onMount } from "svelte";
 import { get, writable } from "svelte/store";
 import buildings from "../assets/buildings.json";
 import bonuses from "../assets/bonuses.json";
@@ -102,7 +101,7 @@ function createGame() {
     function loadBonuses() {
         const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
 
-        return bonuses.map(b => {
+        return bonuses.filter(b => b.active).map(b => {
             const s = saved.find(s => s.id === b.id);
             const bonus = lang.bonuses[b.id];
             return {
@@ -158,7 +157,7 @@ function createGame() {
 
         const stock = base ? 1 : building.stock;
 
-        return building.production * Math.pow(2, building.level) * stock;
+        return building.production * Math.pow(building.level, building.level) * stock;
     }
 
     function getBuildingCrit(building) {
@@ -378,7 +377,7 @@ function createGame() {
         const now = Date.now();
 
         game.activeBoosts.push({
-            multiplier: 5 * (1 + game.goldenItemBoostPower),
+            multiplier: 3 * (1 + game.goldenItemBoostPower),
             startedAt: now,
             expiresAt: now + 5000 + (game.goldenItemBoostDuration * 1000)
         });
@@ -443,7 +442,7 @@ function createGame() {
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
 
         const cursor = game.buildings.find(u => u.type == "cursor");
-        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier * (1 + game.cursorProductionPercentage * game.production);
+        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier + (0.01 * game.production);
         game.crit = getBuildingCrit(cursor);
 
         // Check achievements AT THE END
