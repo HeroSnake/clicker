@@ -157,7 +157,7 @@ function createGame() {
 
         const stock = base ? 1 : building.stock;
 
-        return building.production * Math.pow(building.level, building.level) * stock;
+        return building.production * Math.pow(2, building.level) * stock;
     }
 
     function getBuildingCrit(building) {
@@ -377,7 +377,7 @@ function createGame() {
         const now = Date.now();
 
         game.activeBoosts.push({
-            multiplier: 3 * (1 + game.goldenItemBoostPower),
+            multiplier: 5 * (1 + game.goldenItemBoostPower),
             startedAt: now,
             expiresAt: now + 5000 + (game.goldenItemBoostDuration * 1000)
         });
