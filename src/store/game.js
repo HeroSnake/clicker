@@ -442,7 +442,7 @@ function createGame() {
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
 
         const cursor = game.buildings.find(u => u.type == "cursor");
-        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier + (0.01 * game.production);
+        game.itemsPerClick = getItemsPerClick(cursor) * boostMultiplier * (1 + game.cursorProductionPercentage * game.production);
         game.crit = getBuildingCrit(cursor);
 
         // Check achievements AT THE END

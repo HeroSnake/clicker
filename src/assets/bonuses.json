@@ -42,7 +42,7 @@
         "increase": 1,
         "unit": "%",
         "level": 0,
-        "active": false
+        "active": true
     },
     {
         "id": 5,
