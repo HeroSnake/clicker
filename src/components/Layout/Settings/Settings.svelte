@@ -3,6 +3,7 @@
     import { game } from "../../../store/game";
     import Button from "../Game/Button.svelte";
     import Seasons from "../Plate/Seasons.svelte";
+    import Auth from "./Auth.svelte";
 
     let resetTimeout;
     let stage = $state(1);
@@ -46,8 +47,12 @@
     >
         <span class="title">Settings</span>
 
-        <span class="sub-title">Select season theme</span>
-        <Seasons />
+        <div>
+            <span class="sub-title">Select season theme</span>
+            <Seasons />
+        </div>
+
+        <Auth />
 
         <Button onClick={reset} size="lg">
             <span>{resetText}</span>
@@ -83,7 +88,7 @@
         transform: translate(-50%, -50%);
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 20px;
     }
 
     @media (max-width: 768px) {

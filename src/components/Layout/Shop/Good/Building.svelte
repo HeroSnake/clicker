@@ -7,31 +7,69 @@
 
     const { building = {}, amount = 0 } = $props();
 
+    const ENHANCE_TRESHOLD = 25;
+
+    let upgrade = $derived.by(() => {
+        const level = building.level + 1;
+
+        for (let l = level; l <= level + 1; l++) {
+            const cost = game.getBuildingUpgradeCost(building, l);
+            const disabled = (building.stock < l * ENHANCE_TRESHOLD || $game.totalItemsCollected < cost / 2) || cost > $game.itemCount
+
+            return {
+                cost,
+                disabled,
+            }
+        }
+    });
+
 </script>
 
-<button
-    class="building"
-    onclick={() => game.buyBuilding(building.__original, amount)}
-    disabled={building.disabled}
->
-    <Image img={building.img} />
-    <div class="info">
-        {#if building.unlocked}
-            <span class="name">{building.name}</span>
-            {#if building.level > 0}
-                <span class="level">(lvl {building.level})</span>
+<div class="building-row">
+    <button
+        class="building"
+        onclick={() => game.buyBuilding(building.__original, amount)}
+        disabled={building.disabled}
+        onmouseenter={(e) => game.mouseEnterTooltip("shop", () => ({
+            ...building,
+            cost: building.cost,
+            disabled: building.disabled,
+            libelle: "building"
+        }), e)}
+        onmouseleave={game.mouseLeaveTooltip}
+    >
+        <Image img={building.img} />
+        <div class="info">
+            {#if building.unlocked}
+                <span class="name">{building.name}</span>
+            {:else}
+                <span class="name">???</span>
             {/if}
-        {:else}
-            <span class="name">???</span>
+            <Cost value={building.cost} />
+        </div>
+        {#if building.stock > 0}
+            <span class="stock">
+                {building.stock}
+            </span>
         {/if}
-        <Cost value={building.cost} />
-    </div>
-    {#if building.stock > 0}
-        <span class="stock">
-            {building.stock}
-        </span>
-    {/if}
-</button>
+    </button>
+
+    <button
+        class="level-up interactive"
+        onclick={() => game.upgradeBuilding(building.__original)}
+        disabled={upgrade.disabled}
+        onmouseenter={(e) => game.mouseEnterTooltip("shop", () => ({
+            ...building,
+            ...upgrade,
+            name: `Upgrade: ${building.name}`,
+            libelle: "upgrade"
+        }), e)}
+        onmouseleave={game.mouseLeaveTooltip}
+    >
+        <span class="level">{building.level}</span>
+        <!-- <Cost value={upgrade.cost} /> -->
+    </button>
+</div>
 {#if $display.device === "mobile"}
     <div class="stats border wooden">
         <Body data={building} />
@@ -39,6 +77,44 @@
 {/if}
 
 <style>
+    .building-row {
+        display: flex;
+    }
+
+    .level-up {
+        text-align: center;
+        width: 20%;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #000;
+    }
+
+    .level-up::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url('/img/textures/stone-square.png');
+        background-size: contain;
+        z-index: -1;
+        box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
+    }
+
+    .level-up:hover:not(:disabled) {
+        filter: brightness(1.3);
+        box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.2);
+    }
+
+    .level-up:disabled {
+        filter: grayscale(100) brightness(0.8);
+        cursor: auto;
+    }
+
+    .level {
+        font-size: 2rem;
+        color: #ffffff;
+        opacity: 0.7;
+    }
+
     .building {
         width: 100%;
         position: relative;
@@ -46,6 +122,8 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
+        border-radius: 10px;
+        overflow: hidden;
         box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.2), 0 0 7px 2px rgba(0, 0, 0, 0.2);
     }
 
@@ -92,9 +170,6 @@
         font-weight: bold;
     }
 
-    .level {
-        font-size: 1rem;
-    }
     .stats {
         pointer-events: none;
         padding: 10px;

@@ -26,7 +26,17 @@
         {"name": "Cosmic Nut Generator", "description": "Generate glands at cosmic rates."},
         {"name": "Nut God", "description": "Divine nut power increases gland production massively."},
         {"name": "Eternal Nut Universe", "description": "A universe made entirely of glands."},
-        {"name": "Infinite Nut Dimensions", "description": "Infinite realms of nut riches."}
+        {"name": "Infinite Nut Dimensions", "description": "Infinite realms of nut riches."},
+        {"name": "Dark Energy Nut", "description": "Harness the invisible force expanding the universe to push gland production beyond the speed of light."},
+        {"name": "The Nut Paradox", "description": "Glands that shouldn't exist begin to manifest from pure logical contradiction."},
+        {"name": "Sentient Nut-Matter", "description": "Every gland gains a consciousness dedicated solely to multiplying itself."},
+        {"name": "Hyper-Nut String Theory", "description": "Vibrate the strings of the universe to resonate at a frequency of pure glands."},
+        {"name": "Probability Nut Engine", "description": "Collapses all possible timelines into the one where you have the most glands."},
+        {"name": "Recursive Gland Loop", "description": "Every gland produced instantly produces another gland, and another, forever."},
+        {"name": "Grand Architect's Acorn", "description": "Redesign the laws of physics to make 'Gland' the fundamental unit of matter."},
+        {"name": "Transcendent Nut Ego", "description": "Your will alone causes glands to manifest in the minds of all beings."},
+        {"name": "Simulated Gland Reality", "description": "Run trillions of digital universes where every atom is a gland."},
+        {"name": "Javascript in a Nutshell", "description": "Reach out of the game's code to write more glands into the story of existence."}
   ],
   "bonuses": [
     {"name": "Efficient Workflow", "description": "All sources produce more resources.", "detail": "total production"},
@@ -35,5 +45,8 @@
     {"name": "Gilded Chance", "description": "Golden nuts appear more often.", "detail": "golden nut spawn chance"},
     {"name": "Golden Click", "description": "Your clicks scale with your production !", "detail": "bonus click scaling"},
     {"name": "Milk Based Production", "description": "Production increases the more milk you have !", "detail": "additionnal total production"}
+  ],
+  "augments": [
+    {"name": "Golden Nut Radar", "description": "Auto clicks golden nuts !!", "detail": "Trigger it to auto click golden nuts !"}
   ]
 }

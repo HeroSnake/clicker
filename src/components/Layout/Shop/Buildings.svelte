@@ -31,13 +31,7 @@
 
 <div class="buildings">
     {#each buildings as building (building.id)}
-        {#if $display.device === "desktop"}
-            <button onmouseenter={(e) => game.mouseEnterTooltip("shop", { ...building, disabled: building.disabled }, e)} onmouseleave={game.mouseLeaveTooltip}>
-                <Building {building} amount={$game.amount} />
-            </button>
-        {:else}
-            <Building {building} amount={$game.amount} />
-        {/if}
+        <Building {building} amount={$game.amount} />
     {/each}
 </div>
 

@@ -18,18 +18,19 @@
     {/if}
 
 {:else if data.libelle === "bonus"}
-        <span>
-            grants <span class="bonus">{displayNumber(data.increase)}{data.unit}</span> {data.detail}
-        </span>
-        <span>
-            {#if data.unit === "x"}
-                <span class="total">{displayNumber($game[data.code])}x</span> total production
-            {:else if (data.unit === "%")}
-                <span class="total">{displayNumber($game[data.code] * 100)}%</span> total
-            {:else}
-                <span class="total">{displayNumber($game[data.code])}{data.unit}</span> total
-            {/if}
-        </span>
+
+    <span>
+        grants <span class="bonus">{displayNumber(data.increase)}{data.unit}</span> {data.detail}
+    </span>
+    <span>
+        {#if data.unit === "x"}
+            <span class="total">{displayNumber($game[data.code])}x</span> total production
+        {:else if (data.unit === "%")}
+            <span class="total">{displayNumber($game[data.code] * 100)}%</span> total
+        {:else}
+            <span class="total">{displayNumber($game[data.code])}{data.unit}</span> total
+        {/if}
+    </span>
 
 {:else if data.libelle === "building"}
     {#if data.unlocked}

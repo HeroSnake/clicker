@@ -18,7 +18,14 @@
 <span class="title">Achievements <small>{$achievements.unlocked.size} / {$achievements.list.length} {$achievements.completion}(%)</small></span>
 <div class="achievements">
     {#each achievementList as achievement}
-        <button onmouseenter={(e) => game.mouseEnterTooltip("journal", { ...achievement, disabled: !achievement.unlocked }, e)} onmouseleave={game.mouseLeaveTooltip}>
+        <button
+            onmouseenter={(e) => game.mouseEnterTooltip("journal", () => ({
+                ...achievement,
+                disabled: !achievement.unlocked,
+                libelle: "achievement"
+            }), e)}
+            onmouseleave={game.mouseLeaveTooltip}
+        >
             <Achievement {achievement} />
         </button>
     {/each}

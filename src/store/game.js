@@ -5,6 +5,7 @@ import seasons from "../assets/seasons.json";
 import lang from "../assets/lang.json";
 import { achievements } from "./achievements";
 import { display } from "./display";
+import { supabase } from '../lib/supabase';
 
 const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
@@ -26,7 +27,7 @@ function createGame() {
         const buildings = loadBuildings();
         const mobile = get(display).device === "mobile";
 
-        const state = {
+        let state = {
             itemCount: +localStorage.getItem("itemCount") || 0,
             production: 0,
             itemsPerClick: 0,
@@ -47,6 +48,7 @@ function createGame() {
             goldenItemSpawnChance: 0,
             cursorProductionPercentage: 0,
             milkProductionMultiplier: 0,
+            goldenItemRadar: false,
             crit: {},
             seasons,
             seasonId: initSeason(),
@@ -60,6 +62,20 @@ function createGame() {
                 y: 0,
             },
         };
+
+        getBestSave().then(cloudPayload => {
+            if (cloudPayload) {
+                update(current => {
+                    return {
+                        ...current,
+                        ...cloudPayload,
+                        buildings: loadBuildings(cloudPayload),
+                        bonuses: loadBonuses(cloudPayload)
+                    };
+                });
+                achievements.load(cloudPayload.buildings);
+            }
+        });
 
         achievements.load(buildings);
 
@@ -83,8 +99,8 @@ function createGame() {
         };
     }
 
-    function loadBuildings() {
-        const saved = JSON.parse(localStorage.getItem("upgrades")) || [];
+    function loadBuildings(externalData = null) {
+        const saved = externalData?.buildings || JSON.parse(localStorage.getItem("upgrades")) || [];
 
         return buildings.map(b => {
             const s = saved.find(s => s.id === b.id);
@@ -98,8 +114,8 @@ function createGame() {
         });
     }
 
-    function loadBonuses() {
-        const saved = JSON.parse(localStorage.getItem("bonuses")) || [];
+    function loadBonuses(externalData = null) {
+        const saved = externalData?.bonuses || JSON.parse(localStorage.getItem("bonuses")) || [];
 
         return bonuses.filter(b => b.active).map(b => {
             const s = saved.find(s => s.id === b.id);
@@ -186,24 +202,6 @@ function createGame() {
         return game.activeBoosts.reduce((total, b) => total + (b.multiplier - 1), 1);
     }
 
-    function getBonuses(game) {
-        let bonuses = {};
-
-        game.bonuses.forEach(b => {
-            if (b.level === 0) {
-                bonuses[b.code] = 0;
-            } else {
-                let increase = b.increase;
-                if (b.unit == "%") {
-                    increase = b.increase / 100;
-                }
-                bonuses[b.code] = increase * b.level;
-            }
-        });
-
-        return bonuses;
-    }
-
     // COMPUTE ITEMS PER CLICK
     function getItemsPerClick(cursor) {
         return 1 * Math.pow(2, cursor.level);
@@ -225,8 +223,8 @@ function createGame() {
         return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
-    function getUpgradeCost(upgrade, level) {
-        return Math.floor(getBuildingCost(upgrade, 1, level * 25) / 2);
+    function getBuildingUpgradeCost(building, level) {
+        return Math.floor(getBuildingCost(building, 1, level * 25) / 2);
     }
 
     function getBuildingCost(building, multiple, stock = null) {
@@ -314,12 +312,12 @@ function createGame() {
         return game;
     });
 
-    const buyUpgrade = upgrade => update(game => {
-        const cost = getUpgradeCost(upgrade, upgrade.level + 1);
+    const upgradeBuilding = building => update(game => {
+        const cost = getBuildingUpgradeCost(building, building.level + 1);
         if (game.itemCount < cost) return game;
 
         game.itemCount -= cost;
-        upgrade.level++;
+        building.level++;
 
         saveUpgrades(game.buildings);
         return game;
@@ -336,6 +334,12 @@ function createGame() {
         saveBonuses(game.bonuses);
         return game;
     });
+
+    const toggleBonus = code => update(game => {
+        game[code] = !game[code];
+
+        return game;
+    })
 
     const resetGame = () => update(() => {
         localStorage.clear();
@@ -385,8 +389,24 @@ function createGame() {
         return game;
     });
 
-    const mouseEnterTooltip = async (parent, data, event) => update(game => {
-        game.tooltip.data = data;
+    const getBonuses = () => update(game => {
+        game.bonuses.forEach(b => {
+            if (b.level === 0) {
+                game[b.code] = 0;
+            } else {
+                let increase = b.increase;
+                if (b.unit == "%") {
+                    increase = b.increase / 100;
+                }
+                game[b.code] = increase * b.level;
+            }
+        });
+
+        return game;
+    })
+
+    const mouseEnterTooltip = async (parent, getDataFn, event) => update(game => {
+        game.tooltip.getData = getDataFn;
 
         if (get(display).device === "desktop") {
             const tooltipEl = document.getElementById('tooltip');
@@ -415,7 +435,7 @@ function createGame() {
 
         game.tooltip.x = window.innerWidth - parentRect.right + parentRect.width;
 
-        const y = targetRect.top + targetRect.height / 2 - tooltipRect.height / 2;
+        const y = targetRect.top + targetRect.height - tooltipRect.height;
 
         game.tooltip.y = Math.min(window.innerHeight - tooltipRect.height - 8, Math.max(8, y));
 
@@ -425,18 +445,11 @@ function createGame() {
     /* ---------------- TICK ---------------- */
 
     const tickGame = () => update(game => {
-        const bonuses = getBonuses(game);
+        getBonuses();
         const boostMultiplier = getBoost(game);
         const totalProduction = getTotalProduction(game);
 
-        game.productionBonus = bonuses.productionBonus;
-        game.goldenItemBoostPower = bonuses.goldenItemBoostPower;
-        game.goldenItemBoostDuration = bonuses.goldenItemBoostDuration;
-        game.goldenItemSpawnChance = bonuses.goldenItemSpawnChance;
-        game.cursorProductionPercentage = bonuses.cursorProductionPercentage;
-        game.milkProductionMultiplier = bonuses.milkProductionMultiplier * (get(achievements).completion / 2);
-
-        game.production = (totalProduction * (1 + game.productionBonus) + (game.milkProductionMultiplier * totalProduction)) * boostMultiplier;
+        game.production = (totalProduction * (1 + game.productionBonus) + ((game.milkProductionMultiplier * (get(achievements).completion / 2)) * totalProduction)) * boostMultiplier;
 
         game.itemCount += game.production / (1000 / TICK_RATE);
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
@@ -453,21 +466,49 @@ function createGame() {
 
     /* ---------------- SAVE ---------------- */
 
-    function saveData() {
+    async function saveData() {
         update(game => {
-            localStorage.setItem("itemCount", Math.floor(game.itemCount).toString());
-            localStorage.setItem("totalItemsCollected", game.totalItemsCollected.toString());
-            localStorage.setItem("maxItemsCollected", game.maxItemsCollected.toString());
-            localStorage.setItem("clickCount", game.clickCount.toString());
-            localStorage.setItem("critCount", game.critCount.toString());
-            localStorage.setItem("goldenItemCount", game.goldenItemCount.toString());
-            localStorage.setItem("seasonId", game.seasonId.toString());
-            localStorage.setItem("lastSaveAt", Date.now().toString());
+            // 1. Prepare the payload
+            const savePayload = {
+                itemCount: Math.floor(game.itemCount),
+                totalItemsCollected: game.totalItemsCollected,
+                maxItemsCollected: game.maxItemsCollected,
+                clickCount: game.clickCount,
+                critCount: game.critCount,
+                goldenItemCount: game.goldenItemCount,
+                seasonId: game.seasonId,
+                lastSaveAt: Date.now(),
+                buildings: game.buildings, // Assuming these are arrays/objects
+                bonuses: game.bonuses
+            };
 
-            saveUpgrades(game.buildings);
-            saveBonuses(game.bonuses);
+            // 2. ALWAYS save to LocalStorage (as a local backup/guest mode)
+            Object.entries(savePayload).forEach(([key, value]) => {
+                localStorage.setItem(key, JSON.stringify(value));
+            });
+
+            // 3. IF logged in, sync to Supabase
+            // Note: We don't 'await' inside the update to keep the UI snappy
+            syncToCloud(savePayload);
+
             return game;
         });
+    }
+
+    async function syncToCloud(payload) {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (user) {
+            const { error } = await supabase
+                .from('saves')
+                .upsert({
+                    user_id: user.id,
+                    payload: payload,
+                    updated_at: new Date()
+                });
+
+            if (error) console.error("Cloud save failed:", error.message);
+        }
     }
 
     function saveUpgrades(upgrades) {
@@ -482,13 +523,63 @@ function createGame() {
         ));
     }
 
+    async function getBestSave() {
+        const localLastSave = parseInt(localStorage.getItem("lastSaveAt")) || 0;
+
+        const { data: { user } } = await supabase.auth.getUser();
+        let cloudSave = null;
+
+        if (user) {
+            const { data } = await supabase
+                .from('saves')
+                .select('*')
+                .eq('user_id', user.id)
+                .single();
+            cloudSave = data;
+        }
+
+        const cloudLastSave = cloudSave ? new Date(cloudSave.updated_at).getTime() : 0;
+
+        if (cloudLastSave > localLastSave) {
+            console.log("☁️ Loading from Cloud (Newer)");
+            return cloudSave.payload;
+        } else {
+            console.log("💾 Loading from LocalStorage");
+            return null;
+        }
+    }
+
+    /* ---------------- AUTH ---------------- */
+
+    async function login() {
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+    }
+
+    async function logout() {
+        const { error } = await supabase.auth.signOut();
+
+        if (error) {
+            console.error("Logout error:", error.message);
+            return;
+        }
+
+        // localStorage.clear();
+        // update(() => initGame());
+    };
+
     return {
         subscribe,
         buyBuilding,
-        buyUpgrade,
+        upgradeBuilding,
         buyBonus,
+        toggleBonus,
         getBonusCost,
-        getUpgradeCost,
+        getBuildingUpgradeCost,
         getBuildingCost,
         clickItem,
         resetGame,
@@ -501,7 +592,9 @@ function createGame() {
         toggleSettings,
         mouseEnterTooltip,
         mouseLeaveTooltip,
-        GOD_MODE
+        GOD_MODE,
+        login,
+        logout,
     };
 }
 

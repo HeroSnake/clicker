@@ -3,20 +3,27 @@
     import { game } from "../../../../store/game";
     import Body from "./Body.svelte";
     import Head from "./Head.svelte";
+
+    let activeData = $derived.by(() => {
+        if ($game.tooltip.display && typeof $game.tooltip.getData === 'function') {
+            return $game.tooltip.getData();
+        }
+        return null;
+    });
 </script>
 
-{#if $game.tooltip.display}
+{#if $game.tooltip.display && activeData}
     <div id="tooltip"
         class="border wooden"
-        class:disabled={$game.tooltip.data.disabled}
+        class:disabled={activeData.disabled}
         style:top={$game.tooltip.y ? `${$game.tooltip.y}px` : 'unset'}
         style:right={$game.tooltip.x ? `${$game.tooltip.x}px` : 0}
         transition:fly={{ x: 150, duration: 150 }}
     >
-        <Head data={$game.tooltip.data} />
-        {#if $game.tooltip.data.libelle !== "achievement"}
+        <Head data={activeData} />
+        {#if activeData.libelle !== "achievement"}
             <div class="body">
-                <Body data={$game.tooltip.data} />
+                <Body data={activeData} />
             </div>
         {/if}
     </div>

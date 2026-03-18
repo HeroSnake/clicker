@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
     import { game } from '../../../store/game';
     import Buildings from './Buildings.svelte';
-    import Upgrades from '../Journal/Upgrades.svelte';
+    import Bonuses from '../Journal/Bonuses.svelte';
 </script>
 
 {#if $game.displayShop}
@@ -10,7 +10,7 @@
         in:fly={{ x: 40, duration: 200 }}
         out:fly={{ x: 40, duration: 200 }}
     >
-        <Upgrades />
+        <Bonuses />
         <Buildings />
     </div>
 {/if}
