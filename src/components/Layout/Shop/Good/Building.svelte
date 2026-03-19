@@ -12,14 +12,12 @@
     let upgrade = $derived.by(() => {
         const level = building.level + 1;
 
-        for (let l = level; l <= level + 1; l++) {
-            const cost = game.getBuildingUpgradeCost(building, l);
-            const disabled = (building.stock < l * ENHANCE_TRESHOLD || $game.totalItemsCollected < cost / 2) || cost > $game.itemCount
+        const cost = game.getBuildingUpgradeCost(building, level);
+        const disabled = (building.stock < level * ENHANCE_TRESHOLD || $game.totalItemsCollected < cost / 2) || cost > $game.itemCount
 
-            return {
-                cost,
-                disabled,
-            }
+        return {
+            cost,
+            disabled,
         }
     });
 
@@ -35,7 +33,7 @@
             cost: building.cost,
             disabled: building.disabled,
             libelle: "building"
-        }), e)}
+        }), e, $display.device !== "mobile")}
         onmouseleave={game.mouseLeaveTooltip}
     >
         <Image img={building.img} />
@@ -60,14 +58,13 @@
         disabled={upgrade.disabled}
         onmouseenter={(e) => game.mouseEnterTooltip("shop", () => ({
             ...building,
-            ...upgrade,
-            name: `Upgrade: ${building.name}`,
+            cost: upgrade.cost,
+            disabled: upgrade.disabled,
             libelle: "upgrade"
-        }), e)}
+        }), e, $display.device !== "mobile")}
         onmouseleave={game.mouseLeaveTooltip}
     >
         <span class="level">{building.level}</span>
-        <!-- <Cost value={upgrade.cost} /> -->
     </button>
 </div>
 {#if $display.device === "mobile"}

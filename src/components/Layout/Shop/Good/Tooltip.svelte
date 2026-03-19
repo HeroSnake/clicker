@@ -31,7 +31,7 @@
 
 <style>
     #tooltip {
-        position: absolute;
+        position: fixed;
         pointer-events: none;
         color: #d1d1d1;
         padding: 10px;
@@ -58,6 +58,7 @@
 
     @media (max-width: 768px) {
         #tooltip {
+            position: absolute;
             width: calc(100% - 30px);
             bottom: 0;
             top: auto !important;

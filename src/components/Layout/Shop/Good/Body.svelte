@@ -36,10 +36,10 @@
     {#if data.unlocked}
         <span>
             Each {data.name} produces <b class="bonus">{displayNumber(game.getBuildingProduction(data, true), false, true)}</b> per second
-        </span>
+        </span><br>
         <span>
             {data.stock} {data.name}s produces a total of <b class="bonus">{displayNumber(game.getBuildingProduction(data), false, true)}</b> per second
-        </span>
+        </span><br>
         {#if data.type === "cursor" && $game.crit.chance > 0}
             <span>
                 <b class="total">+{displayNumber($game.crit.chance * 100)}%</b> <small>Crit chance</small>

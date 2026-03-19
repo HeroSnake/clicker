@@ -405,7 +405,9 @@ function createGame() {
         return game;
     })
 
-    const mouseEnterTooltip = async (parent, getDataFn, event) => update(game => {
+    const mouseEnterTooltip = async (parent, getDataFn, event, defaultDisplay = true) => update(game => {
+        if  (!defaultDisplay) return;
+
         game.tooltip.getData = getDataFn;
 
         if (get(display).device === "desktop") {
@@ -435,9 +437,11 @@ function createGame() {
 
         game.tooltip.x = window.innerWidth - parentRect.right + parentRect.width;
 
-        const y = targetRect.top + targetRect.height - tooltipRect.height;
+        // Center tooltip vertically with target by default
+        const y = targetRect.top + (targetRect.height / 2) - (tooltipRect.height / 2);
+        const maxY = window.innerHeight - tooltipRect.height - 8;
 
-        game.tooltip.y = Math.min(window.innerHeight - tooltipRect.height - 8, Math.max(8, y));
+        game.tooltip.y = y > maxY ? maxY : Math.max(8, y);
 
         return game;
     })
@@ -468,7 +472,6 @@ function createGame() {
 
     async function saveData() {
         update(game => {
-            // 1. Prepare the payload
             const savePayload = {
                 itemCount: Math.floor(game.itemCount),
                 totalItemsCollected: game.totalItemsCollected,
@@ -478,17 +481,16 @@ function createGame() {
                 goldenItemCount: game.goldenItemCount,
                 seasonId: game.seasonId,
                 lastSaveAt: Date.now(),
-                buildings: game.buildings, // Assuming these are arrays/objects
-                bonuses: game.bonuses
+                upgrades: game.buildings.map(b => ({ id: b.id, stock: b.stock, level: b.level })),
+                bonuses: game.bonuses.map(b => ({ id: b.id, level: b.level }))
             };
 
-            // 2. ALWAYS save to LocalStorage (as a local backup/guest mode)
+            // ALWAYS save to LocalStorage
             Object.entries(savePayload).forEach(([key, value]) => {
                 localStorage.setItem(key, JSON.stringify(value));
             });
 
-            // 3. IF logged in, sync to Supabase
-            // Note: We don't 'await' inside the update to keep the UI snappy
+            // IF logged in, sync to cloud
             syncToCloud(savePayload);
 
             return game;
