@@ -406,7 +406,7 @@ function createGame() {
     })
 
     const mouseEnterTooltip = async (parent, getDataFn, event, defaultDisplay = true) => update(game => {
-        if  (!defaultDisplay) return;
+        if (!defaultDisplay) return game;
 
         game.tooltip.getData = getDataFn;
 
