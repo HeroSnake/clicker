@@ -11,7 +11,7 @@ const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 
 const MAX_OFFLINE_TIME = 60 * 60 * 12; // 12 hours cap (seconds)
 const TICK_RATE = 200;
-const SAVE_RATE = 2000;
+const SAVE_RATE = 10000;
 
 let hiddenAt = null;
 
