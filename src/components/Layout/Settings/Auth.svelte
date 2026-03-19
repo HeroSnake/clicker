@@ -21,14 +21,14 @@
 {#if session}
     <div class="user-info">
         <Button onClick={game.logout} size="lg">
-            <img src="/img/icons/google.png" alt="google logo" class="icon-google" />
+            <img src="./img/icons/google.png" alt="google logo" class="icon-google" />
             Logout
         </Button>
         <span class="user-email">{session.user.email}</span>
     </div>
 {:else}
     <Button onClick={game.login} size="lg">
-        <img src="/img/icons/google.png" alt="google logo" class="icon-google" />
+        <img src="./img/icons/google.png" alt="google logo" class="icon-google" />
         Login
     </Button>
 {/if}
