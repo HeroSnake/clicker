@@ -17,7 +17,7 @@
 
 <style>
     #shop {
-        width: 420px;
+        width: 500px;
         z-index: 2;
         padding: 10px;
         overflow-x: hidden;

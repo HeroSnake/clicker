@@ -12,6 +12,7 @@ const GOD_MODE = import.meta.env.DEV ?? !!+import.meta.env.VITE_GOD_MODE;
 const MAX_OFFLINE_TIME = 60 * 60 * 12; // 12 hours cap (seconds)
 const TICK_RATE = 200;
 const SAVE_RATE = 15000;
+const SYNC_RATE = 2000;
 
 let hiddenAt = null;
 
@@ -88,6 +89,7 @@ function createGame() {
 
     function startLoops() {
         const saveInterval = setInterval(saveData, SAVE_RATE);
+        const syncInterval = setInterval(syncData, SYNC_RATE);
         const tickInterval = setInterval(tickGame, TICK_RATE);
 
         document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -95,6 +97,7 @@ function createGame() {
         return () => {
             clearInterval(saveInterval);
             clearInterval(tickInterval);
+            clearInterval(syncInterval)
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
     }
@@ -223,14 +226,21 @@ function createGame() {
         return Math.floor(bonus.cost * (Math.pow(costMultiplier, bonus.level) * (costMultiplier - 1)) / (costMultiplier - 1));
     }
 
-    function getBuildingUpgradeCost(building, level) {
-        return Math.floor(getBuildingCost(building, 1, level * 25) / 2);
+    function getBuildingUpgradeCost(building, targetLevel) {
+        const upgradeBase = building.baseCost * 10;
+        const multiplier = Math.pow(5, targetLevel);
+
+        // if (building.id ===0) {
+        //     console.log(building);
+        // }
+
+        return Math.floor(upgradeBase * multiplier);
     }
 
     function getBuildingCost(building, multiple, stock = null) {
         const costMultiplier = 1.15;
         const buildingCost = stock ?? building.stock;
-        return Math.floor(building.cost * (Math.pow(costMultiplier, buildingCost) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
+        return Math.floor(building.baseCost * (Math.pow(costMultiplier, buildingCost) * (Math.pow(costMultiplier, multiple) - 1)) / (costMultiplier - 1));
     }
 
     function applyOfflineProgress(game) {
@@ -453,7 +463,7 @@ function createGame() {
         const boostMultiplier = getBoost(game);
         const totalProduction = getTotalProduction(game);
 
-        game.production = (totalProduction * (1 + game.productionBonus) + ((game.milkProductionMultiplier * (get(achievements).completion / 2)) * totalProduction)) * boostMultiplier;
+        game.production = (totalProduction * (1 + game.productionBonus) + ((game.milkProductionMultiplier * (get(achievements).completion)) * totalProduction)) * boostMultiplier;
 
         game.itemCount += game.production / (1000 / TICK_RATE);
         game.totalItemsCollected += game.production / (1000 / TICK_RATE);
@@ -470,27 +480,38 @@ function createGame() {
 
     /* ---------------- SAVE ---------------- */
 
+    function getSavePayload(game) {
+        return {
+            itemCount: Math.floor(game.itemCount),
+            totalItemsCollected: game.totalItemsCollected,
+            maxItemsCollected: game.maxItemsCollected,
+            clickCount: game.clickCount,
+            critCount: game.critCount,
+            goldenItemCount: game.goldenItemCount,
+            seasonId: game.seasonId,
+            lastSaveAt: Date.now(),
+            upgrades: game.buildings.map(b => ({ id: b.id, stock: b.stock, level: b.level })),
+            bonuses: game.bonuses.map(b => ({ id: b.id, level: b.level }))
+        };
+    }
+
     async function saveData() {
         update(game => {
-            const savePayload = {
-                itemCount: Math.floor(game.itemCount),
-                totalItemsCollected: game.totalItemsCollected,
-                maxItemsCollected: game.maxItemsCollected,
-                clickCount: game.clickCount,
-                critCount: game.critCount,
-                goldenItemCount: game.goldenItemCount,
-                seasonId: game.seasonId,
-                lastSaveAt: Date.now(),
-                upgrades: game.buildings.map(b => ({ id: b.id, stock: b.stock, level: b.level })),
-                bonuses: game.bonuses.map(b => ({ id: b.id, level: b.level }))
-            };
+            const savePayload = getSavePayload(game);
 
             // ALWAYS save to LocalStorage
             Object.entries(savePayload).forEach(([key, value]) => {
                 localStorage.setItem(key, JSON.stringify(value));
             });
 
-            // IF logged in, sync to cloud
+            return game;
+        });
+    }
+
+    async function syncData() {
+        update(game => {
+            const savePayload = getSavePayload(game);
+
             syncToCloud(savePayload);
 
             return game;

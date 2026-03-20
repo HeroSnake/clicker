@@ -11,13 +11,14 @@
 
     let upgrade = $derived.by(() => {
         const level = building.level + 1;
-
         const cost = game.getBuildingUpgradeCost(building, level);
-        const disabled = (building.stock < level * ENHANCE_TRESHOLD || $game.totalItemsCollected < cost / 2) || cost > $game.itemCount
+
+        const canAfford = $game.itemCount >= cost;
+        const hasStock = building.stock >= level * ENHANCE_TRESHOLD;
 
         return {
             cost,
-            disabled,
+            disabled: !canAfford || !hasStock,
         }
     });
 
@@ -80,7 +81,7 @@
 
     .level-up {
         text-align: center;
-        width: 20%;
+        width: 18%;
         border-radius: 10px;
         overflow: hidden;
         border: 1px solid #000;
@@ -96,6 +97,10 @@
         box-shadow: inset 0 0 12px 12px rgba(0,0,0,0.7);
     }
 
+    .level-up:not(:disabled)::before {
+        filter: sepia(1) saturate(3);
+    }
+
     .level-up:hover:not(:disabled) {
         filter: brightness(1.3);
         box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.2);
@@ -107,9 +112,9 @@
     }
 
     .level {
-        font-size: 2rem;
+        font-size: 2.5rem;
         color: #ffffff;
-        opacity: 0.7;
+        opacity: 0.9;
     }
 
     .building {
