@@ -14,7 +14,7 @@
             })
             .map(building => {
                 const cost = game.getBuildingCost(building, $game.amount);
-                const unlocked = $game.totalItemsCollected >= cost;
+                const unlocked = $game.totalItemsCollected >= building.baseCost;
                 return {
                     ...building,
                     __original: building,
