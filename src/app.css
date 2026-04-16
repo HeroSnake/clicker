@@ -164,3 +164,33 @@ button:disabled {
         border-image-width: 5px;
     }
 }
+
+:root .close-btn {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 24px;
+    height: 24px;
+    background: #e64a33;
+    border: 4px solid #000;
+    box-shadow: inset -4px -4px 0px 0px #801b10, inset 4px 4px 0px 0px #ff6b57;
+    color: #fff;
+    font-family: "dogicapixelbold", sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    text-shadow: 2px 2px 0px #000;
+}
+
+:root .close-btn:hover {
+    background: #ff6b57;
+}
+
+:root .close-btn:active {
+    box-shadow: inset 4px 4px 0px 0px #801b10, inset -4px -4px 0px 0px #ff6b57;
+    padding-top: 4px;
+    padding-left: 4px;
+}

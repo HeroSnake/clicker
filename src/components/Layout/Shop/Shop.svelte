@@ -17,36 +17,6 @@
 {/if}
 
 <style>
-    .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 32px;
-        height: 32px;
-        background: #e64a33;
-        border: 4px solid #000;
-        box-shadow: inset -4px -4px 0px 0px #801b10, inset 4px 4px 0px 0px #ff6b57;
-        color: #fff;
-        font-family: "dogicapixelbold", sans-serif;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10;
-        text-shadow: 2px 2px 0px #000;
-    }
-
-    .close-btn:hover {
-        background: #ff6b57;
-    }
-
-    .close-btn:active {
-        box-shadow: inset 4px 4px 0px 0px #801b10, inset -4px -4px 0px 0px #ff6b57;
-        padding-top: 4px;
-        padding-left: 4px;
-    }
-
     #shop {
         width: 500px;
         z-index: 2;
