@@ -151,11 +151,19 @@ function createAchievements() {
         });
     }
 
+    function clearAll() {
+        update(achievements => {
+            achievements.newlyUnlocked.clear();
+            return achievements;
+        });
+    }
+
     return {
         subscribe,
         load,
         evaluate,
         clear,
+        clearAll,
     };
 }
 
