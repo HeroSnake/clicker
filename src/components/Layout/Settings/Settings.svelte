@@ -45,6 +45,8 @@
         in:fly={{ y: 40, duration: 200 }}
         out:fly={{ y: 40, duration: 200 }}
     >
+        <button class="close-btn" onclick={game.toggleSettings}>X</button>
+
         <span class="title">Settings</span>
 
         <div>
@@ -61,6 +63,36 @@
 {/if}
 
 <style>
+    .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 32px;
+        height: 32px;
+        background: #e64a33;
+        border: 4px solid #000;
+        box-shadow: inset -4px -4px 0px 0px #801b10, inset 4px 4px 0px 0px #ff6b57;
+        color: #fff;
+        font-family: "dogicapixelbold", sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        text-shadow: 2px 2px 0px #000;
+    }
+
+    .close-btn:hover {
+        background: #ff6b57;
+    }
+
+    .close-btn:active {
+        box-shadow: inset 4px 4px 0px 0px #801b10, inset -4px -4px 0px 0px #ff6b57;
+        padding-top: 4px;
+        padding-left: 4px;
+    }
+
     .title {
         font-size: 1.8rem;
         text-shadow: 4px 4px 12px rgba(0, 0, 0, 1), 0 0 8px rgba(0, 0, 0, 1);
